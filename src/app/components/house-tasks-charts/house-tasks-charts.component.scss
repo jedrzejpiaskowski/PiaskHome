@@ -1,0 +1,20 @@
+.tasks-summary {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    
+    .time-period-button {
+        margin: 0.75em 0 0.5em 0;
+    }
+
+    .tasks-charts {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    
+        @media screen and (orientation: portrait), (max-width: 960px) {
+          flex-direction: column;
+          align-items: center;
+        }
+    }
+}

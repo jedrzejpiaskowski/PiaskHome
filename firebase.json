@@ -1,0 +1,22 @@
+{
+  "hosting": {
+    "public": "dist/piask-home",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "emulators": {
+      "hosting": {
+        "port": 5000,
+        "host": "0.0.0.0"
+      }
+    }
+  }
+}

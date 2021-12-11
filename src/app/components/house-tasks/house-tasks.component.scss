@@ -1,0 +1,110 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media screen and (orientation: portrait), (max-width: 960px) {
+    flex-direction: column;
+  }
+}
+
+.task-viewer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 1em 1em 0 1em;
+
+  .active-task {
+    margin: 0 1em;
+
+    .tasks-container {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .task-category:first-child {
+      margin-left: 1em;
+      margin-right: 1em;
+    }
+  }
+}
+
+.tasks-table {
+  margin: 1em 0em;
+
+  tr {
+    cursor: pointer;
+
+    td {
+        mat-icon {
+            vertical-align: middle;
+        }
+    }
+  }
+
+  tr.mat-row:nth-child(odd) {
+    height: 20px;
+    border-width: 0px;
+
+    td {
+      border-width: 0;
+    }
+  }
+
+  tr:nth-child(even) {
+    height: 35px;
+    mat-icon {
+      padding: 0 0.15em;
+    }
+  }
+
+  tr:nth-child(odd).mine {
+    background-color: #ffab4014;
+    // background-image: linear-gradient(to bottom, #ffab4014, transparent);
+  }
+
+  tr:nth-child(even):hover {
+    background-color: #0d96881a;
+    // background-image: linear-gradient(to top, #0d96881a, transparent);
+  }
+
+  .table-actions {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    margin-top: 1em;
+
+    button {
+      margin: 0 0.25em;
+    }
+  }
+}
+
+.d-none {
+  opacity: 0;
+}
+
+.opaque {
+  opacity: 0.2;
+}
+
+ul {
+  list-style-type: none;
+  padding-inline-start: 1em;
+
+  li {
+    margin-top: 0.5em;
+
+    span {
+      margin-right: 0.5em;
+    }
+
+    mat-icon {
+      vertical-align: sub;
+    }
+  }
+}
+
+::ng-deep .ngx-charts .bar {
+    border-radius: 0px;
+  }

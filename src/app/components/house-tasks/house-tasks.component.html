@@ -1,0 +1,294 @@
+<mat-tab-group class='full-width-tabs' mat-align-tabs="center">
+    <mat-tab label="Bieżące">
+        <ng-container *ngIf='{
+    activeDate: activeDate$ | async,
+    activeTasks: activeTasks$ | async,
+    user: user$ | async
+} as data'>
+
+            <div class='task-viewer' *ngIf='data.activeTasks'>
+                <mat-card class="active-task" *ngIf='{ notMe: data.activeTasks.who !== data.user?.shortName} as check'>
+                    <mat-card-header>
+                        <mat-card-title>Prace domowe
+                            <span *ngIf='data.activeTasks.saved; else unsaved'>
+                                <mat-icon color='primary'>save</mat-icon>
+                            </span>
+                            <ng-template #unsaved>
+                                <mat-icon color='warn'>help_outline</mat-icon>
+                            </ng-template>
+                            <span *ngIf='data.activeTasks.approved === true'>
+                                <mat-icon color='primary'>check_circle</mat-icon>
+                            </span>
+                            <span *ngIf='data.activeTasks.approved === false'>
+                                <mat-icon color='warn'>cancel</mat-icon>
+                            </span>
+                        </mat-card-title>
+                        <mat-card-subtitle>
+                            <span *ngIf='data.activeTasks.who === data.user?.shortName; else notYou'>Ty - </span>
+                            <ng-template #notYou>
+                                <span>{{data.activeTasks.who}} - </span>
+                            </ng-template>
+                            <span *ngIf='data.activeTasks.dateString === today'>Dzisiaj</span>
+                            <span *ngIf='data.activeTasks.dateString === yesterday'>Wczoraj</span>
+                            <ng-container></ng-container>
+                            <span
+                                *ngIf='data.activeTasks.dateString !== today && data.activeTasks.dateString !== yesterday'>{{data.activeTasks.date
+                                | date: 'EEEE' }}, {{data.activeTasks.dateString}}</span>
+                        </mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class='tasks-container'>
+                            <div class='task-category'>
+                                <h3>Kuchenne</h3>
+                                <ul>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe' [(ngModel)]='data.activeTasks.dinner'>
+                                            <span>Obiad</span>
+                                            <mat-icon color='accent'>ramen_dining</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe' [(ngModel)]='data.activeTasks.snacks'>
+                                            <span>Przekąska</span>
+                                            <mat-icon color='accent'>bakery_dining</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe' [(ngModel)]='data.activeTasks.groceries'>
+                                            <span>Zakupy</span>
+                                            <mat-icon color='accent'>shopping_cart</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe'
+                                            [(ngModel)]='data.activeTasks.dishesAndKitchen'>
+                                            <span>Naczynia</span>
+                                            <mat-icon color='accent'>soap</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe'
+                                            [(ngModel)]='data.activeTasks.dishwasher'>
+                                            <span>Zmywarka</span>
+                                            <mat-icon color='accent'><span class="material-icons-round">
+                                                    local_laundry_service
+                                                </span></mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class='task-category'>
+                                <h3>Sprzątanie</h3>
+                                <ul>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe' [(ngModel)]='data.activeTasks.vacuuming'>
+                                            <span>Odkurzanie</span>
+                                            <mat-icon color='accent'>cleaning_services</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe' [(ngModel)]='data.activeTasks.dusting'>
+                                            <span>Ścieranie kurzy</span>
+                                            <mat-icon color='accent'>pan_tool</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe'
+                                            [(ngModel)]='data.activeTasks.smallBathroom'>
+                                            <span>Mała łazienka</span>
+                                            <mat-icon color='accent'>clean_hands</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe'
+                                            [(ngModel)]='data.activeTasks.bigBathroom'>
+                                            <span>Duża łazienka</span>
+                                            <mat-icon color='accent'>bathtub</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                    <li>
+                                        <mat-checkbox [disabled]='check.notMe' [(ngModel)]='data.activeTasks.laundry'>
+                                            <span>Pranie</span>
+                                            <mat-icon color='accent'>dry_cleaning</mat-icon>
+                                        </mat-checkbox>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </mat-card-content>
+                    <mat-card-actions align='end'>
+                        <button mat-icon-button (click)='getPrevious(data.user?.shortName)'>
+                            <mat-icon color='primary'>arrow_back</mat-icon>
+                        </button>
+                        <ng-container *ngIf='check.notMe; else me'>
+                            <button *ngIf='!data.activeTasks.approved' color='warn'
+                                (click)='approve(data.activeTasks, false)' mat-stroked-button>
+                                <mat-icon>clear</mat-icon>
+                                Odrzuć
+                            </button>
+                            <button color='primary' (click)='approve(data.activeTasks, true)' mat-stroked-button>
+                                <mat-icon>done</mat-icon>
+                                Potwierdź
+                            </button>
+                        </ng-container>
+                        <ng-template #me>
+                            <button color='primary' *ngIf='!data.activeTasks.saved' (click)='save(data.activeTasks)'
+                                mat-stroked-button>Zapisz</button>
+                            <button color='primary' *ngIf='data.activeTasks.saved' (click)='update(data.activeTasks)'
+                                mat-stroked-button>Aktualizuj</button>
+                        </ng-template>
+                        <button mat-icon-button (click)='getNext(data.user?.shortName)'
+                            [ngClass]="{ 'd-none': data.activeDate === today}" [disabled]='data.activeDate === today'>
+                            <mat-icon color='primary'>arrow_forward</mat-icon>
+                        </button>
+                    </mat-card-actions>
+                    <mat-card-footer>
+                        <mat-progress-bar></mat-progress-bar>
+                    </mat-card-footer>
+                </mat-card>
+            </div>
+
+            <div class='tasks-table' *ngIf='tasksList$ | async as tasksList'>
+                <table mat-table [dataSource]="tasksList" multiTemplateDataRows>
+                    <ng-container matColumnDef="who">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task"> {{task.who}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="date">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">{{task.date | date: 'EEEE' }}, {{task.dateString}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dinner">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.dinner !== true}" color='accent'>ramen_dining
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="snacks">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.snacks !== true}" color='accent'>tapas</mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dishesAndKitchen">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.dishesAndKitchen !== true}" color='accent'>soap
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dishwasher">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.dishwasher !== true}" color='accent'>
+                                local_laundry_service
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="groceries">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.groceries !== true}" color='accent'>shopping_cart
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="vacuuming">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.vacuuming !== true}" color='accent'>cleaning_services
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dusting">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.dusting !== true}" color='accent'>pan_tool</mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="smallBathroom">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.smallBathroom !== true}" color='accent'>clean_hands
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="bigBathroom">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon [ngClass]="{'opaque': task.bigBathroom !== true}" color='accent'>bathtub
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="approved">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task">
+                            <mat-icon *ngIf='task.approved === true' color='primary'>done</mat-icon>
+                            <mat-icon *ngIf='task.approved === false' color='warn'>clear</mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="details">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let task" [attr.colspan]="3">
+                            <mat-icon [ngClass]="{'opaque': task.dinner !== true}" color='accent'>ramen_dining
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.snacks !== true}" color='accent'>tapas</mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.dishesAndKitchen !== true}" color='accent'>soap
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.dishwasher !== true}" color='accent'>
+                                local_laundry_service
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.groceries !== true}" color='accent'>shopping_cart
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.vacuuming !== true}" color='accent'>cleaning_services
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.dusting !== true}" color='accent'>pan_tool</mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.smallBathroom !== true}" color='accent'>clean_hands
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.bigBathroom !== true}" color='accent'>bathtub
+                            </mat-icon>
+                            <mat-icon [ngClass]="{'opaque': task.laundry !== true}" color='accent'>dry_cleaning
+                            </mat-icon>
+                        </td>
+                    </ng-container>
+
+                    <!-- <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr> -->
+                    <tr [ngClass]="{'mine': task.who === data.user?.shortName}" mat-row
+                        *matRowDef="let task; columns: displayedColumns;" (click)='selectTask(task)'></tr>
+                    <tr mat-row *matRowDef="let task; columns: ['details']" (click)='selectTask(task)'></tr>
+                </table>
+                <div class='table-actions' *ngIf='{ paging: paging$ | async } as data'>
+                    <button mat-stroked-button
+                        *ngIf='data.paging !== pagingPrev || (data.paging === pagingPrev && tasksList.length === pageSize)'
+                        (click)='getPreviousPage()'>
+                        <mat-icon color='primary'>arrow_back</mat-icon>
+                        Wcześniej
+                    </button>
+                    <button mat-stroked-button (click)='resetPaging()'>
+                        <mat-icon color='primary'>clear</mat-icon>
+                        Wyczyść
+                    </button>
+                    <button mat-stroked-button *ngIf='data.paging !== pagingNone' (click)='getNextPage()'>
+                        Później
+                        <mat-icon color='primary'>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </ng-container>
+    </mat-tab>
+    <mat-tab label="Podsumowanie">
+        <app-house-tasks-charts></app-house-tasks-charts>
+    </mat-tab>
+</mat-tab-group>

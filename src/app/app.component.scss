@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+}
+
+.full-height {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: yellow;
+//   height: 100%;
+  //   margin-bottom: 100px;
+  background-color: transparent;
+}
+
+.example-toolbar {
+  div {
+    a {
+      padding: 0 1em;
+    }
+  }
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+button {
+  .mat-icon {
+    margin-right: 0.5em;
+  }
+}
+
+.active-link {
+    color: #ffc983;
+}
