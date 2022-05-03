@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { debounceTime, filter, map, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { DaySummary, VisitEntry } from 'src/models/visit-entry';
@@ -14,7 +14,7 @@ import { DateUtilityService } from '../../services/date-utility.service';
   templateUrl: './visits.component.html',
   styleUrls: ['./visits.component.scss'],
 })
-export class VisitsComponent implements OnInit {
+export class VisitsComponent implements OnInit, OnDestroy {
   activeVisit$: Observable<VisitEntry>;
   visitsForDay$: Observable<VisitEntry[]>;
   visitsForMonth$: Observable<DaySummary[]>;
@@ -85,10 +85,9 @@ export class VisitsComponent implements OnInit {
     );
 
     this.visitsForMonth$ = this.selectedMonth$.pipe(
+      debounceTime(200),
       tap((_) => {
-        this.totalMonthEarnings = 0;
-        this.totalMonthPrice = 0;
-        this.totalMonthVisits = 0;
+        this.resetSummaries();
       }),
       switchMap((d) => {
         const firstDay = new Date(d.getFullYear(), d.getMonth(), 1);
@@ -107,6 +106,7 @@ export class VisitsComponent implements OnInit {
       }),
       map((visits) => {
         if (visits && visits.length > 0) {
+          this.resetSummaries();
           visits = visits.map((v) => this.convertVisit(v));
           return visits.reduce<DaySummary[]>((summary, visit) => {
             const day = new Date(visit.date.toDateString());
@@ -135,6 +135,14 @@ export class VisitsComponent implements OnInit {
       })
     );
   }
+  ngOnDestroy(): void {
+  }
+
+  resetSummaries(): void {
+    this.totalMonthEarnings = 0;
+    this.totalMonthPrice = 0;
+    this.totalMonthVisits = 0;
+  }
 
   changeMonth(change: number) {
     const sm = this.selectedMonth$.getValue();
@@ -146,7 +154,7 @@ export class VisitsComponent implements OnInit {
   showNextMonthArrow(): boolean {
     const cd = new Date();
     const sm = this.selectedMonth$.getValue();
-    return sm.getFullYear() <= cd.getFullYear() && sm.getMonth() < cd.getMonth();
+    return sm.getFullYear() < cd.getFullYear() || (sm.getFullYear() === cd.getFullYear() && sm.getMonth() < cd.getMonth());
   }
 
   dateChanged(date: moment.Moment) {

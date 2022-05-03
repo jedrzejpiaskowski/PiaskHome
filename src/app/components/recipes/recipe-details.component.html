@@ -35,6 +35,17 @@
                 <mat-label>Opis</mat-label>
                 <textarea formControlName='description' matInput></textarea>
             </mat-form-field>
+            <div class="horizontal-row">
+                <mat-form-field appearance="standard">
+                    <input min="0" matInput formControlName='calories' type="number">
+                    <span matSuffix> kcal</span>
+                </mat-form-field>
+                <mat-form-field appearance="standard">
+                    <mat-label>Czas</mat-label>
+                    <input min="0" matInput formControlName='prepTime' type="number">
+                    <span matSuffix> min</span>
+                </mat-form-field>
+            </div>
             <mat-form-field appearance="fill">
                 <mat-label>Link</mat-label>
                 <input formControlName='url' matInput>
@@ -53,7 +64,7 @@
                         (matChipInputTokenEnd)="add($event)">
                 </mat-chip-list>
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                    <mat-option *ngFor="let tag of availableTags" [value]="tag">
+                    <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
                         {{tag}}
                     </mat-option>
                 </mat-autocomplete>
@@ -77,8 +88,8 @@
                             </mat-progress-bar>
                         </ng-container>
                     </div>
-                    <div appDragDrop (files)='filesDroppedEvent($event, recipe.saved)' #imageDropRef id='imageDropRef' multiple
-                        draggable="true" class="tile upload-tile" color="primary" (click)="fileUpload.click()">
+                    <div appDragDrop (files)='filesDroppedEvent($event, recipe.saved)' #imageDropRef id='imageDropRef'
+                        multiple draggable="true" class="tile upload-tile" color="primary" (click)="fileUpload.click()">
                         <mat-icon color='primary'>add</mat-icon>
                     </div>
                 </div>
@@ -86,6 +97,21 @@
         </form>
         <div class='recipe-view' *ngIf='!editing'>
             <p *ngIf='recipe.description'>{{recipe.description}}</p>
+            <div class='horizontal-row'>
+                <span *ngIf='recipe.calories'>
+                    <mat-icon color="primary">bolt</mat-icon> {{recipe.calories}} kcal
+                </span>
+                <span *ngIf='recipe.prepTime'>
+                    <mat-icon color="primary">schedule</mat-icon> {{recipe.prepTime}} min
+                </span>
+            </div>
+            <div class='horizontal-row'>
+                <ng-container *ngFor="let r of ratings">
+                    <button mat-icon-button (click)='changeRating(r)' [color]="hasStar(r) ? 'accent' : 'primary'">
+                        <mat-icon>star</mat-icon>
+                    </button>
+                </ng-container>
+            </div>
             <p *ngIf='recipe.url'>
                 <a target="_blank" [href]='recipe.url'>{{recipe.url}}</a>
             </p>

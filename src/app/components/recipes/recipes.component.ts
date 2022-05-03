@@ -24,13 +24,12 @@ export class RecipesComponent implements OnInit {
     private store: AngularFirestore,
     private dateUtilityService: DateUtilityService
   ) {
-
     this.allRecipes$ = this.store
       .collection<Recipe>(CollectionKey.Recipes, (ref) => {
         let query:
           | firebase.default.firestore.CollectionReference
           | firebase.default.firestore.Query = ref;
-        query = query.orderBy('creationDate', 'desc');
+        query = query.orderBy('creationDate', 'desc');//.limit(2);
         return query;
       })
       .valueChanges({ idField: 'id' })
@@ -46,19 +45,21 @@ export class RecipesComponent implements OnInit {
         })
       );
 
-      this.filteredRecipes$ = combineLatest([this.allRecipes$, this.selectedTags$])
-      .pipe(
-        map(([recipes, tags]) => {
-          if (tags?.length === 0) {
-            return recipes;
-          }
-          return recipes.filter(r => tags.every(t => r.tags.includes(t)));
-        })
-      );
+    this.filteredRecipes$ = combineLatest([
+      this.allRecipes$,
+      this.selectedTags$,
+    ]).pipe(
+      map(([recipes, tags]) => {
+        if (tags?.length === 0) {
+          return recipes;
+        }
+        return recipes.filter((r) => tags.every((t) => r.tags.includes(t)));
+      })
+    );
 
     this.tagContainer$ = this.store
       .doc<TagContainer>(
-        `${CollectionKey.RecipeTags}/${Constants.TAG_CONTAINER_ID}`
+        `${CollectionKey.Recipes}/${Constants.TAG_CONTAINER_ID}`
       )
       .valueChanges()
       .pipe(
@@ -78,17 +79,26 @@ export class RecipesComponent implements OnInit {
 
   tagChanged(tag: Tag) {
     tag.selected = !tag.selected;
-    this.selectedTags$.next(this.tags.filter(t => t.selected).map(t => t.value));
+    this.selectedTags$.next(
+      this.tags.filter((t) => t.selected).map((t) => t.value)
+    );
   }
 
   anySelected(): boolean {
-    return this.tags.some(t => t.selected);
+    return this.tags.some((t) => t.selected);
   }
 
   clearTags() {
     console.log('?');
-    this.tags.forEach(t => t.selected = false);
+    this.tags.forEach((t) => (t.selected = false));
     this.selectedTags$.next([]);
+  }
+
+  hasStar(star: number, rating: number | null): boolean {
+    if (!rating) {
+      return false;
+    }
+    return rating >= star;
   }
 
   ngOnInit(): void {}

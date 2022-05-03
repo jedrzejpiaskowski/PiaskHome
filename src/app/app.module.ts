@@ -21,6 +21,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HouseTasksComponent } from './components/house-tasks/house-tasks.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
@@ -49,6 +51,9 @@ import { RecipeDetailsComponent } from './components/recipes/recipe-details.comp
 import { DragDropDirective } from './directives/drag-drop.directive';
 import { AngularImageViewerModule } from 'angular-x-image-viewer';
 import { ImageViewerDialogComponent } from './dialogs/image-viewer-dialog/image-viewer-dialog.component';
+import { ShoppingComponent } from './components/shopping/shopping.component';
+import { ShoppingListComponent } from './components/shopping/shopping-list/shopping-list.component';
+import { IngredientsComponent } from './components/shopping/ingredients/ingredients.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +69,9 @@ import { ImageViewerDialogComponent } from './dialogs/image-viewer-dialog/image-
     RecipeDetailsComponent,
     DragDropDirective,
     ImageViewerDialogComponent,
+    ShoppingComponent,
+    ShoppingListComponent,
+    IngredientsComponent,
   ],
   imports: [
     BrowserModule,
@@ -92,6 +100,8 @@ import { ImageViewerDialogComponent } from './dialogs/image-viewer-dialog/image-
     MatButtonToggleModule,
     MatChipsModule,
     MatAutocompleteModule,
+    MatSelectModule,
+    MatSnackBarModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,

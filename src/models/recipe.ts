@@ -6,10 +6,13 @@ export interface Recipe {
     title: string;
     url: string;
     description: string;
+    calories: number|null;
+    prepTime: number|null;
     tags: string[];
     imageUrls: string[];
     ingredients: Ingredient[];
     saved: boolean;
+    rating: number|null;
 }
 
 export interface TagContainer {

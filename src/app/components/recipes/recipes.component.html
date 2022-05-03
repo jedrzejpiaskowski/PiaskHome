@@ -27,16 +27,27 @@
           <mat-icon>link</mat-icon>
         </a>
       </h3>
-
     </div>
 
-    <div class='recipe-date'>
+    <!-- <div class='recipe-date'>
       <span>{{r.creationDate | date: 'dd.MM.yyyy'}}</span>
+    </div> -->
 
+    <div class='recipe-marks' *ngIf='r.calories || r.prepTime'>
+      <span *ngIf="r.calories">{{r.calories}}&nbsp;<mat-icon color="primary">bolt</mat-icon></span>
+      <span *ngIf="r.prepTime">{{r.prepTime}}&nbsp;<mat-icon color="primary">schedule</mat-icon></span>
     </div>
 
     <div class='recipe-desc' *ngIf='r.description && r.description.length > 0'>
       {{ (r.description.length > 80)? (r.description | slice:0:78) + '..' : r.description }}
+    </div>
+
+    <div class='recipe-rating' *ngIf='r.rating'>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(1, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(2, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(3, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(4, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(5, r.rating) }"></div>
     </div>
 
     <div class='recipe-tags' *ngIf='r.tags'>

@@ -1,25 +1,14 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import {
-  AngularFireStorage,
-} from '@angular/fire/compat/storage';
-import {
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import {
-  BehaviorSubject,
-  iif,
-  Observable,
-  of,
-} from 'rxjs';
+import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import {
   finalize,
   map,
@@ -54,6 +43,8 @@ export class RecipeDetailsComponent {
   recipe$: Observable<Recipe | undefined>;
   recipeId: string | null;
   recipeId$: BehaviorSubject<string | null>;
+  rating: number | null = null;
+  ratings = [1, 2, 3, 4, 5];
   maxFileSize = 1_000_000;
   @ViewChild('tagsInput') tagsInput!: ElementRef<HTMLInputElement>;
 
@@ -71,6 +62,9 @@ export class RecipeDetailsComponent {
       description: new FormControl(''),
       imageUrls: new FormControl([]),
       url: new FormControl(''),
+      calories: new FormControl(null),
+      prepTime: new FormControl(null),
+      rating: new FormControl(null),
       tags: this.tagsControl,
       saved: new FormControl(),
     });
@@ -84,7 +78,7 @@ export class RecipeDetailsComponent {
 
     this.tagContainer$ = this.store
       .doc<TagContainer>(
-        `${CollectionKey.RecipeTags}/${Constants.TAG_CONTAINER_ID}`
+        `${CollectionKey.Recipes}/${Constants.TAG_CONTAINER_ID}`
       )
       .valueChanges()
       .pipe(
@@ -108,9 +102,13 @@ export class RecipeDetailsComponent {
         iif(() => r?.id !== 'new', of(r), of(this.createNewRecipe()))
       ),
       tap((r) => {
-        console.log(r);
-        if (r && !r.imageUrls) {
-          r.imageUrls = [];
+        if (r) {
+          if (!r.imageUrls) {
+            r.imageUrls = [];
+          }
+          this.rating = r.rating = r.rating ?? null;
+          r.calories = r.calories ?? null;
+          r.prepTime = r.prepTime ?? null;
         }
         this.images = [];
         this.tags = r?.tags ?? [];
@@ -143,10 +141,13 @@ export class RecipeDetailsComponent {
       title: 'Nowy przepis...',
       description: '',
       url: '',
+      calories: null,
+      prepTime: null,
       tags: [],
       imageUrls: [],
       saved: false,
       creationDate: new Date(),
+      rating: null
     } as Partial<Recipe> as Recipe;
   }
 
@@ -167,6 +168,13 @@ export class RecipeDetailsComponent {
     }
   }
 
+  private _filter(value: string): string[] {
+    const filterValue = String(value).toLowerCase();
+    return this.availableTags.filter((tag) =>
+      tag.toLowerCase().includes(filterValue)
+    );
+  }
+
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim().toLowerCase();
     console.log(value);
@@ -182,16 +190,21 @@ export class RecipeDetailsComponent {
     this.tagsControl.setValue(null);
   }
 
-  saveRecipe(stopEditing: boolean = true, tagContainer: TagContainer|null = null) {
+  saveRecipe(
+    stopEditing: boolean = true,
+    tagContainer: TagContainer | null = null
+  ) {
     const recipe = this.recipeForm.getRawValue() as Recipe;
     recipe.imageUrls = this.images.filter((i) => i).map((i) => i.downloadUrl);
     this.tags = [...new Set(this.tags)];
     recipe.tags = this.tags;
+    recipe.rating = this.rating;
 
     if (tagContainer) {
       this.updateTags(tagContainer, this.tags);
     }
 
+    console.log(recipe);
     if (!recipe.saved) {
       recipe.saved = true;
       recipe.creationDate = new Date();
@@ -208,13 +221,13 @@ export class RecipeDetailsComponent {
   }
 
   updateTags(tagContainer: TagContainer, tags: string[]) {
-    const newTags = tags.filter(t => !tagContainer.tags.includes(t));
+    const newTags = tags.filter((t) => !tagContainer.tags.includes(t));
     if (newTags.length > 0) {
       tagContainer.tags.push(...newTags);
       this.store
-      .collection(CollectionKey.RecipeTags)
-      .doc(Constants.TAG_CONTAINER_ID)
-      .update(tagContainer);
+        .collection(CollectionKey.Recipes)
+        .doc(Constants.TAG_CONTAINER_ID)
+        .update(tagContainer);
     }
   }
 
@@ -243,7 +256,8 @@ export class RecipeDetailsComponent {
           if (iid >= 0) {
             this.images.splice(iid, 1);
           }
-          if (recipeSaved) { // do not update new recipe
+          if (recipeSaved) {
+            // do not update new recipe
             this.saveRecipe(false);
           }
         }
@@ -303,14 +317,23 @@ export class RecipeDetailsComponent {
     }
   }
 
-  editRecipe() {
-    this.editing = true;
+  hasStar(star: number): boolean {
+    if (this.rating) {
+      return this.rating >= star;
+    }
+    return false;
   }
 
-  private _filter(value: string): string[] {
-    const filterValue = String(value).toLowerCase();
-    return this.availableTags.filter((tag) =>
-      tag.toLowerCase().includes(filterValue)
-    );
+  changeRating(star: number) {
+    if (this.rating === star) {
+      this.rating = null;
+    } else {
+      this.rating = star;
+    }
+    this.saveRecipe();
+  }
+
+  editRecipe() {
+    this.editing = true;
   }
 }

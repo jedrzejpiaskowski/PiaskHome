@@ -64,6 +64,7 @@ export class HouseTasksComponent {
             let query:
               | firebase.default.firestore.CollectionReference
               | firebase.default.firestore.Query = ref;
+            query = query.orderBy('date', 'desc');
 
             if (paging === Paging.Previous && this.last) {
               query = query.startAfter(this.last.date).limit(this.pageSize);

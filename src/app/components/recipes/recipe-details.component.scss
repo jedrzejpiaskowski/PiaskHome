@@ -26,6 +26,31 @@ form {
   flex-direction: column;
 }
 
+.horizontal-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  mat-form-field {
+    width: 80px;
+    // width: 100%;
+  }
+
+  span:not(:last-child),
+  mat-form-field:not(:last-child) {
+    margin-right: 1em;
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+      margin-right: 0.2em;
+    }
+  }
+}
+
 .recipe-images {
   display: flex;
   flex-direction: row;
@@ -68,8 +93,8 @@ form {
     }
 
     .progress {
-        position: absolute;
-        bottom: 0;
+      position: absolute;
+      bottom: 0;
     }
   }
 
@@ -88,7 +113,7 @@ form {
 }
 
 .recipe-view {
-    h2 {
-        margin: 1em 0 0.5em 0;
-    }
+  h2 {
+    margin: 1em 0 0.5em 0;
+  }
 }
