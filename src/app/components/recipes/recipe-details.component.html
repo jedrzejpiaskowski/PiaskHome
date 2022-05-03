@@ -1,0 +1,133 @@
+<ng-container *ngIf='{ recipe: recipe$ | async,
+    tagContainer: tagContainer$ | async } as data'>
+    <ng-container *ngIf='data.recipe as recipe'>
+        <div class='recipe-header'>
+            <a mat-icon-button button color='primary' aria-label="back icon" routerLink='/recipes'>
+                <mat-icon>arrow_back</mat-icon>
+            </a>
+            <h1>{{recipe.title}}</h1>
+            <span class='spacer'></span>
+            <div class='recipe-actions'>
+                <ng-container *ngIf='editing'>
+                    <button mat-icon-button (click)='saveRecipe(true, data.tagContainer)'>
+                        <mat-icon color='primary'>save</mat-icon>
+                    </button>
+                    <button mat-icon-button *ngIf='recipe.saved' (click)='discardRecipe()'>
+                        <mat-icon color='warn'>clear</mat-icon>
+                    </button>
+                </ng-container>
+                <ng-container *ngIf='!editing'>
+                    <button mat-icon-button (click)='editRecipe()'>
+                        <mat-icon color='primary'>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button>
+                        <mat-icon color='warn'>delete</mat-icon>
+                    </button>
+                </ng-container>
+            </div>
+        </div>
+        <form [formGroup]='recipeForm' *ngIf='editing'>
+            <mat-form-field appearance="fill">
+                <mat-label>Tytuł</mat-label>
+                <input formControlName='title' matInput>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Opis</mat-label>
+                <textarea formControlName='description' matInput></textarea>
+            </mat-form-field>
+            <div class="horizontal-row">
+                <mat-form-field appearance="standard">
+                    <input min="0" matInput formControlName='calories' type="number">
+                    <span matSuffix> kcal</span>
+                </mat-form-field>
+                <mat-form-field appearance="standard">
+                    <mat-label>Czas</mat-label>
+                    <input min="0" matInput formControlName='prepTime' type="number">
+                    <span matSuffix> min</span>
+                </mat-form-field>
+            </div>
+            <mat-form-field appearance="fill">
+                <mat-label>Link</mat-label>
+                <input formControlName='url' matInput>
+            </mat-form-field>
+            <h2>Tagi</h2>
+            <mat-form-field class="example-chip-list" appearance="fill">
+                <mat-chip-list #tagList aria-label="Tag selection">
+                    <mat-chip *ngFor="let tag of tags" removable="true" (removed)="remove(tag)" selected>
+                        {{tag}}
+                        <button matChipRemove>
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </mat-chip>
+                    <input placeholder="Nowy tag..." #tagsInput formControlName="tags" [matAutocomplete]="auto"
+                        [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                        (matChipInputTokenEnd)="add($event)">
+                </mat-chip-list>
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                    <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                        {{tag}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <h2>Zdjęcia</h2>
+            <div class='recipe-images'>
+                <input type="file" class="file-input" multiple #fileUpload accept=".png,.jpg"
+                    (change)='filesChangedEvent($event.target, recipe.saved)'>
+                <div class='recipe-images'>
+                    <div *ngFor='let image of images' class="tile image-tile">
+                        <ng-container *ngIf='image && image.uploaded'>
+                            <img [src]='image.downloadUrl'>
+                            <button mat-icon-button color="warn" class='close-button'
+                                (click)='deleteImage(image, recipe.saved);$event.stopPropagation()'>
+                                <mat-icon>cancel</mat-icon>
+                            </button>
+                        </ng-container>
+                        <ng-container *ngIf='!image.uploaded'>
+                            <mat-progress-bar *ngIf='image.uploadProgress$ | async as progress' class="progress"
+                                color="primary" mode="determinate" [value]="progress">
+                            </mat-progress-bar>
+                        </ng-container>
+                    </div>
+                    <div appDragDrop (files)='filesDroppedEvent($event, recipe.saved)' #imageDropRef id='imageDropRef'
+                        multiple draggable="true" class="tile upload-tile" color="primary" (click)="fileUpload.click()">
+                        <mat-icon color='primary'>add</mat-icon>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class='recipe-view' *ngIf='!editing'>
+            <p *ngIf='recipe.description'>{{recipe.description}}</p>
+            <div class='horizontal-row'>
+                <span *ngIf='recipe.calories'>
+                    <mat-icon color="primary">bolt</mat-icon> {{recipe.calories}} kcal
+                </span>
+                <span *ngIf='recipe.prepTime'>
+                    <mat-icon color="primary">schedule</mat-icon> {{recipe.prepTime}} min
+                </span>
+            </div>
+            <div class='horizontal-row'>
+                <ng-container *ngFor="let r of ratings">
+                    <button mat-icon-button (click)='changeRating(r)' [color]="hasStar(r) ? 'accent' : 'primary'">
+                        <mat-icon>star</mat-icon>
+                    </button>
+                </ng-container>
+            </div>
+            <p *ngIf='recipe.url'>
+                <a target="_blank" [href]='recipe.url'>{{recipe.url}}</a>
+            </p>
+            <h2>Tagi</h2>
+            <mat-chip-list #chipList aria-label="Tags selection">
+                <mat-chip selected *ngFor="let tag of tags">
+                    {{tag}}
+                </mat-chip>
+            </mat-chip-list>
+            <h2>Zdjęcia</h2>
+            <div class='recipe-images'>
+                <div *ngFor='let image of images; let i = index' class="tile image-tile">
+                    <img *ngIf='image' [src]='image.downloadUrl' (click)='showImages(recipe.imageUrls, i)'>
+                </div>
+            </div>
+
+        </div>
+    </ng-container>
+</ng-container>

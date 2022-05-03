@@ -1,0 +1,57 @@
+::ng-deep .mat-dialog-container {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  width: 90vw;
+  height: 100vh;
+}
+
+.image-viewer-container {
+  display: flex;
+}
+
+::ng-deep button.img-button {
+    background-color: white;
+    border: 1px solid #aaa;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    opacity: .7;
+    -webkit-transition: opacity .2s;
+    transition: opacity .2s;
+    font-family: "Material Icons";
+    font-size: 24px;
+    color: #444;
+}
+
+::ng-deep .img-button:hover {
+    opacity: .8;
+}
+
+::ng-deep .zoom-in:after {
+  content: "add";
+}
+
+::ng-deep .zoom-out:after {
+  content: "remove";
+}
+
+::ng-deep .next:after {
+  content: "navigate_next";
+}
+
+::ng-deep .previous:after {
+  content: "navigate_before";
+}
+
+::ng-deep .fullscreen:after {
+  content: "fullscreen";
+}
+
+::ng-deep .right:after {
+  content: "redo";
+}
+
+::ng-deep .left:after {
+  content: "undo";
+}

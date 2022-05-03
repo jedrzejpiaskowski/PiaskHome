@@ -1,0 +1,24 @@
+<div class='tasks-summary'>
+    <mat-button-toggle-group [(ngModel)]='summaryPeriod' (change)='changeTimePeriod($event.value)' class='time-period-button' name="timePeriod"
+        aria-label="Font Style">
+        <mat-button-toggle value="week">Tydzień</mat-button-toggle>
+        <mat-button-toggle value="month">Miesiąc</mat-button-toggle>
+        <mat-button-toggle value="all">Od początku</mat-button-toggle>
+    </mat-button-toggle-group>
+    <ng-container *ngIf='tasksSummary$ | async'>
+        <div class='tasks-charts'>
+            <ngx-charts-bar-vertical-2d [view]='view' [scheme]="colorScheme" [results]="kitchenData" [gradient]="gradient"
+                [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="showLegend" [showDataLabel]="showDataLabel"
+                [showGridLines]='showGridLines' [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [barPadding]="0" [legend]="showLegend"
+                [legendPosition]="legendPosition" [legendTitle]="legendTitle">
+            </ngx-charts-bar-vertical-2d>
+            <ngx-charts-bar-vertical-2d [view]='view' [scheme]="colorScheme" [results]="cleaningData" [gradient]="gradient"
+                [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="showLegend" [showDataLabel]="showDataLabel"
+                [showGridLines]='showGridLines' [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel"
+                [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [barPadding]="0" [legend]="showLegend"
+                [legendPosition]="legendPosition" [legendTitle]="legendTitle">
+            </ngx-charts-bar-vertical-2d>
+        </div>
+    </ng-container>
+</div>

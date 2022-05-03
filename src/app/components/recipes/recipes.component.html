@@ -1,0 +1,57 @@
+<div class='recipes-header'>
+  <h1>Przepisy</h1>
+  <a mat-stroked-button color='primary' routerLink='/recipes/new' aria-label="add recipe icon">
+    <mat-icon>add</mat-icon>
+    Dodaj nowy
+  </a>
+</div>
+<div class='recipes-search' *ngIf='tagContainer$ | async'>
+  <mat-chip-list multiple #chipList aria-label="Tags selection" *ngIf='tags'>
+    <mat-chip selectable [selected]='tag.selected' (click)='tagChanged(tag)' *ngFor="let tag of tags">
+        {{tag.value}}
+    </mat-chip>
+    <button mat-icon-button *ngIf='anySelected()' (click)='clearTags()' color="warn">
+      <mat-icon>cancel</mat-icon>
+    </button>
+</mat-chip-list>
+</div>
+<div class='recipes-view' *ngIf='filteredRecipes$ | async as recipes'>
+  <div class='recipe-row' *ngFor='let r of recipes'>
+    <div class='recipe-title'>
+      <h3>
+        <a class='recipe-link' routerLink='/recipes/{{r.id}}'>
+          {{r.title}}
+        </a>
+        <a class='external-link' *ngIf='r.url' [href]='r.url' target='blank' mat-icon-button button color='primary'
+          aria-label="recipe url icon">
+          <mat-icon>link</mat-icon>
+        </a>
+      </h3>
+    </div>
+
+    <!-- <div class='recipe-date'>
+      <span>{{r.creationDate | date: 'dd.MM.yyyy'}}</span>
+    </div> -->
+
+    <div class='recipe-marks' *ngIf='r.calories || r.prepTime'>
+      <span *ngIf="r.calories">{{r.calories}}&nbsp;<mat-icon color="primary">bolt</mat-icon></span>
+      <span *ngIf="r.prepTime">{{r.prepTime}}&nbsp;<mat-icon color="primary">schedule</mat-icon></span>
+    </div>
+
+    <div class='recipe-desc' *ngIf='r.description && r.description.length > 0'>
+      {{ (r.description.length > 80)? (r.description | slice:0:78) + '..' : r.description }}
+    </div>
+
+    <div class='recipe-rating' *ngIf='r.rating'>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(1, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(2, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(3, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(4, r.rating) }"></div>
+      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(5, r.rating) }"></div>
+    </div>
+
+    <div class='recipe-tags' *ngIf='r.tags'>
+      <span>Tagi: {{r.tags.join(', ')}}</span>
+    </div>
+  </div>
+</div>

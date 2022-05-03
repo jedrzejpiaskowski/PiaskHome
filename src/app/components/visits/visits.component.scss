@@ -1,0 +1,93 @@
+:host {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  @media screen and (orientation: portrait), (max-width: 960px) {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+::ng-deep .mat-form-field-wrapper {
+  margin-bottom: -1.25em;
+}
+
+.visit-container {
+  margin: 1em;
+
+  .visit-form {
+    display: grid;
+    grid-template-columns: max(150px) max(100px);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      "date date"
+      "price percentage"
+      "patient patient";
+  }
+
+  .item-date {
+    grid-area: date;
+  }
+
+  .item-price {
+    grid-area: price;
+    margin-right: 0.5em;
+  }
+
+  .item-percentage {
+    margin-left: 0.5em;
+    grid-area: percentage;
+  }
+
+  .item-patient {
+    grid-area: patient;
+  }
+}
+
+.visits-table {
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+
+  .summary-header {
+    display: flex;
+    align-items: center;
+  }
+
+  table {
+    width: 100%;
+
+    th:first-child,
+    td:first-child {
+      padding-right: 1em;
+      width: 15%;
+    }
+
+    th,
+    td {
+      margin: 0 2em;
+    }
+  }
+}
+
+.right {
+  text-align: right;
+}
+
+.center {
+  text-align: center;
+}
+
+.bold {
+  font-weight: 500;
+}
+
+.month-table {
+  width: 100%;
+  max-width: 900px;
+
+  tfoot tr td {
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,64 @@
+<div class='container'>
+    <mat-toolbar color="primary" class='example-toolbar'>
+        <mat-toolbar-row>
+            <button mat-icon-button (click)="sidenav.toggle()" fxShow="true" fxHide.gt-sm>
+                <mat-icon>menu</mat-icon>
+            </button>
+            <span>PiaskHome</span>
+
+            <span class="example-spacer"></span>
+            <div fxShow="true" fxHide.lt-md>
+                <a mat-button routerLink='/login' class="example-icon favorite-icon"
+                    aria-label="user login icon" routerLinkActive='active-link'>
+                    <mat-icon>face</mat-icon>
+                    Profil
+                </a>
+                <a mat-button routerLink='/house-tasks' class="example-icon favorite-icon"
+                    aria-label="house icon" routerLinkActive='active-link'>
+                    <mat-icon>home</mat-icon>
+                    Domowe
+                </a>
+                <a mat-button routerLink='/recipes' class="example-icon favorite-icon"
+                aria-label="dinner icon" routerLinkActive='active-link'>
+                <mat-icon>lunch_dining</mat-icon>
+                Przepisy
+            </a>
+                <a mat-button routerLink='/visits' class="example-icon favorite-icon"
+                    aria-label="medical services icon" routerLinkActive='active-link'>
+                    <mat-icon>medical_services</mat-icon>
+                    Wizyty
+                </a>
+            </div>
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <mat-sidenav-container class='full-height'>
+        <mat-sidenav #sidenav>
+            <mat-nav-list>
+                <!-- <a (click)="sidenav.toggle()" mat-list-item>
+                    <mat-icon matListIcon>close</mat-icon>
+                    Zamknij
+                </a> -->
+                <a mat-list-item routerLink='/login' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListIcon>face</mat-icon>
+                    Profil
+                </a>
+                <a mat-list-item routerLink='/house-tasks' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListIcon>home</mat-icon>
+                    Domowe
+                </a>
+                <a mat-list-item routerLink='/recipes' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListIcon>lunch_dining</mat-icon>
+                    Przepisy
+                </a>
+                <a mat-list-item routerLink='/visits' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListIcon>payments</mat-icon>
+                    Wizyty
+                </a>
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</div>

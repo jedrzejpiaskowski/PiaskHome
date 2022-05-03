@@ -1,0 +1,119 @@
+:host {
+  // max-width: 1200px;
+  margin: auto;
+  padding: 1em;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.recipe-header {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .recipe-actions {
+    display: flex;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.horizontal-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  mat-form-field {
+    width: 80px;
+    // width: 100%;
+  }
+
+  span:not(:last-child),
+  mat-form-field:not(:last-child) {
+    margin-right: 1em;
+  }
+
+  span {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+      margin-right: 0.2em;
+    }
+  }
+}
+
+.recipe-images {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  .file-input {
+    display: none;
+  }
+
+  .upload-tile {
+    border: 2px dashed #009688;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .mat-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .material-icons {
+      font-size: 32px;
+    }
+  }
+
+  .image-tile {
+    border: 2px solid #009688;
+    position: relative;
+
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .close-button {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+    }
+
+    .progress {
+      position: absolute;
+      bottom: 0;
+    }
+  }
+
+  .upload-tile,
+  .image-tile {
+    cursor: pointer;
+    min-width: 100px;
+    width: 100px;
+    min-height: 100px;
+    height: 100px;
+  }
+
+  .tile:not(:last-child) {
+    margin: 0 0.75em 0.75em 0;
+  }
+}
+
+.recipe-view {
+  h2 {
+    margin: 1em 0 0.5em 0;
+  }
+}
