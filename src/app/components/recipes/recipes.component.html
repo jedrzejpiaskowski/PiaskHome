@@ -7,15 +7,15 @@
 </div>
 <div class='recipes-search' *ngIf='tagContainer$ | async'>
   <mat-chip-list multiple #chipList aria-label="Tags selection" *ngIf='tags'>
-    <mat-chip selectable [selected]='tag.selected' (click)='tagChanged(tag)' *ngFor="let tag of tags">
-        {{tag.value}}
-    </mat-chip>
     <button mat-icon-button *ngIf='anySelected()' (click)='clearTags()' color="warn">
       <mat-icon>cancel</mat-icon>
     </button>
+    <mat-chip selectable [selected]='tag.selected' (click)='tagChanged(tag)' *ngFor="let tag of tags">
+        {{tag.value}}
+    </mat-chip>
 </mat-chip-list>
 </div>
-<div class='recipes-view' *ngIf='filteredRecipes$ | async as recipes'>
+<div class='recipes-view' *ngIf='allRecipes$ | async as recipes'>
   <div class='recipe-row' *ngFor='let r of recipes'>
     <div class='recipe-title'>
       <h3>

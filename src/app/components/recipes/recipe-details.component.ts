@@ -204,7 +204,6 @@ export class RecipeDetailsComponent {
       this.updateTags(tagContainer, this.tags);
     }
 
-    console.log(recipe);
     if (!recipe.saved) {
       recipe.saved = true;
       recipe.creationDate = new Date();

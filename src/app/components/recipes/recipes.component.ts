@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { debounceTime, filter, map, switchMap, tap } from 'rxjs/operators';
 import { Recipe, TagContainer } from 'src/models/recipe';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { CollectionKey } from 'src/models/colletion-keys';
@@ -15,45 +15,67 @@ import { Tag } from 'src/models/tag';
 })
 export class RecipesComponent implements OnInit {
   allRecipes$: Observable<Recipe[]>;
-  filteredRecipes$: Observable<Recipe[]>;
   selectedTags$ = new BehaviorSubject<string[]>([]);
   tagContainer$: Observable<TagContainer | undefined>;
   tags: Tag[] = [];
+  startingTags: Tag[] = [];
 
   constructor(
     private store: AngularFirestore,
     private dateUtilityService: DateUtilityService
   ) {
-    this.allRecipes$ = this.store
-      .collection<Recipe>(CollectionKey.Recipes, (ref) => {
-        let query:
-          | firebase.default.firestore.CollectionReference
-          | firebase.default.firestore.Query = ref;
-        query = query.orderBy('creationDate', 'desc');//.limit(2);
-        return query;
-      })
-      .valueChanges({ idField: 'id' })
-      .pipe(
-        map((recipes) => {
-          recipes.map((r) => {
-            r.creationDate = this.dateUtilityService.getDateFromTimeStamp(
-              r.creationDate
-            );
-            r.tags = r.tags.sort();
-          });
-          return recipes;
-        })
-      );
-
-    this.filteredRecipes$ = combineLatest([
-      this.allRecipes$,
-      this.selectedTags$,
-    ]).pipe(
-      map(([recipes, tags]) => {
-        if (tags?.length === 0) {
-          return recipes;
+    this.allRecipes$ = this.selectedTags$.pipe(
+      debounceTime(200),
+      switchMap((tags) => {
+        if (!tags || tags.length === 0) {
+          return combineLatest([of([] as Recipe[]), of(tags)]);
         }
-        return recipes.filter((r) => tags.every((t) => r.tags.includes(t)));
+        const rec = this.store
+          .collection<Recipe>(CollectionKey.Recipes, (ref) => {
+            let query:
+              | firebase.default.firestore.CollectionReference
+              | firebase.default.firestore.Query = ref;
+              // can only use single 'array-contains', rest of the tags is filtered 'offline'
+            query = query.where('tags', 'array-contains', tags[0]);
+            query = query.orderBy('creationDate', 'desc');
+            return query;
+          })
+          .valueChanges({ idField: 'id' });
+
+        let remaingingTags: string[] = [];
+        if (tags.length > 1) {
+          remaingingTags = tags.slice(1, tags.length);
+        }
+        return combineLatest([rec, of(remaingingTags)]);
+      }),
+      map(([recipes, remaingingTags]) => {
+        let _recipes = recipes as Recipe[];
+        _recipes.map((r) => {
+          r.creationDate = this.dateUtilityService.getDateFromTimeStamp(
+            r.creationDate
+          );
+          r.tags = r.tags.sort();
+        });
+        if (remaingingTags) {
+          _recipes = _recipes.filter((r) =>
+            remaingingTags.every((t) => r.tags.includes(t))
+          );
+        }
+        return _recipes;
+      }),
+      tap((recipes) => {
+        let filteredTags = this.selectedTags$.getValue();
+        if (filteredTags?.length > 0) {
+          recipes.forEach((r) => {
+            filteredTags = filteredTags.concat(r.tags);
+          });
+          filteredTags = filteredTags
+            .filter((item, pos) => filteredTags.indexOf(item) === pos)
+            .sort();
+          this.mergeTags(filteredTags);
+        } else {
+          this.tags = this.startingTags;
+        }
       })
     );
 
@@ -71,10 +93,26 @@ export class RecipesComponent implements OnInit {
                 value: t,
                 selected: false,
               } as Tag);
+              this.startingTags = this.tags;
             });
           }
         })
       );
+  }
+
+  mergeTags(allFilteredTags: string[]) {
+    let mergedTags: Tag[] = allFilteredTags.map((ft) => {
+      const existing = this.tags.find((t) => t.value === ft);
+      if (existing) {
+        return existing;
+      }
+      let mt = {
+        value: ft,
+        selected: this.tags.some((t) => t.value === ft && t.selected),
+      } as Tag;
+      return mt;
+    });
+    this.tags = mergedTags;
   }
 
   tagChanged(tag: Tag) {
@@ -89,7 +127,6 @@ export class RecipesComponent implements OnInit {
   }
 
   clearTags() {
-    console.log('?');
     this.tags.forEach((t) => (t.selected = false));
     this.selectedTags$.next([]);
   }
