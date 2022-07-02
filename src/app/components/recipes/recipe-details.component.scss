@@ -65,13 +65,22 @@ form {
   }
 }
 
-.horizontal-row, .rating-row {
+.horizontal-row,
+.rating-row {
   display: flex;
   flex-direction: row;
   margin: 0.5em 0;
 
   @media screen and (orientation: portrait), (max-width: 960px) {
     justify-content: center;
+  }
+}
+
+.tags-container {
+  margin-top: -2em;
+
+  input {
+    margin-top: 1em;
   }
 }
 

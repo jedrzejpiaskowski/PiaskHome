@@ -51,7 +51,7 @@
                 <input formControlName='url' matInput>
             </mat-form-field>
             <h2>Tagi</h2>
-            <mat-form-field class="example-chip-list" appearance="fill">
+            <mat-form-field class='tags-container' appearance="fill">
                 <mat-chip-list #tagList aria-label="Tag selection">
                     <mat-chip *ngFor="let tag of tags" removable="true" (removed)="remove(tag)" selected>
                         {{tag}}
@@ -60,8 +60,8 @@
                         </button>
                     </mat-chip>
                     <input placeholder="Nowy tag..." #tagsInput formControlName="tags" [matAutocomplete]="auto"
-                        [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                        (matChipInputTokenEnd)="add($event)">
+                    [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="add($event)">
                 </mat-chip-list>
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
                     <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
@@ -127,7 +127,7 @@
                     {{tag}}
                 </mat-chip>
             </mat-chip-list>
-            <h2>Zdjęcia</h2>
+            <h2 *ngIf='images && images.length > 0'>Zdjęcia</h2>
             <div class='recipe-images'>
                 <div *ngFor='let image of images; let i = index' class="tile image-tile">
                     <img *ngIf='image' [src]='image.downloadUrl' (click)='showImages(recipe.imageUrls, i)'>

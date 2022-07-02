@@ -86,7 +86,6 @@ export class RecipeDetailsComponent {
       .valueChanges()
       .pipe(
         tap((tc) => {
-          console.log(tc);
           if (tc && tc.tags) {
             this.availableTags = tc.tags.sort();
           }
