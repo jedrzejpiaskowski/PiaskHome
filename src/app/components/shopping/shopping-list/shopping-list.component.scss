@@ -1,0 +1,98 @@
+:host {
+  padding: 0.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.item-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.item-form {
+  .name {
+    margin-right: 0.6em;
+  }
+
+  mat-form-field {
+    margin-right: 0.4em;
+  }
+
+  .quantity {
+    width: 45px;
+  }
+
+  .unit {
+    width: 50px;
+  }
+}
+
+.item-option {
+  display: flex;
+  justify-content: space-between;
+  align-content: stretch;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.items-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+
+  .empty-list {
+    padding: 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    mat-icon {
+        margin-left: 0.5em;
+    }
+  }
+
+  @media screen and (orientation: portrait), (max-width: 960px) {
+    flex-direction: column;
+  }
+
+  .category {
+    min-width: 300px;
+    max-width: 400px;
+    @media screen and (orientation: portrait), (max-width: 960px) {
+      max-width: 100%;
+    }
+
+    margin: 0.75em;
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.2em;
+
+      mat-icon {
+        margin-left: 0.4em;
+      }
+    }
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+
+    span {
+      color: gray;
+      margin-left: 0.5em;
+    }
+  }
+
+  .bought-item {
+    text-decoration: line-through;
+    color: gray;
+  }
+}

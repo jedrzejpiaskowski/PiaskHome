@@ -8,23 +8,30 @@
 
             <span class="example-spacer"></span>
             <div fxShow="true" fxHide.lt-md>
-                <a mat-button routerLink='/login' class="example-icon favorite-icon"
-                    aria-label="user login icon" routerLinkActive='active-link'>
+                <a mat-button routerLink='/login' class="example-icon favorite-icon" aria-label="user login icon"
+                    routerLinkActive='active-link'>
                     <mat-icon>face</mat-icon>
                     Profil
                 </a>
-                <a mat-button routerLink='/house-tasks' class="example-icon favorite-icon"
-                    aria-label="house icon" routerLinkActive='active-link'>
+                <a mat-button routerLink='/house-tasks' class="example-icon favorite-icon" aria-label="house icon"
+                    routerLinkActive='active-link'>
                     <mat-icon>home</mat-icon>
                     Domowe
                 </a>
-                <a mat-button routerLink='/recipes' class="example-icon favorite-icon"
-                aria-label="dinner icon" routerLinkActive='active-link'>
-                <mat-icon>lunch_dining</mat-icon>
-                Przepisy
-            </a>
-                <a mat-button routerLink='/visits' class="example-icon favorite-icon"
-                    aria-label="medical services icon" routerLinkActive='active-link'>
+                <a mat-button routerLink='/shopping' class="example-icon favorite-icon" aria-label="dinner icon"
+                    routerLinkActive='active-link'>
+                    <mat-icon><span class="material-icons">
+                            local_grocery_store
+                        </span></mat-icon>
+                    Zakupy
+                </a>
+                <a mat-button routerLink='/recipes' class="example-icon favorite-icon" aria-label="dinner icon"
+                    routerLinkActive='active-link'>
+                    <mat-icon>lunch_dining</mat-icon>
+                    Przepisy
+                </a>
+                <a mat-button routerLink='/visits' class="example-icon favorite-icon" aria-label="medical services icon"
+                    routerLinkActive='active-link'>
                     <mat-icon>medical_services</mat-icon>
                     Wizyty
                 </a>
@@ -46,6 +53,10 @@
                 <a mat-list-item routerLink='/house-tasks' (click)="sidenav.toggle()" routerLinkActive='active-link'>
                     <mat-icon matListIcon>home</mat-icon>
                     Domowe
+                </a>
+                <a mat-list-item routerLink='/shopping' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListIcon>local_grocery_store</mat-icon>
+                    Zakupy
                 </a>
                 <a mat-list-item routerLink='/recipes' (click)="sidenav.toggle()" routerLinkActive='active-link'>
                     <mat-icon matListIcon>lunch_dining</mat-icon>

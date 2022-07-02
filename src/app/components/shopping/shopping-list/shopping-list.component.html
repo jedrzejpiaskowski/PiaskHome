@@ -1,0 +1,80 @@
+<ng-container *ngIf='{ categories: categories$ | async } as data'>
+    <div *ngIf="mode === 'edit'" class='item-edit'>
+        <div class='item-form'>
+            <mat-form-field>
+                <mat-label>Produkt</mat-label>
+                <input type="text" matInput [formControl]="productControl" [matAutocomplete]="auto">
+                <mat-autocomplete (optionSelected)='ingredientSelected($event)' #auto="matAutocomplete"
+                    [displayWith]="displayFn" panelClass='item-option' classList='item-option'>
+                    <mat-option *ngFor="let product of filteredProducts$ | async" [value]="product" class='item-option'>
+                        <div class='item-option'>
+                            <span>{{product?.name}}</span>
+                            <small *ngIf='product.quantity'> | {{ product.quantity }}</small>
+                            <small *ngIf='product.unit'> | {{ product.unit }}</small>
+                            <mat-icon color='accent'>{{categoriesIcons[product.categoryId]}}</mat-icon>
+                        </div>
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field class='quantity'>
+                <mat-label>Ilość</mat-label>
+                <input matInput type="number" [(ngModel)]="quantity">
+            </mat-form-field>
+            <mat-form-field class='unit'>
+                <mat-select [(ngModel)]="unit" (selectionChange)='setFormItemUnit($event.value)'>
+                    <mat-option *ngFor="let u of units" [value]="u">
+                        {{u}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button mat-icon-button color="primary" (click)="addItemToList()"
+                [disabled]="!product || productControl?.value?.name !== product.name">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+        <button (click)='clearList()' *ngIf="!(shoppingList?.items?.length === 0)" mat-stroked-button aria-label="clear list icon">
+            Wyczyść listę
+            <mat-icon color='warn'>clear</mat-icon>
+        </button>
+    </div>
+
+    <div class='items-list'>
+        <div *ngIf="shoppingList?.items?.length === 0" class='empty-list'>
+            <span>Lista jest pusta</span>
+            <mat-icon color='accent'>remove_shopping_cart</mat-icon>
+        </div>
+        <ng-container *ngFor='let c of data.categories'>
+            <div *ngIf='categories.includes(c.id)' class='category'>
+                <h2 class='category-header'>{{c.name}}<mat-icon color='accent'>{{c.icon}}</mat-icon>
+                </h2>
+                <ng-container *ngFor='let item of items[c.id]'>
+                    <div *ngIf="mode === 'view'" [ngClass]="{ 'item' : true, 'bought-item' : item.bought }">
+                        <mat-checkbox [(ngModel)]="item.bought" (change)='itemBoughtChanged()'>
+                            {{ item.ingredient.name }}
+                        </mat-checkbox>
+                        <span *ngIf='item.ingredient.quantity'>{{ item.ingredient.quantity }}</span>
+                        <span *ngIf='item.ingredient.unit'>{{ item.ingredient.unit }}</span>
+                    </div>
+                    <div *ngIf="mode === 'edit'" class='item-form'>
+                        <span class='name'>{{ item.ingredient.name }}</span>
+                        <mat-form-field class='quantity'>
+                            <mat-label>Ilość</mat-label>
+                            <input matInput type="number" [(ngModel)]="item.ingredient.quantity">
+                        </mat-form-field>
+                        <mat-form-field class='unit'>
+                            <mat-select [(ngModel)]="item.ingredient.unit"
+                                (selectionChange)='setItemUnit(item.ingredient, $event.value)'>
+                                <mat-option *ngFor="let u of units" [value]="u">
+                                    {{u}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <button mat-icon-button color="warn" (click)='deleteItem(item)'>
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>

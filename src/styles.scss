@@ -96,6 +96,20 @@ body {
   }
 }
 
+.mat-option.mat-active, .mat-option:hover:not(.mat-option-disabled) {
+  background-color: rgb(225, 225, 225);
+}
+
+.snackbar-info {
+  background-color: #009688;
+  color: white;
+}
+
+.snackbar-warning {
+  background-color: #ffab40;
+  color: black;
+}
+
 :root {
   --primary: #009688;
 }
