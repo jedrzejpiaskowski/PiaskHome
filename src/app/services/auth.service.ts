@@ -64,7 +64,6 @@ export class AuthService {
       .get()
       .pipe(first())
       .subscribe((savedUser) => {
-        console.log(savedUser);
         const data = {
           uid: user.uid,
           email: user.email,

@@ -96,7 +96,7 @@
             </div>
         </form>
         <div class='recipe-view' *ngIf='!editing'>
-            <p *ngIf='recipe.description'>{{recipe.description}}</p>
+            <hr class='line-break'>
             <div class='horizontal-row'>
                 <span *ngIf='recipe.calories'>
                     <mat-icon color="primary">bolt</mat-icon> {{recipe.calories}} kcal
@@ -104,14 +104,20 @@
                 <span *ngIf='recipe.prepTime'>
                     <mat-icon color="primary">schedule</mat-icon> {{recipe.prepTime}} min
                 </span>
-            </div>
-            <div class='horizontal-row'>
-                <ng-container *ngFor="let r of ratings">
-                    <button mat-icon-button (click)='changeRating(r)' [color]="hasStar(r) ? 'accent' : 'primary'">
-                        <mat-icon>star</mat-icon>
+                <div class='rating-segment'>
+                    <div class='stars'>
+                        <button mat-icon-button class='star' *ngFor="let r of ratings" (click)='changeRating(r)'
+                            [color]="hasStar(r) ? 'accent' : 'primary'">
+                            <mat-icon>star</mat-icon>
+                        </button>
+                    </div>
+                    <button (click)='copyUrl()' mat-button color="primary" aria-label="Button to copy link">
+                        <mat-icon>share</mat-icon> Kopiuj link
                     </button>
-                </ng-container>
+                </div>
             </div>
+            <hr class='line-break'>
+            <p *ngIf='recipe.description'>{{recipe.description}}</p>
             <p *ngIf='recipe.url'>
                 <a target="_blank" [href]='recipe.url'>{{recipe.url}}</a>
             </p>

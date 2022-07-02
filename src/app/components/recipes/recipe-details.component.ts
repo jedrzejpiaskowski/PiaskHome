@@ -1,3 +1,4 @@
+import { Direction } from '@angular/cdk/bidi';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
@@ -6,6 +7,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
@@ -53,6 +55,7 @@ export class RecipeDetailsComponent {
     private route: ActivatedRoute,
     private storage: AngularFireStorage,
     private sanitizer: DomSanitizer,
+    private snackbar: MatSnackBar,
     private dialog: MatDialog
   ) {
     this.recipeForm = new FormGroup({
@@ -185,7 +188,6 @@ export class RecipeDetailsComponent {
       }
     }
 
-    console.log(this.tags);
     event.chipInput!.clear();
     this.tagsControl.setValue(null);
   }
@@ -334,5 +336,15 @@ export class RecipeDetailsComponent {
 
   editRecipe() {
     this.editing = true;
+  }
+
+  copyUrl() {
+    const url = window.location.href;
+    console.log(url);
+    navigator.clipboard.writeText(url);
+    this.snackbar.open('Link skopiowany', undefined, {
+      duration: 2000,
+      panelClass: ['snackbar-info'],
+    });
   }
 }
