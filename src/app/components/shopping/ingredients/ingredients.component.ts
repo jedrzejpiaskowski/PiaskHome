@@ -1,9 +1,14 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  FormControl,
+  UntypedFormControl,
+  UntypedFormGroup,
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { debounceTime, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { Constants } from 'src/models/constants';
@@ -28,13 +33,16 @@ export class IngredientsComponent implements OnChanges {
 
   categories$: Observable<ProductCategory[]>;
   categories: string[] = [];
+  productSearch = new FormControl('');
   productInputs: { [category: string]: string } = {};
   quantityInputs: { [category: string]: number | null } = {};
   unitInputs: { [category: string]: string | null } = {};
   ingredients: { [category: string]: Ingredient[] } = {};
+  filteredIngredients: { [category: string]: Ingredient[] } = {};
   ingredientContainer$: Observable<IngredientContainer | undefined>;
   units = units;
   IngredientsKey = CollectionKey.Ingredients;
+  searchForm: UntypedFormGroup;
 
   constructor(
     private store: AngularFirestore,
@@ -55,6 +63,10 @@ export class IngredientsComponent implements OnChanges {
           });
         })
       );
+
+    this.searchForm = new UntypedFormGroup({
+      ingredientSearch: new UntypedFormControl(''),
+    });
 
     this.ingredientContainer$ = this.store
       .doc<IngredientContainer>(
@@ -78,9 +90,37 @@ export class IngredientsComponent implements OnChanges {
                 );
               });
             });
+            this.filteredIngredients = this.ingredients;
           }
         })
       );
+
+    this.productSearch.valueChanges
+      .pipe(
+        debounceTime(400),
+        tap((fil) => {
+          if (!fil || fil === '') {
+            this.filteredIngredients = this.ingredients;
+            return;
+          }
+          this.filteredIngredients = {};
+          this.categories.forEach((c) => {
+            this.ingredients[c].forEach((ing) => {
+              if (ing.name.includes(fil)) {
+                if (!this.filteredIngredients[c]) {
+                  this.filteredIngredients[c] = [];
+                }
+                this.filteredIngredients[c].push(ing);
+              }
+            });
+          });
+        })
+      )
+      .subscribe();
+  }
+
+  clearFilter() {
+    this.productSearch.reset();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -88,8 +128,6 @@ export class IngredientsComponent implements OnChanges {
       this.clearSelection();
     }
   }
-
-  clearIngredients() {}
 
   deleteIngredient(
     ingredient: Ingredient,
