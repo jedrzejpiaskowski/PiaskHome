@@ -1,0 +1,10 @@
+.full-width-tabs {
+  ::ng-deep .mat-tab-header {
+    background-color: rgba(#fff, 0.6);
+    position: sticky;
+    position: -webkit-sticky;
+    backdrop-filter: blur(3px);
+    top: 0;
+    z-index: 1000;
+  }
+}

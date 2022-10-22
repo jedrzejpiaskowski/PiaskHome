@@ -3,7 +3,7 @@ import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
@@ -32,8 +32,8 @@ import { Recipe, TagContainer } from 'src/models/recipe';
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent {
-  recipeForm: FormGroup;
-  tagsControl = new FormControl('');
+  recipeForm: UntypedFormGroup;
+  tagsControl = new UntypedFormControl('');
   tagContainer$: Observable<TagContainer | undefined>;
   tags: string[] = [];
   availableTags: string[] = [];
@@ -58,18 +58,18 @@ export class RecipeDetailsComponent {
     private snackbar: MatSnackBar,
     private dialog: MatDialog
   ) {
-    this.recipeForm = new FormGroup({
-      id: new FormControl(),
-      title: new FormControl('', Validators.required),
-      creationDate: new FormControl(new Date()),
-      description: new FormControl(''),
-      imageUrls: new FormControl([]),
-      url: new FormControl(''),
-      calories: new FormControl(null),
-      prepTime: new FormControl(null),
-      rating: new FormControl(null),
+    this.recipeForm = new UntypedFormGroup({
+      id: new UntypedFormControl(),
+      title: new UntypedFormControl('', Validators.required),
+      creationDate: new UntypedFormControl(new Date()),
+      description: new UntypedFormControl(''),
+      imageUrls: new UntypedFormControl([]),
+      url: new UntypedFormControl(''),
+      calories: new UntypedFormControl(null),
+      prepTime: new UntypedFormControl(null),
+      rating: new UntypedFormControl(null),
       tags: this.tagsControl,
-      saved: new FormControl(),
+      saved: new UntypedFormControl(),
     });
 
     this.filteredTags = this.tagsControl.valueChanges.pipe(

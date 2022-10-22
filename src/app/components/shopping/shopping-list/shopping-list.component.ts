@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable, of } from 'rxjs';
@@ -33,7 +33,7 @@ export class ShoppingListComponent implements OnChanges {
   products: Ingredient[] = [];
   filteredProducts$: Observable<Ingredient[]> = of([]);
   items: { [category: string]: ShoppingItem[] } = {};
-  productControl = new FormControl();
+  productControl = new UntypedFormControl();
   product: Ingredient | null = null;
   quantity: number | null = null;
   unit: string | null = null;
@@ -102,19 +102,37 @@ export class ShoppingListComponent implements OnChanges {
     }
   }
 
-  clearList() {
+  clearList(all: boolean) {
+    let clearMsg = all
+      ? 'Czy na pewno chcesz wyczyścić listę?'
+      : 'Czy na pewno chcesz wyczyścić kupione?';
     const confirmationDialogRef = this.dialog.open(
       ConfirmationDialogComponent,
-      {
-        data: 'Czy na pewno chcesz wyczyścić listę?',
-      }
+      { data: clearMsg }
     );
     confirmationDialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed && this.shoppingList) {
-        this.shoppingList.items = [];
+        if (all) {
+          this.shoppingList.items = [];
+        } else if (this.shoppingList) {
+          const notBought = this.shoppingList.items.filter(i => i.bought === true);
+          notBought.forEach(i => {
+            const id = this.shoppingList?.items.indexOf(i);
+            if (id && id >= 0) {
+              this.shoppingList?.items.splice(id, 1);
+            }
+          })
+        }
         this.updateItems();
       }
     });
+  }
+
+  anyNotBoughtRemainging(): boolean {
+    if (this.shoppingList && this.shoppingList.items?.length > 0) {
+      return this.shoppingList.items.some((i) => !i.bought);
+    }
+    return false;
   }
 
   ingredientSelected(event: MatAutocompleteSelectedEvent) {

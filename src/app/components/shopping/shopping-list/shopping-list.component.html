@@ -32,10 +32,18 @@
                 <mat-icon>add</mat-icon>
             </button>
         </div>
-        <button (click)='clearList()' *ngIf="!(shoppingList?.items?.length === 0)" mat-stroked-button aria-label="clear list icon">
-            Wyczyść listę
-            <mat-icon color='warn'>clear</mat-icon>
-        </button>
+        <div class='list-buttons-container' *ngIf="!(shoppingList?.items?.length === 0)">
+            <button class='clear-button' (click)='clearList(true)' mat-stroked-button
+                aria-label="clear list icon">
+                Wyczyść
+                <mat-icon color='warn'>clear</mat-icon>
+            </button>
+            <button class='clear-button' (click)='clearList(false)' *ngIf="anyNotBoughtRemainging()" mat-stroked-button
+                aria-label="clear list icon">
+                Wyczyść kupione
+                <mat-icon color='warn'>done</mat-icon>
+            </button>
+        </div>
     </div>
 
     <div class='items-list'>
