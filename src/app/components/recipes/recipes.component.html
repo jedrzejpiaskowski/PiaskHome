@@ -10,7 +10,7 @@
     <button mat-icon-button *ngIf='anySelected()' (click)='clearTags()' color="warn">
       <mat-icon>cancel</mat-icon>
     </button>
-    <mat-chip selectable [selected]='tag.selected' (click)='tagChanged(tag)' *ngFor="let tag of tags">
+    <mat-chip selectable [selected]='tag.selected || tag.isLabel' (click)='tagChanged(tag)' *ngFor="let tag of tags">
         {{tag.value}}
     </mat-chip>
 </mat-chip-list>

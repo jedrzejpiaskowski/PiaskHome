@@ -8,8 +8,9 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { debounceTime, filter, tap } from 'rxjs/operators';
+import { debounceTime, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { StringUtilityService } from 'src/app/services/string-utility.service';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { Constants } from 'src/models/constants';
 import {
@@ -47,7 +48,8 @@ export class IngredientsComponent implements OnChanges {
   constructor(
     private store: AngularFirestore,
     private snackbar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private stringService: StringUtilityService
   ) {
     this.categories$ = this.store
       .collection<ProductCategory>(CollectionKey.ProductCategories, (ref) =>
@@ -103,11 +105,11 @@ export class IngredientsComponent implements OnChanges {
             this.filteredIngredients = this.ingredients;
             return;
           }
-          const filNormalized = this.deaccent(fil);
+          const filNormalized = stringService.deaccent(fil);
           this.filteredIngredients = {};
           this.categories.forEach((c) => {
             this.ingredients[c].forEach((ing) => {
-              if (this.deaccent(ing.name).includes(filNormalized)) {
+              if (stringService.deaccent(ing.name).includes(filNormalized)) {
                 if (!this.filteredIngredients[c]) {
                   this.filteredIngredients[c] = [];
                 }
@@ -120,10 +122,6 @@ export class IngredientsComponent implements OnChanges {
       .subscribe();
   }
   
-  deaccent(str: string): string {
-    return str.normalize('NFD').replace(/\p{Diacritic}/gu, "").replace(/\u0142/g, "l");
-  }
-
   clearFilter() {
     this.productSearch.reset();
   }

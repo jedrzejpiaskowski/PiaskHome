@@ -7,6 +7,7 @@ import { CollectionKey } from 'src/models/colletion-keys';
 import { DateUtilityService } from 'src/app/services/date-utility.service';
 import { Constants } from 'src/models/constants';
 import { Tag } from 'src/models/tag';
+import { StringUtilityService } from 'src/app/services/string-utility.service';
 
 @Component({
   selector: 'app-recipes',
@@ -22,7 +23,8 @@ export class RecipesComponent implements OnInit {
 
   constructor(
     private store: AngularFirestore,
-    private dateUtilityService: DateUtilityService
+    private dateUtilityService: DateUtilityService,
+    private stringService: StringUtilityService
   ) {
     this.allRecipes$ = this.selectedTags$.pipe(
       debounceTime(200),
@@ -35,18 +37,18 @@ export class RecipesComponent implements OnInit {
             let query:
               | firebase.default.firestore.CollectionReference
               | firebase.default.firestore.Query = ref;
-              // can only use single 'array-contains', rest of the tags is filtered 'offline'
+            // can only use single 'array-contains', rest of the tags is filtered 'offline'
             query = query.where('tags', 'array-contains', tags[0]);
             query = query.orderBy('creationDate', 'desc');
             return query;
           })
           .valueChanges({ idField: 'id' });
 
-        let remaingingTags: string[] = [];
+        let remainingTags: string[] = [];
         if (tags.length > 1) {
-          remaingingTags = tags.slice(1, tags.length);
+          remainingTags = tags.slice(1, tags.length);
         }
-        return combineLatest([rec, of(remaingingTags)]);
+        return combineLatest([rec, of(remainingTags)]);
       }),
       map(([recipes, remaingingTags]) => {
         let _recipes = recipes as Recipe[];
@@ -74,7 +76,7 @@ export class RecipesComponent implements OnInit {
             .sort();
           this.mergeTags(filteredTags);
         } else {
-          this.tags = this.startingTags;
+          this.tags = this.addLabelsTags(this.startingTags);
         }
       })
     );
@@ -112,10 +114,34 @@ export class RecipesComponent implements OnInit {
       } as Tag;
       return mt;
     });
-    this.tags = mergedTags;
+
+    this.tags = this.addLabelsTags(mergedTags);
+  }
+
+  addLabelsTags(tags: Tag[]): Tag[] {
+    let _tags: Tag[] = [];
+    let previousLetter = '';
+    for (var i = 0; i < tags.length; i++) {
+      const firstLetter = this.stringService
+        .deaccent(tags[i].value.charAt(0))
+        .toLowerCase();
+      if (firstLetter !== previousLetter) {
+        previousLetter = firstLetter;
+        _tags.push({
+          value: firstLetter.toUpperCase(),
+          isLabel: true,
+        } as Tag);
+      }
+      _tags.push(tags[i]);
+    };
+    return _tags;
   }
 
   tagChanged(tag: Tag) {
+    if (tag.isLabel) {
+      return;
+    }
+
     tag.selected = !tag.selected;
     this.selectedTags$.next(
       this.tags.filter((t) => t.selected).map((t) => t.value)
