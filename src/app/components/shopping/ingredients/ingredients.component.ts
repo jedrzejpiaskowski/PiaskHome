@@ -8,7 +8,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { debounceTime, tap } from 'rxjs/operators';
+import { debounceTime, filter, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { Constants } from 'src/models/constants';
@@ -103,10 +103,11 @@ export class IngredientsComponent implements OnChanges {
             this.filteredIngredients = this.ingredients;
             return;
           }
+          const filNormalized = this.deaccent(fil);
           this.filteredIngredients = {};
           this.categories.forEach((c) => {
             this.ingredients[c].forEach((ing) => {
-              if (ing.name.includes(fil)) {
+              if (this.deaccent(ing.name).includes(filNormalized)) {
                 if (!this.filteredIngredients[c]) {
                   this.filteredIngredients[c] = [];
                 }
@@ -117,6 +118,10 @@ export class IngredientsComponent implements OnChanges {
         })
       )
       .subscribe();
+  }
+  
+  deaccent(str: string): string {
+    return str.normalize('NFD').replace(/\p{Diacritic}/gu, "").replace(/\u0142/g, "l");
   }
 
   clearFilter() {

@@ -1,23 +1,16 @@
 :host {
   padding: 0.5em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .filter-panel {
   display: flex;
   align-content: center;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-end;
+  margin: 0 1em;
   
-  @media screen and (orientation: portrait), (max-width: 960px) {
-    margin-left: 2em;
-    width: 100%;
-  }
-
   .ing-filter {
-    min-width: 250px;
+    min-width: 260px;
     margin-bottom: -1em;
   }
 }
@@ -26,7 +19,7 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-start;
 
   .category {
     min-width: 300px;
