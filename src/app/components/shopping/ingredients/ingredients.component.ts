@@ -100,16 +100,16 @@ export class IngredientsComponent implements OnChanges {
     this.productSearch.valueChanges
       .pipe(
         debounceTime(400),
-        tap((fil) => {
-          if (!fil || fil === '') {
+        tap((filterInput) => {
+          if (!filterInput || filterInput === '') {
             this.filteredIngredients = this.ingredients;
             return;
           }
-          const filNormalized = stringService.deaccent(fil);
+          const filNormalized = stringService.deaccent(filterInput).toLowerCase();
           this.filteredIngredients = {};
           this.categories.forEach((c) => {
             this.ingredients[c].forEach((ing) => {
-              if (stringService.deaccent(ing.name).includes(filNormalized)) {
+              if (stringService.deaccent(ing.name).toLowerCase().includes(filNormalized)) {
                 if (!this.filteredIngredients[c]) {
                   this.filteredIngredients[c] = [];
                 }
@@ -121,7 +121,7 @@ export class IngredientsComponent implements OnChanges {
       )
       .subscribe();
   }
-  
+
   clearFilter() {
     this.productSearch.reset();
   }
