@@ -105,11 +105,18 @@ export class IngredientsComponent implements OnChanges {
             this.filteredIngredients = this.ingredients;
             return;
           }
-          const filNormalized = stringService.deaccent(filterInput).toLowerCase();
+          const filNormalized = stringService
+            .deaccent(filterInput)
+            .toLowerCase();
           this.filteredIngredients = {};
           this.categories.forEach((c) => {
             this.ingredients[c].forEach((ing) => {
-              if (stringService.deaccent(ing.name).toLowerCase().includes(filNormalized)) {
+              if (
+                stringService
+                  .deaccent(ing.name)
+                  .toLowerCase()
+                  .includes(filNormalized)
+              ) {
                 if (!this.filteredIngredients[c]) {
                   this.filteredIngredients[c] = [];
                 }
@@ -179,15 +186,33 @@ export class IngredientsComponent implements OnChanges {
       ingredient,
       bought: false,
     } as ShoppingItem);
+
     this.store
-      .collection(CollectionKey.ShoppingList)
-      .doc(Constants.LIST_CONTAINER_ID)
-      .update(this.shoppingList);
+    .collection(CollectionKey.ShoppingList)
+    .doc(Constants.LIST_CONTAINER_ID)
+    .update(this.shoppingList);
+
+    // clear filter when added item was the only one on the list or input was long
+    if (this.getFilteredIngredientsCount() == 1 || (this.productSearch?.value ?? '').length > 3) {
+      this.clearFilter();
+    }
+
     this.snackbar.open(`Dodano '${ingredient.name}' do listy`, undefined, {
       duration: 4000,
       panelClass: ['snackbar-info'],
     });
+
     ingredient.addedToList = true;
+  }
+
+  getFilteredIngredientsCount() : number {
+    let count = 0;
+    this.categories.forEach((c) => {
+      if (this.filteredIngredients[c]) {
+        count += this.filteredIngredients[c].length;
+      }
+    });
+    return count;
   }
 
   addNewIngredient(
