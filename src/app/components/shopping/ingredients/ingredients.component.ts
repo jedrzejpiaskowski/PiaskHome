@@ -1,4 +1,10 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import {
   FormControl,
@@ -11,6 +17,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { StringUtilityService } from 'src/app/services/string-utility.service';
+import { VoiceRecognitionService } from 'src/app/services/voice-recognition.service';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { Constants } from 'src/models/constants';
 import {
@@ -28,7 +35,7 @@ import {
   templateUrl: './ingredients.component.html',
   styleUrls: ['./ingredients.component.scss'],
 })
-export class IngredientsComponent implements OnChanges {
+export class IngredientsComponent implements OnChanges, OnInit {
   @Input() mode: string = ShoppingMode.View;
   @Input() shoppingList: ShoppingListContainer | null = null;
 
@@ -39,17 +46,22 @@ export class IngredientsComponent implements OnChanges {
   quantityInputs: { [category: string]: number | null } = {};
   unitInputs: { [category: string]: string | null } = {};
   ingredients: { [category: string]: Ingredient[] } = {};
+  allIngredients: Ingredient[] = [];
+  voiceSearchResults: Ingredient[] = [];
   filteredIngredients: { [category: string]: Ingredient[] } = {};
   ingredientContainer$: Observable<IngredientContainer | undefined>;
   units = units;
   IngredientsKey = CollectionKey.Ingredients;
   searchForm: UntypedFormGroup;
+  processedWords: string[] = [];
+  listening = false;
 
   constructor(
     private store: AngularFirestore,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
-    private stringService: StringUtilityService
+    private stringService: StringUtilityService,
+    private voiceRecognition: VoiceRecognitionService
   ) {
     this.categories$ = this.store
       .collection<ProductCategory>(CollectionKey.ProductCategories, (ref) =>
@@ -81,6 +93,7 @@ export class IngredientsComponent implements OnChanges {
           this.categories = [];
           if (ingC && ingC.ingredients?.length > 0) {
             ingC.ingredients.forEach((i) => {
+              this.allIngredients.push(i);
               if (!this.ingredients[i.categoryId]) {
                 this.ingredients[i.categoryId] = [];
                 this.categories.push(i.categoryId);
@@ -105,14 +118,14 @@ export class IngredientsComponent implements OnChanges {
             this.filteredIngredients = this.ingredients;
             return;
           }
-          const filNormalized = stringService
+          const filNormalized = this.stringService
             .deaccent(filterInput)
             .toLowerCase();
           this.filteredIngredients = {};
           this.categories.forEach((c) => {
             this.ingredients[c].forEach((ing) => {
               if (
-                stringService
+                this.stringService
                   .deaccent(ing.name)
                   .toLowerCase()
                   .includes(filNormalized)
@@ -127,6 +140,83 @@ export class IngredientsComponent implements OnChanges {
         })
       )
       .subscribe();
+  }
+
+  ngOnInit(): void {
+    this.initVoiceInput();
+  }
+
+  initVoiceInput() {
+    // Subscription for initializing and this will call when user stopped speaking.
+    this.voiceRecognition.init().subscribe(() => {
+      // User has stopped recording
+      // Do whatever when mic finished listening
+    });
+
+    // Subscription to detect user input from voice to text.
+    this.voiceRecognition.speechInput().subscribe((input) => {
+      let clearInput = input;
+      console.log(clearInput);
+      console.log(this.processedWords);
+      this.processedWords.forEach((pw) => {
+        clearInput = clearInput.replace(pw, '');
+      });
+      let clearWords = clearInput
+        .split(' ')
+        .filter((ci) => ci.length >= 2)
+        .map((ci) => ci.trim());
+
+      if (clearWords.length === 0) {
+        return;
+      }
+
+      if (clearWords.includes('stop')) {
+        this.stopVoiceSearch();
+        return;
+      }
+      if (clearWords.includes('dodaj')) {
+        this.stopAndAdd();
+        return;
+      }
+
+      console.log('CW', clearWords);
+      let matchingIngredients: Ingredient[] = [];
+      clearWords.forEach((cw) => {
+        var foundIng = this.allIngredients.filter((ai) =>
+          this.containsWord(ai.name, cw)
+        );
+        foundIng.forEach((fi) => {
+          if (matchingIngredients.indexOf(fi) === -1) {
+            console.log(`match: ${cw} - ${fi.name}`);
+            matchingIngredients.push(fi);
+          }
+        });
+      });
+
+      if (matchingIngredients.length > 0) {
+        console.log('matching', matchingIngredients);
+        matchingIngredients.forEach((ing) => {
+          if (!this.voiceSearchResults.find((r) => r.id == ing.id) && this.listening) {
+            this.voiceSearchResults.push(ing);
+            console.log(`DOdaje: ${ing.name}`);
+
+            if (!this.processedWords.includes(ing.name)) {
+              this.processedWords.push(ing.name);
+            }
+          }
+        });
+      }
+      // Set voice text output to
+      // this.searchForm.controls.searchText.setValue(input);
+    });
+  }
+
+  removeSearchResult(ingredient: Ingredient) {
+    const ingIndex = this.voiceSearchResults?.indexOf(ingredient);
+    if (ingIndex > -1) {
+      this.voiceSearchResults.splice(ingIndex, 1);
+    }
+    console.log(this.voiceSearchResults);
   }
 
   clearFilter() {
@@ -167,6 +257,47 @@ export class IngredientsComponent implements OnChanges {
     });
   }
 
+  saveShoppingList() {
+    if (!this.shoppingList) return;
+
+    this.store
+      .collection(CollectionKey.ShoppingList)
+      .doc(Constants.LIST_CONTAINER_ID)
+      .update(this.shoppingList);
+  }
+
+  saveSearchResults() {
+    if (!this.voiceSearchResults || this.voiceSearchResults.length === 0 || !this.shoppingList) return;
+
+    let savedCount = 0;
+    this.voiceSearchResults.forEach((ing) => {
+      const index = this.shoppingList?.items.findIndex(
+        (i) => i.ingredient.id === ing.id
+      );
+      if (index && index < 0) {
+        savedCount++;
+        ing.addedToList = true;
+        this.shoppingList?.items.push({
+          id: this.store.createId(),
+          ingredient: ing,
+          bought: false,
+        } as ShoppingItem);
+      }
+    });
+    if (savedCount > 0) {
+      this.saveShoppingList();
+      this.snackbar.open(`Dodano ${savedCount} produkt[y] do listy`, undefined, {
+        duration: 4000,
+        panelClass: ['snackbar-info'],
+      });
+      this.clearSearchResults();
+    }
+  }
+
+  clearSearchResults() {
+    this.voiceSearchResults = [];
+  }
+
   addToShoppingList(ingredient: Ingredient) {
     if (!this.shoppingList) return;
 
@@ -187,13 +318,13 @@ export class IngredientsComponent implements OnChanges {
       bought: false,
     } as ShoppingItem);
 
-    this.store
-    .collection(CollectionKey.ShoppingList)
-    .doc(Constants.LIST_CONTAINER_ID)
-    .update(this.shoppingList);
+    this.saveShoppingList();
 
     // clear filter when added item was the only one on the list or input was long
-    if (this.getFilteredIngredientsCount() == 1 || (this.productSearch?.value ?? '').length > 3) {
+    if (
+      this.getFilteredIngredientsCount() == 1 ||
+      (this.productSearch?.value ?? '').length > 3
+    ) {
       this.clearFilter();
     }
 
@@ -205,7 +336,7 @@ export class IngredientsComponent implements OnChanges {
     ingredient.addedToList = true;
   }
 
-  getFilteredIngredientsCount() : number {
+  getFilteredIngredientsCount(): number {
     let count = 0;
     this.categories.forEach((c) => {
       if (this.filteredIngredients[c]) {
@@ -250,6 +381,33 @@ export class IngredientsComponent implements OnChanges {
         .update(ingredientContainer);
       this.productInputs[category.id] = '';
     }
+  }
+
+  startVoiceSearch() {
+    this.processedWords = [];
+    this.voiceSearchResults = [];
+    this.voiceRecognition.start();
+    this.listening = true;
+    console.log('start');
+  }
+
+  stopVoiceSearch() {
+    this.voiceRecognition.stop();
+    this.processedWords = [];
+    this.listening = false;
+    console.log('stop');
+    console.log(this.voiceSearchResults);
+  }
+
+  stopAndAdd() {
+    this.stopVoiceSearch();
+    this.saveSearchResults();
+  }
+
+  containsWord(str: string, word: string): boolean {
+    return (
+      str === word || (word.length > 2 && new RegExp('(?:^|\\s)' + word + '(?:^|\\s|$)').test(str))
+    );
   }
 
   clearSelection() {

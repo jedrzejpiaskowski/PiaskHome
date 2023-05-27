@@ -8,6 +8,37 @@
         <button mat-icon-button color="warn" (click)='clearFilter()'>
             <mat-icon>clear</mat-icon>
         </button>
+        <button *ngIf="!listening" (click)='startVoiceSearch()' mat-icon-button color="primary">
+            <mat-icon>mic</mat-icon>
+        </button>
+        <button *ngIf="listening" (click)='stopVoiceSearch()' mat-icon-button color="warn">
+            <mat-icon>mic</mat-icon>
+        </button>
+    </div>
+    <div *ngIf="listening || voiceSearchResults.length > 0" class="voice-search">
+        <div *ngIf='listening' class='listening-indicator'>
+            <mat-progress-bar color='warn' mode="indeterminate"></mat-progress-bar>
+        </div>
+        <div class='search-results'>
+            <mat-chip-list multiple="true" #tagList aria-label="Tag selection">
+                <mat-chip *ngFor='let si of voiceSearchResults' class='ingredient'>
+                    <span class='name'>{{ si.name }}</span>
+                    <button matChipRemove (click)='removeSearchResult(si)'>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip>
+            </mat-chip-list>
+        </div>
+        <div *ngIf="!listening" class='results-actions'>
+            <button mat-flat-button color='accent' (click)='clearSearchResults()' aria-label="clear ingredients icon">
+                Wyczyść
+                <mat-icon>clear</mat-icon>
+            </button>
+            <button mat-flat-button color='primary' (click)='saveSearchResults()' aria-label="add ingredients icon">
+                Dodaj
+                <mat-icon>add_icon</mat-icon>
+            </button>
+        </div>
     </div>
     <div class='ingredient-groups' *ngIf='categories$ | async as categories'>
         <ng-container *ngFor='let c of data.categories'>
@@ -39,7 +70,8 @@
                     </button>
                 </div>
                 <mat-chip-list multiple="true" #tagList aria-label="Tag selection">
-                    <mat-chip *ngFor='let i of filteredIngredients[c.id]' [selected]='i.addedToList' class='ingredient'>
+                    <mat-chip *ngFor='let i of filteredIngredients[c.id]' [selected]='i.addedToList' class='ingredient'
+                        color='accent'>
                         <span class='name'>{{ i.name }}</span>
                         <span *ngIf='i.quantity' class='quantity'>{{ i.quantity }}</span>
                         <span *ngIf='i.unit' class='unit'>{{ i.unit }}</span>
@@ -53,6 +85,6 @@
                     </mat-chip>
                 </mat-chip-list>
             </div>
-        </ng-container >
+        </ng-container>
     </div>
 </ng-container>
