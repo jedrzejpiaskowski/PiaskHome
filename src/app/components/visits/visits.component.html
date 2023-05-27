@@ -145,19 +145,19 @@
                     <ng-container matColumnDef="visitsCount">
                         <th class='center' mat-header-cell *matHeaderCellDef>Wizyty</th>
                         <td class='center' mat-cell *matCellDef="let entry">{{entry.visitsCount}}</td>
-                        <td class='center' mat-footer-cell *matFooterCellDef>{{totalMonthVisits}}</td>
+                        <td class='center' mat-footer-cell *matFooterCellDef>{{monthSummary.totalVisits}}</td>
                     </ng-container>
 
                     <ng-container matColumnDef="price">
                         <th class='right' mat-header-cell *matHeaderCellDef>Suma</th>
                         <td class='right' mat-cell *matCellDef="let entry">{{entry.price | currency: 'PLN'}}</td>
-                        <td class='right' mat-footer-cell *matFooterCellDef>{{totalMonthPrice | currency: 'PLN'}}</td>
+                        <td class='right' mat-footer-cell *matFooterCellDef>{{monthSummary.totalPrice | currency: 'PLN'}}</td>
                     </ng-container>
 
                     <ng-container matColumnDef="earnings">
                         <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
                         <td class='right' mat-cell *matCellDef="let entry">{{entry.earnings | currency: 'PLN'}}</td>
-                        <td class='right' mat-footer-cell *matFooterCellDef>{{totalMonthEarnings | currency: 'PLN'}}
+                        <td class='right' mat-footer-cell *matFooterCellDef>{{monthSummary.totalEarnings | currency: 'PLN'}}
                         </td>
                     </ng-container>
 
@@ -169,4 +169,57 @@
             </div>
         </ng-container>
     </mat-tab>
+    <mat-tab label="Rok">
+        <!-- yearly summary -->
+        <ng-container *ngIf='{ yearSummary: visitsForYear$ | async,
+            selectedYear: selectedYear$ | async } as data'>
+            <div class='year-table' *ngIf='data.yearSummary && data.selectedYear'>
+                <table class='year-table' mat-table [dataSource]="data.yearSummary">
+
+                    <ng-container matColumnDef="year">
+                        <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
+                            <button (click)='changeYear(-1)' mat-icon-button>
+                                <mat-icon color='primary'>arrow_left</mat-icon>
+                            </button>
+                            <span>{{ yearLabel }}</span>
+                            <button (click)='changeYear(1)' mat-icon-button
+                                [ngClass]='{ "d-none": !showNextYearArrow() }' [disabled]='!showNextYearArrow()'>
+                                <mat-icon color='primary'>arrow_right</mat-icon>
+                            </button>
+                        </th>
+                    </ng-container>
+
+                    <ng-container matColumnDef="month">
+                        <th mat-header-cell *matHeaderCellDef>Miesiąc</th>
+                        <td mat-cell *matCellDef="let entry">{{entry.monthDate | date: 'LLLL' |  titlecase}}</td>
+                        <td mat-footer-cell *matFooterCellDef>W sumie</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="visitsCount">
+                        <th class='center' mat-header-cell *matHeaderCellDef>Wizyty</th>
+                        <td class='center' mat-cell *matCellDef="let entry">{{entry.visitsCount}}</td>
+                        <td class='center' mat-footer-cell *matFooterCellDef>{{yearSummary.totalVisits}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="price">
+                        <th class='right' mat-header-cell *matHeaderCellDef>Suma</th>
+                        <td class='right' mat-cell *matCellDef="let entry">{{entry.totalPrice | currency: 'PLN'}}</td>
+                        <td class='right' mat-footer-cell *matFooterCellDef>{{yearSummary.totalPrice | currency: 'PLN'}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="earnings">
+                        <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
+                        <td class='right' mat-cell *matCellDef="let entry">{{entry.totalEarnings | currency: 'PLN'}}</td>
+                        <td class='right' mat-footer-cell *matFooterCellDef>{{yearSummary.totalEarnings | currency: 'PLN'}}
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="['year']"></tr>
+                    <tr mat-header-row *matHeaderRowDef="displayedYearColumns"></tr>
+                    <tr mat-row *matRowDef="let visit; columns: displayedYearColumns;"></tr>
+                    <tr mat-footer-row *matFooterRowDef="displayedYearColumns" class="bold"></tr>
+                </table>
+            </div>
+        </ng-container>
+    </mat-tab>    
 </mat-tab-group>

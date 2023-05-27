@@ -10,10 +10,12 @@ export interface VisitEntry {
 }
 
 export interface MonthSummary {
-    month: Date;
+    month: number;
+    monthDate: Date;
     days: DaySummary[];
     totalPrice: number;
     totalEarnings: number;
+    visitsCount: number;
 }
 
 export interface DaySummary {
@@ -21,4 +23,10 @@ export interface DaySummary {
     visitsCount: number;
     price: number;
     earnings: number;
+}
+
+export interface Summary {
+    totalEarnings: number;
+    totalPrice: number;
+    totalVisits: number;
 }
