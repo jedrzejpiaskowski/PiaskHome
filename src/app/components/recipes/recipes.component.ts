@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
-import { debounceTime, filter, map, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { Recipe, TagContainer } from 'src/models/recipe';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { DateUtilityService } from 'src/app/services/date-utility.service';
 import { Constants } from 'src/models/constants';
 import { Tag } from 'src/models/tag';
-import { StringUtilityService } from 'src/app/services/string-utility.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-recipes',
@@ -24,8 +24,9 @@ export class RecipesComponent implements OnInit {
   constructor(
     private store: AngularFirestore,
     private dateUtilityService: DateUtilityService,
-    private stringService: StringUtilityService
+    private title: Title
   ) {
+    this.title.setTitle('Przepisy');
     this.allRecipes$ = this.selectedTags$.pipe(
       debounceTime(200),
       switchMap((tags) => {
@@ -89,6 +90,7 @@ export class RecipesComponent implements OnInit {
       .pipe(
         tap((tc) => {
           if (tc && tc.tags) {
+            console.log(tc);
             this.tags = [];
             tc.tags.sort().map((t) => {
               this.tags.push({
@@ -122,9 +124,7 @@ export class RecipesComponent implements OnInit {
     let _tags: Tag[] = [];
     let previousLetter = '';
     for (var i = 0; i < tags.length; i++) {
-      const firstLetter = this.stringService
-        .deaccent(tags[i].value.charAt(0))
-        .toLowerCase();
+      const firstLetter = tags[i].value.charAt(0).toLowerCase();
       if (firstLetter !== previousLetter) {
         previousLetter = firstLetter;
         _tags.push({

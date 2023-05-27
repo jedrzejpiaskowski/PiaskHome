@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { Title } from '@angular/platform-browser';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, tap } from 'rxjs/operators';
 import { CollectionKey } from 'src/models/colletion-keys';
@@ -15,7 +16,8 @@ export class ShoppingComponent {
   mode = ShoppingMode.View;
   shoppingList$: Observable<ShoppingListContainer | undefined>;
 
-  constructor(private store: AngularFirestore) {
+  constructor(private store: AngularFirestore, private title: Title) {
+    this.title.setTitle('Przepisy');
     this.shoppingList$ = this.store
       .doc<ShoppingListContainer>(
         `${CollectionKey.ShoppingList}/${Constants.LIST_CONTAINER_ID}`

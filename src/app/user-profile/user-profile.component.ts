@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { User } from 'src/models/user';
 import { AuthService } from '../services/auth.service';
 const googleLogoURL =
@@ -11,19 +11,19 @@ const googleLogoURL =
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent {
   constructor(
     public auth: AuthService,
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private title: Title
   ) {
+    this.title.setTitle('Profil');
     this.matIconRegistry.addSvgIcon(
       'logo',
       this.domSanitizer.bypassSecurityTrustResourceUrl(googleLogoURL)
     );
   }
-
-  ngOnInit(): void {}
 
   logout() {
     this.auth.signOut();

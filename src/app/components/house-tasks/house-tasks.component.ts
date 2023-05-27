@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HouseTasks } from 'src/models/house-task';
 import { AngularFirestore, Query } from '@angular/fire/compat/firestore';
 import {
@@ -18,8 +18,7 @@ import { CollectionKey } from 'src/models/colletion-keys';
 import { User } from 'src/models/user';
 import { Paging } from 'src/models/paging-mode';
 import { DateUtilityService } from '../../services/date-utility.service';
-import { multi } from './../../data/data';
-import { ColorHelper } from '@swimlane/ngx-charts';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-house-tasks',
@@ -49,7 +48,8 @@ export class HouseTasksComponent {
     'approved',
   ];
 
-  constructor(private store: AngularFirestore, private auth: AuthService, private dateUtilityService: DateUtilityService) {
+  constructor(private store: AngularFirestore, private auth: AuthService, private dateUtilityService: DateUtilityService, private title: Title) {
+    this.title.setTitle('Domowe');
     const date = new Date();
     this.today = date.toLocaleDateString();
     this.activeDate = this.today;

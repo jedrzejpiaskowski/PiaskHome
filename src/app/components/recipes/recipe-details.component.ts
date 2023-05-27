@@ -8,7 +8,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import {
@@ -56,7 +56,8 @@ export class RecipeDetailsComponent {
     private storage: AngularFireStorage,
     private sanitizer: DomSanitizer,
     private snackbar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private title: Title
   ) {
     this.recipeForm = new UntypedFormGroup({
       id: new UntypedFormControl(),
@@ -127,6 +128,8 @@ export class RecipeDetailsComponent {
         }
         if (!r?.id) {
           this.editing = true;
+        } else {
+          this.title.setTitle(r.title);
         }
       })
     );
@@ -217,6 +220,7 @@ export class RecipeDetailsComponent {
     }
     if (stopEditing) {
       this.editing = false;
+      this.title.setTitle(recipe.title);
     }
   }
 
