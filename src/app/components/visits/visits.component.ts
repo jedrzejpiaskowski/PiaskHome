@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import * as moment from 'moment';
@@ -14,6 +15,7 @@ import { DateUtilityService } from '../../services/date-utility.service';
   selector: 'app-visits',
   templateUrl: './visits.component.html',
   styleUrls: ['./visits.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class VisitsComponent implements OnInit, OnDestroy {
   activeVisit$: Observable<VisitEntry>;
@@ -304,6 +306,18 @@ export class VisitsComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
+    if (view === 'month') {
+      const date = new Date(cellDate);
+      const day = date.getDay();
+      const inThePast = date <= new Date();
+
+      // Highlight Mon-Thu days
+      return (inThePast && day >= 1 && day <= 4) ? 'working-day' : '';
+    }
+    return '';
+  };
 
   ngOnInit(): void {}
 }

@@ -23,7 +23,7 @@
                                 <input (dateChange)='dateChanged($event.value)' matInput
                                     [(ngModel)]='data.activeVisit.date' [matDatepicker]="datepicker">
                                 <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-                                <mat-datepicker touchUi #datepicker>
+                                <mat-datepicker [dateClass]="dateClass" touchUi #datepicker>
                                 </mat-datepicker>
                             </mat-form-field>
                             <mat-form-field class='item-price' appearance="standard">
@@ -43,15 +43,15 @@
                             </mat-form-field>
                         </div>
                     </mat-card-content>
-                    <mat-card-actions align='end'>
+                    <mat-card-actions align='end' class='visit-actions'>
                         <button color='primary'
                             [disabled]='!data.activeVisit.patient || data.activeVisit.patient?.length === 0 || !data.activeVisit.price || data.activeVisit.price <= 0'
                             *ngIf='!data.activeVisit.saved' (click)='save(data.activeVisit)'
                             mat-stroked-button>Zapisz</button>
                         <ng-container *ngIf='data.activeVisit.saved'>
                             <button color='warn' (click)='delete(data.activeVisit)' mat-stroked-button>Usuń</button>
-                            <button color='primary' (click)='update(data.activeVisit)'
-                                mat-stroked-button>Aktualizuj</button>
+                            <button color='accent' (click)='newVisit()' mat-stroked-button>Nowa</button>
+                            <button color='primary' (click)='update(data.activeVisit)' mat-stroked-button>Aktualizuj</button>
                         </ng-container>
                     </mat-card-actions>
                     <mat-card-footer>
