@@ -14,8 +14,7 @@ import { DateUtilityService } from '../../services/date-utility.service';
 @Component({
   selector: 'app-visits',
   templateUrl: './visits.component.html',
-  styleUrls: ['./visits.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  styleUrls: ['./visits.component.scss']
 })
 export class VisitsComponent implements OnInit, OnDestroy {
   activeVisit$: Observable<VisitEntry>;

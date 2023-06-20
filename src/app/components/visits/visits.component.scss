@@ -49,7 +49,7 @@
       margin-left: 0;
       margin-right: 0.5em;
     }
-  }  
+  }
 }
 
 .visits-table {
@@ -90,7 +90,8 @@
   font-weight: 500;
 }
 
-.month-table, .year-table {
+.month-table,
+.year-table {
   width: 100%;
   max-width: 900px;
 
@@ -99,7 +100,7 @@
   }
 }
 
-button.working-day {
+::ng-deep button.working-day {
   border-radius: 100%;
   border: 3px solid transparent;
   box-shadow: inset 0 0 5px 0px var(--primary);
