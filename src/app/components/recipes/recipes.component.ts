@@ -90,7 +90,6 @@ export class RecipesComponent implements OnInit {
       .pipe(
         tap((tc) => {
           if (tc && tc.tags) {
-            console.log(tc);
             this.tags = [];
             tc.tags.sort().map((t) => {
               this.tags.push({

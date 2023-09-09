@@ -1,15 +1,18 @@
-import { Direction } from '@angular/cdk/bidi';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer, Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import {
   finalize,
@@ -53,15 +56,20 @@ export class RecipeDetailsComponent {
   constructor(
     private store: AngularFirestore,
     private route: ActivatedRoute,
+    private router: Router,
     private storage: AngularFireStorage,
     private sanitizer: DomSanitizer,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private title: Title
   ) {
+    new UntypedFormControl();
     this.recipeForm = new UntypedFormGroup({
       id: new UntypedFormControl(),
-      title: new UntypedFormControl('', Validators.required),
+      title: new UntypedFormControl('', [
+        Validators.required,
+        Validators.minLength(3),
+      ]),
       creationDate: new UntypedFormControl(new Date()),
       description: new UntypedFormControl(''),
       imageUrls: new UntypedFormControl([]),
@@ -143,7 +151,7 @@ export class RecipeDetailsComponent {
   createNewRecipe(): Recipe {
     return {
       id: '',
-      title: 'Nowy przepis...',
+      title: '',
       description: '',
       url: '',
       calories: null,
@@ -152,11 +160,11 @@ export class RecipeDetailsComponent {
       imageUrls: [],
       saved: false,
       creationDate: new Date(),
-      rating: null
+      rating: null,
     } as Partial<Recipe> as Recipe;
   }
 
-  remove(tag: string): void {
+  removeTag(tag: string): void {
     const index = this.tags.indexOf(tag);
     if (index >= 0) {
       this.tags.splice(index, 1);
@@ -199,8 +207,23 @@ export class RecipeDetailsComponent {
     tagContainer: TagContainer | null = null
   ) {
     const recipe = this.recipeForm.getRawValue() as Recipe;
-    recipe.imageUrls = this.images.filter((i) => i).map((i) => i.downloadUrl);
+    if (recipe.title?.length < 3) {
+      this.snackbar.open('Tytuł jest za krótki!', undefined, {
+        duration: 2000,
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
     this.tags = [...new Set(this.tags)];
+    if (this.tags?.length === 0) {
+      this.snackbar.open('Musisz wybrać przynajmniej 1 tag!', undefined, {
+        duration: 2000,
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    recipe.imageUrls = this.images.filter((i) => i).map((i) => i.downloadUrl);
     recipe.tags = this.tags;
     recipe.rating = this.rating;
 
@@ -211,7 +234,14 @@ export class RecipeDetailsComponent {
     if (!recipe.saved) {
       recipe.saved = true;
       recipe.creationDate = new Date();
-      this.store.collection(CollectionKey.Recipes).add(recipe);
+      this.store
+        .collection(CollectionKey.Recipes)
+        .add(recipe)
+        .then((ref) => {
+          this.router.navigate([`/recipes/${ref.id}`]).then(() => {
+            window.location.reload();
+          });
+        });
     } else {
       this.store
         .collection(CollectionKey.Recipes)
@@ -222,6 +252,30 @@ export class RecipeDetailsComponent {
       this.editing = false;
       this.title.setTitle(recipe.title);
     }
+  }
+
+  deleteRecipe(recipeId: string) {
+    const confirmationDialogRef = this.dialog.open(
+      ConfirmationDialogComponent,
+      {
+        data: 'Czy na pewno chcesz usunąć przepis?',
+      }
+    );
+    confirmationDialogRef.afterClosed().subscribe((confirmed) => {
+      if (confirmed) {
+        const recipeRef = this.store.doc<Recipe>(
+          `${CollectionKey.Recipes}/${recipeId}`
+        );
+        console.log(recipeRef);
+        recipeRef.delete().then((_) => {
+          this.snackbar.open('Przepis usunięty', undefined, {
+            duration: 2000,
+            panelClass: ['snackbar-info'],
+          });
+          this.router.navigate(['/recipes']);
+        });
+      }
+    });
   }
 
   updateTags(tagContainer: TagContainer, tags: string[]) {

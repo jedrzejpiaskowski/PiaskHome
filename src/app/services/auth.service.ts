@@ -6,7 +6,7 @@ import {
 } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { first, switchMap, take } from 'rxjs/operators';
+import { first, switchMap } from 'rxjs/operators';
 import { User } from 'src/models/user';
 import * as firebase from 'firebase/auth';
 

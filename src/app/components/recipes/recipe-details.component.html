@@ -5,7 +5,7 @@
             <a mat-icon-button button color='primary' aria-label="back icon" routerLink='/recipes'>
                 <mat-icon>arrow_back</mat-icon>
             </a>
-            <h1>{{recipe.title}}</h1>
+            <h1>{{recipe.saved ? recipe.title : 'Nowy przepis'}}</h1>
             <span class='spacer'></span>
             <div class='recipe-actions'>
                 <ng-container *ngIf='editing'>
@@ -20,7 +20,7 @@
                     <button mat-icon-button (click)='editRecipe()'>
                         <mat-icon color='primary'>edit</mat-icon>
                     </button>
-                    <button mat-icon-button>
+                    <button mat-icon-button (click)='deleteRecipe(recipe.id)'>
                         <mat-icon color='warn'>delete</mat-icon>
                     </button>
                 </ng-container>
@@ -53,7 +53,7 @@
             <h2>Tagi</h2>
             <mat-form-field class='tags-container' appearance="fill">
                 <mat-chip-list #tagList aria-label="Tag selection">
-                    <mat-chip *ngFor="let tag of tags" removable="true" (removed)="remove(tag)" selected>
+                    <mat-chip *ngFor="let tag of tags" removable="true" (removed)="removeTag(tag)" selected>
                         {{tag}}
                         <button matChipRemove>
                             <mat-icon>cancel</mat-icon>
