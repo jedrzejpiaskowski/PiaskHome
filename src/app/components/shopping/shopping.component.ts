@@ -17,7 +17,7 @@ export class ShoppingComponent {
   shoppingList$: Observable<ShoppingListContainer | undefined>;
 
   constructor(private store: AngularFirestore, private title: Title) {
-    this.title.setTitle('Przepisy');
+    this.title.setTitle('Zakupy');
     this.shoppingList$ = this.store
       .doc<ShoppingListContainer>(
         `${CollectionKey.ShoppingList}/${Constants.LIST_CONTAINER_ID}`

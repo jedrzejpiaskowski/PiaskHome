@@ -196,13 +196,13 @@ export class IngredientsComponent implements OnChanges, OnInit {
       if (matchingIngredients.length > 0) {
         console.log('matching', matchingIngredients);
         matchingIngredients.forEach((ing) => {
-          if (!this.voiceSearchResults.find((r) => r.id == ing.id) && this.listening) {
+          if (
+            !this.voiceSearchResults.find((r) => r.id == ing.id) &&
+            this.listening
+          ) {
             this.voiceSearchResults.push(ing);
-            console.log(`DOdaje: ${ing.name}`);
-
-            if (!this.processedWords.includes(ing.name)) {
-              this.processedWords.push(ing.name);
-            }
+            console.log(`Dodaje: ${ing.name}`);
+            this.addProcessedIngredient(ing);
           }
         });
       }
@@ -215,8 +215,15 @@ export class IngredientsComponent implements OnChanges, OnInit {
     const ingIndex = this.voiceSearchResults?.indexOf(ingredient);
     if (ingIndex > -1) {
       this.voiceSearchResults.splice(ingIndex, 1);
+      this.addProcessedIngredient(ingredient);
     }
     console.log(this.voiceSearchResults);
+  }
+
+  addProcessedIngredient(ing: Ingredient) {
+    if (!this.processedWords.includes(ing.name)) {
+      this.processedWords.push(ing.name);
+    }
   }
 
   clearFilter() {
@@ -267,7 +274,12 @@ export class IngredientsComponent implements OnChanges, OnInit {
   }
 
   saveSearchResults() {
-    if (!this.voiceSearchResults || this.voiceSearchResults.length === 0 || !this.shoppingList) return;
+    if (
+      !this.voiceSearchResults ||
+      this.voiceSearchResults.length === 0 ||
+      !this.shoppingList
+    )
+      return;
 
     let savedCount = 0;
     this.voiceSearchResults.forEach((ing) => {
@@ -286,10 +298,14 @@ export class IngredientsComponent implements OnChanges, OnInit {
     });
     if (savedCount > 0) {
       this.saveShoppingList();
-      this.snackbar.open(`Dodano ${savedCount} produkt[y] do listy`, undefined, {
-        duration: 4000,
-        panelClass: ['snackbar-info'],
-      });
+      this.snackbar.open(
+        `Dodano ${savedCount} produkt[y] do listy`,
+        undefined,
+        {
+          duration: 4000,
+          panelClass: ['snackbar-info'],
+        }
+      );
       this.clearSearchResults();
     }
   }
@@ -406,7 +422,9 @@ export class IngredientsComponent implements OnChanges, OnInit {
 
   containsWord(str: string, word: string): boolean {
     return (
-      str === word || (word.length > 2 && new RegExp('(?:^|\\s)' + word + '(?:^|\\s|$)').test(str))
+      str === word ||
+      (word.length > 2 &&
+        new RegExp('(?:^|\\s)' + word + '(?:^|\\s|$)').test(str))
     );
   }
 

@@ -27,7 +27,7 @@ export class VoiceRecognitionService {
   init() {
     this.recognition = new webkitSpeechRecognition();
     this.recognition.continuous = true;
-    this.recognition.interimResults = true;
+    this.recognition.interimResults = false;
     this.recognition.lang = 'pl';
 
     this.recognition.addEventListener('result', (e: any) => {
@@ -99,6 +99,7 @@ export class VoiceRecognitionService {
   wordConcat() {
     this.text = this.text.trim() + ' ' + this.tempWords;
     this.text = this.text.trim();
+    console.log(this.text);
     this.tempWords = '';
   }
 }
