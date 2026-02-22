@@ -18,7 +18,7 @@
                     </mat-card-header>
                     <mat-card-content>
                         <div class='visit-form'>
-                            <mat-form-field class='item-date' appearance="standard">
+                            <mat-form-field class='item-date' appearance="outline">
                                 <mat-label>Data</mat-label>
                                 <input (dateChange)='dateChanged($event.value)' matInput
                                     [(ngModel)]='data.activeVisit.date' [matDatepicker]="datepicker">
@@ -26,18 +26,18 @@
                                 <mat-datepicker [dateClass]="dateClass" touchUi #datepicker>
                                 </mat-datepicker>
                             </mat-form-field>
-                            <mat-form-field class='item-price' appearance="standard">
+                            <mat-form-field class='item-price' appearance="outline">
                                 <mat-label>Kwota</mat-label>
                                 <input min="0" matInput [(ngModel)]='data.activeVisit.price' type="number" required>
                                 <span matSuffix> zł</span>
                             </mat-form-field>
-                            <mat-form-field class='item-percentage' appearance="standard">
+                            <mat-form-field class='item-percentage' appearance="fill">
                                 <mat-label>Procent</mat-label>
                                 <input min="0" max="100" step="1" matInput [(ngModel)]='data.activeVisit.percentage'
                                     type="number">
                                 <span matSuffix> %</span>
                             </mat-form-field>
-                            <mat-form-field class='item-patient' appearance="standard">
+                            <mat-form-field class='item-patient' appearance="fill">
                                 <mat-label>Pacjent</mat-label>
                                 <input matInput maxlength="30" [(ngModel)]='data.activeVisit.patient' type="text">
                             </mat-form-field>
@@ -45,7 +45,7 @@
                     </mat-card-content>
                     <mat-card-actions align='end' class='visit-actions'>
                         <button color='primary'
-                            [disabled]='!data.activeVisit.patient || data.activeVisit.patient?.length === 0 || !data.activeVisit.price || data.activeVisit.price <= 0'
+                            [disabled]='!data.activeVisit.patient || data.activeVisit.patient.length === 0 || !data.activeVisit.price || data.activeVisit.price <= 0'
                             *ngIf='!data.activeVisit.saved' (click)='save(data.activeVisit)'
                             mat-stroked-button>Zapisz</button>
                         <ng-container *ngIf='data.activeVisit.saved'>

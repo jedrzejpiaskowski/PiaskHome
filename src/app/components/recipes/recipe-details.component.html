@@ -36,11 +36,11 @@
                 <textarea formControlName='description' matInput></textarea>
             </mat-form-field>
             <div class="horizontal-row">
-                <mat-form-field appearance="standard">
+                <mat-form-field appearance="fill">
                     <input min="0" matInput formControlName='calories' type="number">
                     <span matSuffix> kcal</span>
                 </mat-form-field>
-                <mat-form-field appearance="standard">
+                <mat-form-field appearance="fill">
                     <mat-label>Czas</mat-label>
                     <input min="0" matInput formControlName='prepTime' type="number">
                     <span matSuffix> min</span>
@@ -51,24 +51,22 @@
                 <input formControlName='url' matInput>
             </mat-form-field>
             <h2>Tagi</h2>
-            <mat-form-field class='tags-container' appearance="fill">
-                <mat-chip-list #tagList aria-label="Tag selection">
-                    <mat-chip *ngFor="let tag of tags" removable="true" (removed)="removeTag(tag)" selected>
-                        {{tag}}
-                        <button matChipRemove>
-                            <mat-icon>cancel</mat-icon>
-                        </button>
-                    </mat-chip>
-                    <input placeholder="Nowy tag..." #tagsInput formControlName="tags" [matAutocomplete]="auto"
-                    [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="add($event)">
-                </mat-chip-list>
-                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-                    <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
-                        {{tag}}
-                    </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
+            <mat-chip-grid #tagList aria-label="Tag selection" class='tags-container'>
+                <mat-chip-row *ngFor="let tag of tags" (removed)="removeTag(tag)">
+                    {{tag}}
+                    <button matChipRemove [attr.aria-label]="'remove ' + tag">
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                </mat-chip-row>
+                <input placeholder="Nowy tag..." #tagsInput formControlName="tags" [matAutocomplete]="auto"
+                [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="add($event)" />
+            </mat-chip-grid>
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+                <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                    {{tag}}
+                </mat-option>
+            </mat-autocomplete>
             <h2>Zdjęcia</h2>
             <div class='recipe-images'>
                 <input type="file" class="file-input" multiple #fileUpload accept=".png,.jpg"
@@ -122,11 +120,11 @@
                 <a target="_blank" [href]='recipe.url'>{{recipe.url}}</a>
             </p>
             <h2>Tagi</h2>
-            <mat-chip-list #chipList aria-label="Tags selection">
-                <mat-chip selected *ngFor="let tag of tags">
+            <mat-chip-set #chipList aria-label="Tags selection">
+                <mat-chip *ngFor="let tag of tags">
                     {{tag}}
                 </mat-chip>
-            </mat-chip-list>
+            </mat-chip-set>
             <h2 *ngIf='images && images.length > 0'>Zdjęcia</h2>
             <div class='recipe-images'>
                 <div *ngFor='let image of images; let i = index' class="tile image-tile">

@@ -15,11 +15,19 @@ export class AppComponent {
   constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-    this.mobileQuery.addListener(this._mobileQueryListener);
+    if (this.mobileQuery.addEventListener) {
+      this.mobileQuery.addEventListener('change', this._mobileQueryListener);
+    } else {
+      this.mobileQuery.addListener(this._mobileQueryListener);
+    }
   }
 
   ngOnDestroy(): void {
-    this.mobileQuery.removeListener(this._mobileQueryListener);
+    if (this.mobileQuery.removeEventListener) {
+      this.mobileQuery.removeEventListener('change', this._mobileQueryListener);
+    } else {
+      this.mobileQuery.removeListener(this._mobileQueryListener);
+    }
   }
   
 }

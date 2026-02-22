@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, HostListener, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface GalleryData {
@@ -12,37 +12,87 @@ export interface GalleryData {
   styleUrls: ['./image-viewer-dialog.component.scss'],
 })
 export class ImageViewerDialogComponent {
-  public config: any;
+  currentIndex = 0;
+  zoom = 1;
+  rotation = 0;
 
   constructor(
     public dialogRef: MatDialogRef<ImageViewerDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: GalleryData
   ) {
-    this.config = {
-      btnClass: 'img-button', // The CSS class(es) that will apply to the buttons
-      zoomFactor: 0.15, // The amount that the scale will be increased by
-      containerBackgroundColor: 'transparent', // The color to use for the background. This can provided in hex, or rgb(a).
-      wheelZoom: true, // If true, the mouse wheel can be used to zoom in
-      allowFullscreen: true, // If true, the fullscreen button will be shown, allowing the user to enter fullscreen mode
-      allowKeyboardNavigation: true, // If true, the left / right arrow keys can be used for navigation
-      btnIcons: {
-        // The icon classes that will apply to the buttons. By default, font-awesome is used.
-        zoomIn: 'zoom-in',
-        zoomOut: 'zoom-out',
-        rotateClockwise: 'right',
-        rotateCounterClockwise: 'left',
-        next: 'next',
-        prev: 'previous',
-        fullscreen: 'fullscreen',
-      },
-      btnShow: {
-        zoomIn: true,
-        zoomOut: true,
-        rotateClockwise: true,
-        rotateCounterClockwise: true,
-        next: true,
-        prev: true,
-      },
-    };
+    const firstIndex = this.data?.index ?? 0;
+    const hasImages = this.data?.images?.length > 0;
+    this.currentIndex = hasImages
+      ? Math.min(Math.max(firstIndex, 0), this.data.images.length - 1)
+      : 0;
+  }
+
+  get hasImages(): boolean {
+    return !!this.data?.images?.length;
+  }
+
+  get currentImage(): string {
+    return this.hasImages ? this.data.images[this.currentIndex] : '';
+  }
+
+  canNavigate(): boolean {
+    return (this.data?.images?.length ?? 0) > 1;
+  }
+
+  previous(): void {
+    if (!this.canNavigate()) return;
+    this.currentIndex =
+      (this.currentIndex - 1 + this.data.images.length) % this.data.images.length;
+    this.syncIndex();
+  }
+
+  next(): void {
+    if (!this.canNavigate()) return;
+    this.currentIndex = (this.currentIndex + 1) % this.data.images.length;
+    this.syncIndex();
+  }
+
+  zoomIn(): void {
+    this.zoom = Math.min(this.zoom + 0.15, 3);
+  }
+
+  zoomOut(): void {
+    this.zoom = Math.max(this.zoom - 0.15, 0.5);
+  }
+
+  rotateLeft(): void {
+    this.rotation -= 90;
+  }
+
+  rotateRight(): void {
+    this.rotation += 90;
+  }
+
+  resetTransform(): void {
+    this.zoom = 1;
+    this.rotation = 0;
+  }
+
+  onWheel(event: WheelEvent): void {
+    event.preventDefault();
+    if (event.deltaY < 0) {
+      this.zoomIn();
+    } else {
+      this.zoomOut();
+    }
+  }
+
+  @HostListener('window:keydown.arrowleft')
+  onArrowLeft(): void {
+    this.previous();
+  }
+
+  @HostListener('window:keydown.arrowright')
+  onArrowRight(): void {
+    this.next();
+  }
+
+  private syncIndex(): void {
+    this.data.index = this.currentIndex;
   }
 }

@@ -1,4 +1,45 @@
+<div class="viewer" *ngIf="hasImages; else noImages">
+    <div class="toolbar">
+        <button mat-icon-button type="button" (click)="previous()" [disabled]="!canNavigate()" aria-label="Previous image">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="next()" [disabled]="!canNavigate()" aria-label="Next image">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="zoomOut()" aria-label="Zoom out">
+            <mat-icon>remove</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="zoomIn()" aria-label="Zoom in">
+            <mat-icon>add</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="rotateLeft()" aria-label="Rotate left">
+            <mat-icon>undo</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="rotateRight()" aria-label="Rotate right">
+            <mat-icon>redo</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="resetTransform()" aria-label="Reset transform">
+            <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-icon-button type="button" (click)="dialogRef.close()" aria-label="Close viewer">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
 
-<div>
-    <angular-image-viewer  [src]="data.images" [config]='config' [(index)]="data.index"></angular-image-viewer>
+    <div class="viewport" (wheel)="onWheel($event)">
+        <img
+            [src]="currentImage"
+            [style.transform]="'scale(' + zoom + ') rotate(' + rotation + 'deg)'"
+            [alt]="'Recipe image ' + (currentIndex + 1)"
+            draggable="false"
+        />
+    </div>
 </div>
+
+<ng-template #noImages>
+    <div class="empty-viewer">
+        <button mat-icon-button type="button" (click)="dialogRef.close()" aria-label="Close viewer">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+</ng-template>

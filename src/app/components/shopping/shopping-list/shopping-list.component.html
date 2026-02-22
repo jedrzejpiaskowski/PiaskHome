@@ -28,7 +28,7 @@
                 </mat-select>
             </mat-form-field>
             <button mat-icon-button color="primary" (click)="addItemToList()"
-                [disabled]="!product || productControl?.value?.name !== product.name">
+                [disabled]="!product || productControl.value?.name !== product.name">
                 <mat-icon>add</mat-icon>
             </button>
         </div>
