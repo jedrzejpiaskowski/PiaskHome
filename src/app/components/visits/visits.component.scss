@@ -18,7 +18,7 @@
 
   .visit-form {
     display: grid;
-    grid-template-columns: max(150px) max(100px);
+    grid-template-columns: 3fr 2fr;
     grid-template-rows: repeat(3, 1fr);
     grid-template-areas:
       "date date"
@@ -65,16 +65,16 @@
   table {
     width: 100%;
 
-    th:first-child,
-    td:first-child {
-      padding-right: 1em;
-      width: 15%;
-    }
+    // th:first-child,
+    // td:first-child {
+    //   padding-right: 1em;
+    //   width: 15%;
+    // }
 
-    th,
-    td {
-      margin: 0 2em;
-    }
+    // th,
+    // td {
+    //   margin: 0 2em;
+    // }
   }
 }
 

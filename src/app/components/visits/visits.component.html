@@ -18,26 +18,26 @@
                     </mat-card-header>
                     <mat-card-content>
                         <div class='visit-form'>
-                            <mat-form-field class='item-date' appearance="outline">
+                            <mat-form-field class='item-date' appearance="outline" SubscriptSizing="dynamic">
                                 <mat-label>Data</mat-label>
-                                <input (dateChange)='dateChanged($event.value)' matInput
+                                <input matInput (dateChange)='dateChanged($event.value)'
                                     [(ngModel)]='data.activeVisit.date' [matDatepicker]="datepicker">
                                 <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
                                 <mat-datepicker [dateClass]="dateClass" touchUi #datepicker>
                                 </mat-datepicker>
                             </mat-form-field>
-                            <mat-form-field class='item-price' appearance="outline">
+                            <mat-form-field class='item-price dense-2' appearance="fill" subscriptSizing="dynamic">
                                 <mat-label>Kwota</mat-label>
                                 <input min="0" matInput [(ngModel)]='data.activeVisit.price' type="number" required>
-                                <span matSuffix> zł</span>
+                                <span matTextSuffix> zł</span>
                             </mat-form-field>
-                            <mat-form-field class='item-percentage' appearance="fill">
+                            <mat-form-field class='item-percentage' appearance="fill" subscriptSizing="dynamic">
                                 <mat-label>Procent</mat-label>
                                 <input min="0" max="100" step="1" matInput [(ngModel)]='data.activeVisit.percentage'
                                     type="number">
-                                <span matSuffix> %</span>
+                                <span matTextSuffix> %</span>
                             </mat-form-field>
-                            <mat-form-field class='item-patient' appearance="fill">
+                            <mat-form-field class='item-patient' appearance="fill" subscriptSizing="dynamic">
                                 <mat-label>Pacjent</mat-label>
                                 <input matInput maxlength="30" [(ngModel)]='data.activeVisit.patient' type="text">
                             </mat-form-field>
