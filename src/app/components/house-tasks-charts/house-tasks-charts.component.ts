@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { LegendPosition } from '@swimlane/ngx-charts';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -6,7 +6,6 @@ import { switchMap, tap } from 'rxjs/operators';
 import { BarData, BarGroupData } from 'src/models/bar-group-data';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { HouseTasks, HouseTasksLabels } from 'src/models/house-task';
-import { multi } from './../../data/data';
 
 export enum SummaryPeriod {
   Week = 'week',
@@ -40,9 +39,7 @@ export class HouseTasksChartsComponent {
   showGridLines = true;
   legendTitle: string = '';
   legendPosition = LegendPosition.Below;
-  colorScheme = {
-	domain: ['#009688', '#ffab40'],
-  };
+	colorScheme = 'vivid';
 
   constructor(private store: AngularFirestore) {
 	this.tasksSummary$ = this.summaryPeriod$.pipe(

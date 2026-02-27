@@ -8,7 +8,7 @@ import {
 } from '@angular/platform-browser-dynamic/testing';
 
 declare const require: {
-  context(path: string, deep?: boolean, filter?: RegExp): {
+  context?: (path: string, deep?: boolean, filter?: RegExp) => {
     keys(): string[];
     <T>(id: string): T;
   };
@@ -22,6 +22,12 @@ getTestBed().initTestEnvironment(
 );
 
 // Then we find all the tests.
-const context = require.context('./', true, /\.spec\.ts$/);
+const context =
+  typeof require !== 'undefined' && typeof require.context === 'function'
+    ? require.context('./', true, /\.spec\.ts$/)
+    : (import.meta as any).webpackContext('./', {
+        recursive: true,
+        regExp: /\.spec\.ts$/,
+      });
 // And load the modules.
-context.keys().map(context);
+context.keys().forEach(context);
