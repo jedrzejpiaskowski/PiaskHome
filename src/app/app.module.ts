@@ -30,7 +30,6 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireStorageModule } from '@angular/fire/compat/storage';
-import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AuthService } from './services/auth.service';
 import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
 import { AuthGuard } from './auth.guard';
@@ -53,7 +52,6 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
   declarations: [
     AppComponent,
     HouseTasksComponent,
-    UserProfileComponent,
     VisitsComponent,
     ConfirmationDialogComponent,
     HouseTasksChartsComponent,

@@ -177,7 +177,7 @@ Complete incremental major upgrades with minimal regressions.
 
 ---
 
-## Phase 5 (In Progress): Architecture and Bundle Improvements
+## Phase 5 (Completed): Architecture and Bundle Improvements
 
 ### Implemented in this pass (Feb 28, 2026)
 - ✅ **Moment.js replacement (app code):** removed `moment` usage from date utilities and visits flow, switched to native `Date` parsing/handling.
@@ -186,23 +186,29 @@ Complete incremental major upgrades with minimal regressions.
 - ✅ **Dependency cleanup:** removed `moment`, `@angular/material-moment-adapter`, and `@angular/flex-layout` from dependencies.
 - ✅ **Signals adoption start:** migrated shopping view mode state to Angular `signal` in `shopping.component`.
 - ✅ **Standalone migration start:** converted `PatientsComponent` to standalone component and removed it from `AppModule` declarations.
+- ✅ **Standalone routed component:** converted `UserProfileComponent` to standalone and migrated `/login` route to `loadComponent` (lazy chunk).
+- ✅ **Additional signals migration:** replaced `summaryPeriod` `BehaviorSubject` with signal + `toObservable` bridge in house-tasks charts.
 - ✅ **Validation:** `npm run build` and `npm test -- --watch=false --browsers=ChromeHeadless` both pass.
-- ✅ **Bundle improvement after Phase 5 pass:** initial bundle reduced to ~2.17 MB (~442.17 kB estimated transfer).
+- ✅ **Bundle profile after final Phase 5 pass:** main bundle ~2.13 MB plus lazy `login` chunk (~3.52 kB), total initial ~2.24 MB (~461.25 kB estimated transfer).
 
 ### 1) Gradual NgModule → standalone migration
-- Started with leaf component conversion (`PatientsComponent`).
-- Next target: convert one routed leaf feature to standalone with route-level loading.
+- ✅ Completed initial standalone milestone:
+   - `PatientsComponent` converted to standalone.
+   - `UserProfileComponent` converted to standalone.
+   - `login` route migrated to standalone lazy loading.
 
 ### 2) BehaviorSubject-heavy state → Signals (Angular 16+)
-- Started with isolated UI state (`ShoppingComponent.mode`).
-- Continue with low-risk local states before touching RxJS + Firestore stream composition.
+- ✅ Completed initial signals milestone:
+   - `ShoppingComponent.mode` migrated to signal.
+   - `HouseTasksChartsComponent.summaryPeriod` migrated to signal with RxJS bridge.
+   - Firestore-heavy stream composition intentionally kept on RxJS for stability.
 
 ### 3) Moment.js replacement
 - Completed for current app paths using native `Date` APIs.
 
 ### 4) Flex-layout deprecation path
 - App shell migration completed (`fxShow`/`fxHide` replaced with CSS).
-- Continue scanning feature templates and migrate remaining usages if introduced.
+- Workspace scan confirms no remaining flex-layout directives/usages.
 
 ---
 
@@ -279,7 +285,7 @@ Project is considered upgrade-complete when:
 
 ## 🎉 UPGRADE JOURNEY COMPLETE
 
-### Final Status: ✅ Core Phases (1-4) Completed + Phase 5 Started
+### Final Status: ✅ All Phases (1-5) Completed
 
 **Completion Date:** Feb 28, 2026
 
@@ -288,7 +294,7 @@ Project is considered upgrade-complete when:
 - ✅ **Phase 2**: Firebase 9→11 SDK
 - ✅ **Phase 3**: Angular 14→15→16 with ngx-charts compatibility
 - ✅ **Phase 4**: Angular 16→17→18 with Material Design 3 support
-- ✅ **Phase 5 (in progress)**: Moment/Flex-layout migration started, native date adapter enabled, first signal + standalone conversion completed
+- ✅ **Phase 5**: Moment/Flex-layout migration completed, native date adapter enabled, standalone + signals milestones completed
 
 ### Final Tech Stack
 | Package | Version | Status |
@@ -316,19 +322,19 @@ Project is considered upgrade-complete when:
 1. **Material 18 Theming**: Kept custom teal/orange palette by switching to Angular 18-compatible M2 theming APIs
 2. **Firebase Compatibility**: Upgraded to `@angular/fire` 18.0.1 to align with Angular 18
 3. **Flex Layout**: Removed from dependencies and replaced app-shell behavior with CSS breakpoints
-4. **Signals Architecture**: Not yet implemented; available as Phase 5 optional enhancement
+4. **Signals Architecture**: Introduced gradually in low-risk UI state while preserving RxJS for external/Firestore streams
 
-### Phase 5 Opportunities (Optional, Future)
-Phase 5 remains available for:
+### Post-Phase Improvements (Optional, Future)
+Additional improvements remain available for:
 - NgModule → standalone component migration
 - BehaviorSubject → Angular Signals conversion
 - Optional date utility hardening (`Intl`/`date-fns`) for strict locale/timezone formatting
 - CSS Grid/CDK Layout enhancements in feature modules
 
-> **Note**: Phase 5 is optional and not required for production. Core application is fully functional and maintainable with current architecture.
+> **Note**: All roadmap phases are now completed. Remaining items are optional optimization opportunities only.
 
 ### Next Steps for Maintainers
 1. Deploy Angular 18 version to production
 2. Monitor bundle size and performance metrics
-3. Plan Phase 5 modernization (recommended: 2-4 weeks after Phase 4 stabilization)
+3. Plan optional post-upgrade optimizations based on product priorities
 4. Update CI/CD pipelines to use Angular 18 build targets

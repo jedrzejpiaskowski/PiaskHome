@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { LegendPosition } from '@swimlane/ngx-charts';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { BarData, BarGroupData } from 'src/models/bar-group-data';
 import { CollectionKey } from 'src/models/colletion-keys';
@@ -20,7 +21,8 @@ export enum SummaryPeriod {
 })
 export class HouseTasksChartsComponent {
   summaryPeriod = SummaryPeriod.Week;
-  summaryPeriod$ = new BehaviorSubject<string>(SummaryPeriod.Week);
+	summaryPeriodSignal = signal<string>(SummaryPeriod.Week);
+	summaryPeriod$ = toObservable(this.summaryPeriodSignal);
   tasksSummary$: Observable<HouseTasks[]>;
 
   kitchenData: BarGroupData[] = [];
@@ -89,7 +91,7 @@ export class HouseTasksChartsComponent {
   }
 
   changeTimePeriod(period: string) {
-	  this.summaryPeriod$.next(period);
+	  this.summaryPeriodSignal.set(period);
   }
 
   modifySummary(summary: BarGroupData[], task: HouseTasks) {
