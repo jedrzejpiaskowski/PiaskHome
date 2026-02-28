@@ -1,0 +1,20 @@
+.add-task-card {
+	margin: 12px;
+}
+
+.task-form {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 10px;
+}
+
+.tasks-list {
+	margin: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.task-item {
+	width: 100%;
+}

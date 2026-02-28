@@ -1,1 +1,68 @@
-<p>todo works!</p>
+<mat-card class="add-task-card">
+	<mat-card-header>
+		<mat-card-title>Nowe zadanie TODO</mat-card-title>
+	</mat-card-header>
+
+	<mat-card-content>
+		<div class="task-form">
+			<mat-form-field appearance="outline">
+				<mat-label>Opis</mat-label>
+				<input
+					matInput
+					maxlength="200"
+					[(ngModel)]="newTask.description"
+					placeholder="Wpisz treść zadania"
+				/>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline">
+				<mat-label>Właściciel</mat-label>
+				<mat-select [(ngModel)]="newTask.owner">
+					<mat-option *ngFor="let owner of owners" [value]="owner">{{ owner }}</mat-option>
+				</mat-select>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline">
+				<mat-label>Termin (opcjonalnie)</mat-label>
+				<input matInput [matDatepicker]="deadlinePicker" [(ngModel)]="newTask.deadlineDate" />
+				<mat-datepicker-toggle matSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
+				<mat-datepicker #deadlinePicker></mat-datepicker>
+			</mat-form-field>
+
+			<mat-form-field appearance="outline">
+				<mat-label>Priorytet</mat-label>
+				<mat-select [(ngModel)]="newTask.priority">
+					<mat-option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</mat-option>
+				</mat-select>
+			</mat-form-field>
+		</div>
+	</mat-card-content>
+
+	<mat-card-actions align="end">
+		<button
+			mat-stroked-button
+			color="primary"
+			(click)="addTask()"
+			[disabled]="!newTask.description || newTask.description.trim().length === 0"
+		>
+			Dodaj
+		</button>
+	</mat-card-actions>
+</mat-card>
+
+<div class="tasks-list" *ngIf="tasks$ | async as tasks">
+	<mat-card *ngFor="let task of tasks" class="task-item">
+		<mat-card-header>
+			<mat-card-title>{{ task.description }}</mat-card-title>
+			<mat-card-subtitle>
+				{{ task.owner }} • Priorytet: {{ task.priority }}
+			</mat-card-subtitle>
+		</mat-card-header>
+
+		<mat-card-content>
+			<p>Dodano: {{ task.dateAdded | date: 'd.MM.yyyy HH:mm' }}</p>
+			<p *ngIf="task.deadlineDate">Termin: {{ task.deadlineDate | date: 'd.MM.yyyy' }}</p>
+			<p *ngIf="!task.deadlineDate">Termin: brak</p>
+		</mat-card-content>
+	</mat-card>
+</div>

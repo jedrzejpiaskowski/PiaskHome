@@ -5,5 +5,6 @@ export enum CollectionKey {
   RecipeTags = 'recipe-tags',
   ShoppingList = 'shopping-list',
   ProductCategories = 'product-categories',
-  Ingredients = 'ingredients'
+  Ingredients = 'ingredients',
+  Todo = 'todo',
 }
