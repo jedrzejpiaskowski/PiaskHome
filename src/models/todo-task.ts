@@ -11,4 +11,5 @@ export interface TodoTask {
   owner: string | null | undefined;
   deadlineDate?: Date | null | any;
   priority: TodoPriority;
+  done: boolean;
 }

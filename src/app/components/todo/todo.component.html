@@ -1,6 +1,8 @@
 <mat-card class="add-task-card">
 	<mat-card-header>
-		<mat-card-title>Nowe zadanie TODO</mat-card-title>
+		<mat-card-title>
+			{{ editingTaskId ? 'Zmień zadanie TODO' : 'Nowe zadanie TODO' }}
+		</mat-card-title>
 	</mat-card-header>
 
 	<mat-card-content>
@@ -32,7 +34,7 @@
 			<mat-form-field appearance="outline">
 				<mat-label>Priorytet</mat-label>
 				<mat-select [(ngModel)]="newTask.priority">
-					<mat-option *ngFor="let priority of priorities" [value]="priority">{{ priority }}</mat-option>
+					<mat-option *ngFor="let priority of priorities" [value]="priority">{{ getPriorityLabel(priority) }}</mat-option>
 				</mat-select>
 			</mat-form-field>
 		</div>
@@ -40,29 +42,137 @@
 
 	<mat-card-actions align="end">
 		<button
+			*ngIf="editingTaskId"
+			mat-stroked-button
+			(click)="cancelEdit()"
+			aria-label="Anuluj"
+			title="Anuluj"
+		>
+			<mat-icon>close</mat-icon>
+		</button>
+		<button
 			mat-stroked-button
 			color="primary"
-			(click)="addTask()"
+			(click)="saveTask()"
 			[disabled]="!newTask.description || newTask.description.trim().length === 0"
+			aria-label="Zapisz"
+			title="Zapisz"
 		>
-			Dodaj
+			<mat-icon>{{ editingTaskId ? 'save' : 'add' }}</mat-icon>
 		</button>
 	</mat-card-actions>
 </mat-card>
 
-<div class="tasks-list" *ngIf="tasks$ | async as tasks">
-	<mat-card *ngFor="let task of tasks" class="task-item">
-		<mat-card-header>
-			<mat-card-title>{{ task.description }}</mat-card-title>
-			<mat-card-subtitle>
-				{{ task.owner }} • Priorytet: {{ task.priority }}
-			</mat-card-subtitle>
-		</mat-card-header>
+<div class="tasks-list" *ngIf="activeTasks$ | async as tasks">
+	<div class="tasks-header">
+		<div>Opis</div>
+		<div>Priorytet</div>
+		<div>Dodano</div>
+		<div>Termin</div>
+		<div class="actions-header">Akcje</div>
+	</div>
 
-		<mat-card-content>
-			<p>Dodano: {{ task.dateAdded | date: 'd.MM.yyyy HH:mm' }}</p>
-			<p *ngIf="task.deadlineDate">Termin: {{ task.deadlineDate | date: 'd.MM.yyyy' }}</p>
-			<p *ngIf="!task.deadlineDate">Termin: brak</p>
-		</mat-card-content>
+	<mat-card
+		*ngFor="let task of tasks"
+		class="task-item"
+		[ngClass]="{
+			'deadline-today': isDeadlineToday(task),
+			'deadline-passed': isDeadlinePassed(task)
+		}"
+	>
+		<div class="task-row">
+			<div class="task-desc" [title]="task.description">
+				<div class="task-desc-main">{{ task.description }}</div>
+				<div class="task-desc-owner">{{ task.owner }}</div>
+			</div>
+			<div
+				class="task-meta task-priority"
+				[ngClass]="{
+					'priority-low': task.priority === TodoPriority.Low,
+					'priority-normal': task.priority === TodoPriority.Normal,
+					'priority-high': task.priority === TodoPriority.High
+				}"
+				[title]="getPriorityLabel(task.priority)"
+			>
+				<span class="priority-dot" *ngFor="let _ of getPriorityDots(task.priority)"></span>
+			</div>
+			<div class="task-meta task-added">{{ task.dateAdded | date: 'd.MM.yyyy HH:mm' }}</div>
+			<div class="task-meta task-deadline">
+				{{ task.deadlineDate ? (task.deadlineDate | date: 'd.MM.yyyy') : '' }}
+			</div>
+			<div class="task-actions">
+				<button mat-icon-button color="accent" (click)="editTask(task)" aria-label="Zmień" title="Zmień">
+					<mat-icon>edit</mat-icon>
+				</button>
+				<button mat-icon-button color="primary" (click)="markAsDone(task)" aria-label="Wykonane" title="Wykonane">
+					<mat-icon>check_circle</mat-icon>
+				</button>
+				<!-- <button mat-icon-button color="warn" (click)="deleteTask(task)" aria-label="Usuń" title="Usuń">
+					<mat-icon>delete</mat-icon>
+				</button> -->
+			</div>
+		</div>
 	</mat-card>
+</div>
+
+<mat-card class="archive-card">
+	<mat-card-header>
+		<mat-card-title>Archiwum</mat-card-title>
+	</mat-card-header>
+	<mat-card-actions align="start">
+		<button mat-stroked-button (click)="toggleArchive()" aria-label="Archiwum" title="Archiwum">
+			<mat-icon>{{ isArchiveExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+		</button>
+	</mat-card-actions>
+</mat-card>
+
+<div class="tasks-list" *ngIf="isArchiveExpanded">
+	<ng-container *ngIf="archivedTasks$ | async as archivedTasks">
+	<div class="tasks-header archive-header">
+		<div>Opis</div>
+		<div>Priorytet</div>
+		<div>Dodano</div>
+		<div>Termin</div>
+		<div class="actions-header">Akcje</div>
+	</div>
+
+	<mat-card
+		*ngFor="let task of archivedTasks"
+		class="task-item archive-item"
+		[ngClass]="{
+			'deadline-today': isDeadlineToday(task),
+			'deadline-passed': isDeadlinePassed(task)
+		}"
+	>
+		<div class="task-row">
+			<div class="task-desc" [title]="task.description">
+				<div class="task-desc-main">{{ task.description }}</div>
+				<div class="task-desc-owner">{{ task.owner }}</div>
+			</div>
+			<div
+				class="task-meta task-priority"
+				[ngClass]="{
+					'priority-low': task.priority === TodoPriority.Low,
+					'priority-normal': task.priority === TodoPriority.Normal,
+					'priority-high': task.priority === TodoPriority.High
+				}"
+				[title]="getPriorityLabel(task.priority)"
+			>
+				<span class="priority-dot" *ngFor="let _ of getPriorityDots(task.priority)"></span>
+			</div>
+			<div class="task-meta task-added">{{ task.dateAdded | date: 'd.MM.yyyy HH:mm' }}</div>
+			<div class="task-meta task-deadline">
+				{{ task.deadlineDate ? (task.deadlineDate | date: 'd.MM.yyyy') : '' }}
+			</div>
+			<div class="task-actions">
+				<button mat-icon-button color="primary" (click)="restoreTask(task)" aria-label="Przywróć" title="Przywróć">
+					<mat-icon>restore</mat-icon>
+				</button>
+				<button mat-icon-button color="warn" (click)="deleteTask(task)" aria-label="Usuń" title="Usuń">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</div>
+		</div>
+	</mat-card>
+	</ng-container>
 </div>
