@@ -1,17 +1,17 @@
 <ng-container *ngIf='{ shoppingList: shoppingList$ | async } as data'>
     <mat-tab-group class='full-width-tabs' mat-align-tabs="center" *ngIf="data.shoppingList">
         <mat-tab label='Lista zakupów'>
-            <app-shopping-list [mode]='mode' [shoppingList]="data.shoppingList"></app-shopping-list>
+            <app-shopping-list [mode]='mode()' [shoppingList]="data.shoppingList"></app-shopping-list>
         </mat-tab>
         <mat-tab label='Produkty'>
-            <app-ingredients [mode]='mode' [shoppingList]="data.shoppingList"></app-ingredients>
+            <app-ingredients [mode]='mode()' [shoppingList]="data.shoppingList"></app-ingredients>
         </mat-tab>
         <mat-tab disabled>
             <ng-template mat-tab-label>
-                <button color='primary' *ngIf="mode === 'view'" mat-icon-button (click)='toggleMode()'>
+                <button color='primary' *ngIf="mode() === 'view'" mat-icon-button (click)='toggleMode()'>
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button color='primary' *ngIf="mode === 'edit'" mat-icon-button (click)='toggleMode()'>
+                <button color='primary' *ngIf="mode() === 'edit'" mat-icon-button (click)='toggleMode()'>
                     <mat-icon>shopping_basket</mat-icon>
                 </button>
             </ng-template>

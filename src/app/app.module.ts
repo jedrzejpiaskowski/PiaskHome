@@ -35,7 +35,6 @@ import { AuthService } from './services/auth.service';
 import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
 import { AuthGuard } from './auth.guard';
 import { HttpClientModule } from '@angular/common/http';
-import { PatientsComponent } from './components/patients/patients.component';
 import { MatNativeDateModule } from '@angular/material/core';
 import '@angular/common/locales/global/pl';
 import { VisitsComponent } from './components/visits/visits.component';
@@ -55,7 +54,6 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
     AppComponent,
     HouseTasksComponent,
     UserProfileComponent,
-    PatientsComponent,
     VisitsComponent,
     ConfirmationDialogComponent,
     HouseTasksChartsComponent,

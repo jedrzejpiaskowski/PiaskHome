@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Title } from '@angular/platform-browser';
 import { Observable } from 'rxjs/internal/Observable';
@@ -13,7 +13,7 @@ import { ShoppingListContainer, ShoppingMode } from 'src/models/ingredients';
   styleUrls: ['./shopping.component.scss'],
 })
 export class ShoppingComponent {
-  mode = ShoppingMode.View;
+  mode = signal<ShoppingMode>(ShoppingMode.View);
   shoppingList$: Observable<ShoppingListContainer | undefined>;
 
   constructor(private store: AngularFirestore, private title: Title) {
@@ -34,7 +34,8 @@ export class ShoppingComponent {
   }
 
   toggleMode() {
-    this.mode =
-      this.mode === ShoppingMode.View ? ShoppingMode.Edit : ShoppingMode.View;
+    this.mode.set(
+      this.mode() === ShoppingMode.View ? ShoppingMode.Edit : ShoppingMode.View
+    );
   }
 }

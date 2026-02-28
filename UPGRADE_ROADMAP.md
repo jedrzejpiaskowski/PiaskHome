@@ -184,16 +184,18 @@ Complete incremental major upgrades with minimal regressions.
 - ✅ **Material date adapter update:** replaced `MatMomentDateModule` with `MatNativeDateModule`.
 - ✅ **Flex-layout deprecation start:** removed `fxShow`/`fxHide` usage in app shell and replaced with responsive CSS media-query classes.
 - ✅ **Dependency cleanup:** removed `moment`, `@angular/material-moment-adapter`, and `@angular/flex-layout` from dependencies.
+- ✅ **Signals adoption start:** migrated shopping view mode state to Angular `signal` in `shopping.component`.
+- ✅ **Standalone migration start:** converted `PatientsComponent` to standalone component and removed it from `AppModule` declarations.
 - ✅ **Validation:** `npm run build` and `npm test -- --watch=false --browsers=ChromeHeadless` both pass.
 - ✅ **Bundle improvement after Phase 5 pass:** initial bundle reduced to ~2.17 MB (~442.17 kB estimated transfer).
 
 ### 1) Gradual NgModule → standalone migration
-- Start with leaf/feature components first.
-- Keep routing and providers stable during transition.
+- Started with leaf component conversion (`PatientsComponent`).
+- Next target: convert one routed leaf feature to standalone with route-level loading.
 
 ### 2) BehaviorSubject-heavy state → Signals (Angular 16+)
-- Introduce signals in isolated areas first (e.g., local UI state).
-- Keep Observable APIs where external streams are already stable.
+- Started with isolated UI state (`ShoppingComponent.mode`).
+- Continue with low-risk local states before touching RxJS + Firestore stream composition.
 
 ### 3) Moment.js replacement
 - Completed for current app paths using native `Date` APIs.
@@ -286,7 +288,7 @@ Project is considered upgrade-complete when:
 - ✅ **Phase 2**: Firebase 9→11 SDK
 - ✅ **Phase 3**: Angular 14→15→16 with ngx-charts compatibility
 - ✅ **Phase 4**: Angular 16→17→18 with Material Design 3 support
-- ✅ **Phase 5 (initial)**: Moment + Flex-layout deprecation started, native date adapter enabled
+- ✅ **Phase 5 (in progress)**: Moment/Flex-layout migration started, native date adapter enabled, first signal + standalone conversion completed
 
 ### Final Tech Stack
 | Package | Version | Status |
