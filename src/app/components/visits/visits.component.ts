@@ -3,7 +3,6 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import * as moment from 'moment';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { debounceTime, filter, map, switchMap, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -237,8 +236,9 @@ export class VisitsComponent implements OnInit, OnDestroy {
     return sm.getFullYear() < cd.getFullYear();
   }  
 
-  dateChanged(date: moment.Moment) {
-    this.pickDate(date.toDate());
+  dateChanged(date: Date | null) {
+    if (!date) return;
+    this.pickDate(date);
   }
 
   pickDate(date: Date) {

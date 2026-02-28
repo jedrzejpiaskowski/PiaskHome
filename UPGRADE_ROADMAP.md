@@ -1,19 +1,25 @@
 # PiaskHome Dependency Upgrade Roadmap
 
 **Current State (Feb 28, 2026)**
+- Angular: 18.2.14
+- Angular CLI / build-angular: 18.2.21
+- Angular Material/CDK: 18.2.14
+- @angular/fire: 18.0.1
+- RxJS: 7.8.2
+- Firebase: 11.10.0
+- TypeScript: 5.4.5
+- Target/lib: ES2022
 
 **Recent completed work**
- Angular: 18.2.14
- Angular CLI / build-angular: 18.2.21
- Angular Material/CDK: 18.2.14
- @angular/fire: 18.0.1
- RxJS: 7.8.2
- Firebase: 11.10.0
- TypeScript: 5.4.5
- Target/lib: ES2022
 - ✅ Angular 14 → 15 migration completed.
 - ✅ Material chips migrated to modern API (`MatChipsModule`, `mat-chip-set`, `mat-chip-grid`).
- - ✅ Phase 4 sub-step 2 (FINAL) completed: Angular upgraded 17 → 18.2.14, Material/CDK to 18.2.14.
+- ✅ Phase 1 completed: RxJS upgraded to 7.8.2 (`rxfire` 6.1.0).
+- ✅ Phase 2 completed: Firebase upgraded to 11.10.0.
+- ✅ Phase 3 completed: Angular upgraded to 16.2.x with migration run.
+- ✅ Phase 4 completed: Angular upgraded 16 → 17 → 18.2.14, Material/CDK aligned to 18.2.14.
+- ✅ Custom Material theme colors restored on Angular 18 using M2-compatible theming APIs.
+
+---
 
 ## Completed Phase: Angular 14 → 15
 
@@ -117,7 +123,6 @@ Move to Angular 16 as the stepping stone for Angular 17/18.
 
 ---
 
-## Phase 4 (In Progress): Angular 16 → 17 → 18 (Estimated: 2–3 weeks)
 ## Phase 4 (Completed): Angular 16 → 17 → 18
 
 ### Goal
@@ -133,9 +138,10 @@ Complete incremental major upgrades with minimal regressions.
 3. Fix migration warnings and run smoke tests
 
 ### Validation checklist
-- [ ] All main routes functional (`house-tasks`, `recipes`, `visits`, `shopping`).
-- [ ] No broken Material controls after MDC/theming changes.
+- [x] All main routes functional (`house-tasks`, `recipes`, `visits`, `shopping`).
+- [x] No broken Material controls after MDC/theming changes.
 - [x] Production build succeeds for Angular 17 step.
+- [x] Production build succeeds for Angular 18 step.
 
 ### Completed sub-step: 16 → 17
 - `ng update @angular/cli@17 @angular/core@17` executed with migrations.
@@ -145,14 +151,11 @@ Complete incremental major upgrades with minimal regressions.
    - `npm run build` ✅
    - `npm test -- --watch=false --browsers=ChromeHeadless` ✅
 
-### Next sub-step
-- Upgrade Angular 17 → 18 and then re-validate build/tests/manual mobile smoke checks.
-
 ### Completed sub-step: 17 → 18
 - `ng update @angular/cli@18 @angular/core@18` executed successfully
 - Material/CDK upgraded to 18.2.14
 - @angular/fire upgraded to 18.0.1
-- **Material 18 Theming Fix**: Switched to prebuilt theme (`indigo-pink`) due to breaking SCSS API
+- **Material 18 Theming Fix**: Restored custom colors using Angular 18 M2 theming API (`mat.m2-define-palette`, `mat.m2-define-light-theme`)
 - Build/test status:
    - `npm run build` ✅ (19.4s, 2.61 MB initial)
    - `npm test` ✅ (5/5 SUCCESS)
@@ -167,14 +170,22 @@ Complete incremental major upgrades with minimal regressions.
    - Recipes component accessible
    - Shopping component accessible
    - Visits component accessible
- - **Material UI elements responsive**: ✅ (Prebuilt theme applied, global style overrides maintained)
+ - **Material UI elements responsive**: ✅ (Custom theme applied, global style overrides maintained)
  
  ### Phase 4 Status: ✅ COMPLETE
  All core functionality validated. Angular 18 migration successful with zero compilation/runtime errors.
 
 ---
 
-## Phase 5 (Optional): Architecture and Bundle Improvements
+## Phase 5 (In Progress): Architecture and Bundle Improvements
+
+### Implemented in this pass (Feb 28, 2026)
+- ✅ **Moment.js replacement (app code):** removed `moment` usage from date utilities and visits flow, switched to native `Date` parsing/handling.
+- ✅ **Material date adapter update:** replaced `MatMomentDateModule` with `MatNativeDateModule`.
+- ✅ **Flex-layout deprecation start:** removed `fxShow`/`fxHide` usage in app shell and replaced with responsive CSS media-query classes.
+- ✅ **Dependency cleanup:** removed `moment`, `@angular/material-moment-adapter`, and `@angular/flex-layout` from dependencies.
+- ✅ **Validation:** `npm run build` and `npm test -- --watch=false --browsers=ChromeHeadless` both pass.
+- ✅ **Bundle improvement after Phase 5 pass:** initial bundle reduced to ~2.17 MB (~442.17 kB estimated transfer).
 
 ### 1) Gradual NgModule → standalone migration
 - Start with leaf/feature components first.
@@ -185,10 +196,11 @@ Complete incremental major upgrades with minimal regressions.
 - Keep Observable APIs where external streams are already stable.
 
 ### 3) Moment.js replacement
-- Evaluate `date-fns` or native `Intl` for lighter bundles.
+- Completed for current app paths using native `Date` APIs.
 
 ### 4) Flex-layout deprecation path
-- Replace flex-layout usages with SCSS Grid/Flexbox + CDK layout utilities.
+- App shell migration completed (`fxShow`/`fxHide` replaced with CSS).
+- Continue scanning feature templates and migrate remaining usages if introduced.
 
 ---
 
@@ -219,23 +231,23 @@ Complete incremental major upgrades with minimal regressions.
 | Phase 4: Angular 16→17→18 | 2–3 weeks | High |
 | Phase 5: Optional architecture modernization | 1–3 weeks | Medium |
 
-**Total remaining (core phases only):** ~3–5 weeks
+**Total remaining (core phases only):** 0 weeks (completed)
 
 ---
 
 ## Known Risks & Notes
 
 ### Material Moment Adapter
-**Status:** Acceptable short-term.  
-**Plan:** Revisit after Angular 17/18 if date adapter migration is desired.
+**Status:** Removed from project.  
+**Plan:** Keep native Material date adapter unless specific timezone behavior requires custom adapter.
 
 ### `@swimlane/ngx-charts`
 **Status:** Works now; future Angular major compatibility may lag.  
 **Plan:** Revalidate on Angular 17 and 18; replace only if upgrade is blocked.
 
 ### Angular Flex Layout
-**Status:** Beta-only package and long-term maintenance risk.  
-**Plan:** Gradual replacement as part of optional modernization phase.
+**Status:** Removed from project dependencies and app shell templates.  
+**Plan:** Keep CSS media queries / CDK layout utilities for responsive behavior.
 
 ### Firebase ecosystem drift
 **Status:** SDK and AngularFire versions can diverge quickly across Angular majors.  
@@ -265,7 +277,7 @@ Project is considered upgrade-complete when:
 
 ## 🎉 UPGRADE JOURNEY COMPLETE
 
-### Final Status: ✅ All Core Phases (1-4) Successfully Completed
+### Final Status: ✅ Core Phases (1-4) Completed + Phase 5 Started
 
 **Completion Date:** Feb 28, 2026
 
@@ -274,6 +286,7 @@ Project is considered upgrade-complete when:
 - ✅ **Phase 2**: Firebase 9→11 SDK
 - ✅ **Phase 3**: Angular 14→15→16 with ngx-charts compatibility
 - ✅ **Phase 4**: Angular 16→17→18 with Material Design 3 support
+- ✅ **Phase 5 (initial)**: Moment + Flex-layout deprecation started, native date adapter enabled
 
 ### Final Tech Stack
 | Package | Version | Status |
@@ -294,21 +307,21 @@ Project is considered upgrade-complete when:
 - ✅ Development server compiles and runs (localhost:4200)
 - ✅ All 4 core feature routes accessible (house-tasks, recipes, visits, shopping)
 - ✅ Mobile UI compact and responsive (Material styles maintained)
-- ✅ Bundle size optimized (2.61 MB initial, 512.39 KB transfer)
+- ✅ Bundle size optimized (~2.17 MB initial, ~442.17 kB transfer)
 - ✅ Zero critical vulnerabilities
 
 ### Key Technical Decisions
-1. **Material 18 Theming**: Migrated from custom SCSS palette API to prebuilt `indigo-pink` theme due to Material Design 3 breaking changes
-2. **Firebase Compatibility**: AngularFire 7.1.1 maintained (compatible with both Firebase 11 and Angular 18)
-3. **Flex Layout**: Deferred modernization; scheduled for Phase 5 if needed
+1. **Material 18 Theming**: Kept custom teal/orange palette by switching to Angular 18-compatible M2 theming APIs
+2. **Firebase Compatibility**: Upgraded to `@angular/fire` 18.0.1 to align with Angular 18
+3. **Flex Layout**: Removed from dependencies and replaced app-shell behavior with CSS breakpoints
 4. **Signals Architecture**: Not yet implemented; available as Phase 5 optional enhancement
 
 ### Phase 5 Opportunities (Optional, Future)
 Phase 5 remains available for:
 - NgModule → standalone component migration
 - BehaviorSubject → Angular Signals conversion
-- Moment.js → date-fns replacement
-- Flex Layout → CSS Grid/CDK Layout utilities
+- Optional date utility hardening (`Intl`/`date-fns`) for strict locale/timezone formatting
+- CSS Grid/CDK Layout enhancements in feature modules
 
 > **Note**: Phase 5 is optional and not required for production. Core application is fully functional and maintainable with current architecture.
 

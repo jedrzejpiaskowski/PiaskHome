@@ -33,14 +33,10 @@ import { AngularFireStorageModule } from '@angular/fire/compat/storage';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AuthService } from './services/auth.service';
 import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
-import {
-  MatMomentDateModule,
-  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
-} from '@angular/material-moment-adapter';
 import { AuthGuard } from './auth.guard';
 import { HttpClientModule } from '@angular/common/http';
 import { PatientsComponent } from './components/patients/patients.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatNativeDateModule } from '@angular/material/core';
 import '@angular/common/locales/global/pl';
 import { VisitsComponent } from './components/visits/visits.component';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -92,7 +88,7 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
     MatSidenavModule,
     MatListModule,
     MatDatepickerModule,
-    MatMomentDateModule,
+    MatNativeDateModule,
     MatTabsModule,
     MatDialogModule,
     MatButtonToggleModule,
@@ -103,7 +99,6 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    FlexLayoutModule,
     NgxChartsModule,
   ],
   providers: [
@@ -111,7 +106,6 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
     AuthService,
     { provide: USE_DEVICE_LANGUAGE, useValue: true },
     { provide: LOCALE_ID, useValue: 'pl-PL' },
-    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
   ],
   bootstrap: [AppComponent],
 })

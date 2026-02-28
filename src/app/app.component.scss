@@ -39,3 +39,23 @@ button {
 .active-link {
     color: #ffc983;
 }
+
+.mobile-menu-toggle {
+  display: none;
+}
+
+.desktop-nav {
+  display: block;
+}
+
+@media screen and (max-width: 959px) {
+  .mobile-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+}
