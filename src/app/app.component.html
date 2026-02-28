@@ -35,6 +35,11 @@
                     <mat-icon>medical_services</mat-icon>
                     Wizyty
                 </a>
+                <a mat-button routerLink='/todo' class="example-icon favorite-icon" aria-label="checklist icon"
+                    routerLinkActive='active-link'>
+                    <mat-icon>checklist</mat-icon>
+                    TODO
+                </a>
             </div>
         </mat-toolbar-row>
     </mat-toolbar>
@@ -65,6 +70,10 @@
                 <a mat-list-item routerLink='/visits' (click)="sidenav.toggle()" routerLinkActive='active-link'>
                     <mat-icon matListIcon>payments</mat-icon>
                     Wizyty
+                </a>
+                <a mat-list-item routerLink='/todo' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListIcon>checklist</mat-icon>
+                    TODO
                 </a>
             </mat-nav-list>
         </mat-sidenav>
