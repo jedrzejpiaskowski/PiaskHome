@@ -1,6 +1,24 @@
-﻿// Custom Theming for Angular Material - Using prebuilt theme
-@use "@angular/material/prebuilt-themes/indigo-pink.css";
+﻿// Custom Theming for Angular Material
+@use "@angular/material" as mat;
 @use "sass:map";
+
+@include mat.core();
+
+$piask-home-primary: mat.m2-define-palette(mat.$m2-teal-palette);
+$piask-home-accent: mat.m2-define-palette(mat.$m2-orange-palette, A200, A100, A400);
+$piask-home-warn: mat.m2-define-palette(mat.$m2-red-palette);
+
+$piask-home-theme: mat.m2-define-light-theme(
+  (
+    color: (
+      primary: $piask-home-primary,
+      accent: $piask-home-accent,
+      warn: $piask-home-warn,
+    ),
+  )
+);
+
+@include mat.all-component-themes($piask-home-theme);
 
 // Global styles
 html, body {
@@ -86,3 +104,23 @@ body {
   padding: 0 12px;
   min-height: 36px;
 }
+
+@mixin mix-app-theme($app-theme) {
+  $primary: map.get(map.get($app-theme, color), primary);
+
+  .mat-button-toggle-group {
+    height: 32px;
+    align-items: center;
+    color: white;
+  }
+
+  .mat-button-toggle-checked {
+    background-color: mat.m2-get-color-from-palette($primary);
+
+    button {
+      color: white;
+    }
+  }
+}
+
+@include mix-app-theme($piask-home-theme);
