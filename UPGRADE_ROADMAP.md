@@ -1,12 +1,12 @@
 # PiaskHome Dependency Upgrade Roadmap
 
-**Current State (Feb 27, 2026)**
-- Angular: 16.2.12
-- Angular CLI / build-angular: 16.2.16
-- Angular Material/CDK: 15.2.9
+**Current State (Feb 28, 2026)**
+- Angular: 17.3.12
+- Angular CLI / build-angular: 17.3.17
+- Angular Material/CDK: 17.3.10
 - RxJS: 7.8.2
 - Firebase: 11.10.0
-- TypeScript: 4.9.5
+- TypeScript: 5.4.5
 - Target/lib: ES2022
 
 **Recent completed work**
@@ -18,6 +18,7 @@
 - ✅ Phase 2 completed: Firebase upgraded to 11.10.0.
 - ✅ Phase 3 completed: Angular upgraded to 16.2.x with migration run.
 - ✅ Test baseline stabilized (spec DI setup for Auth/AuthGuard/HouseTasks).
+- ✅ Phase 4 checkpoint completed: Angular upgraded 16 → 17 with Material/CDK aligned to 17.
 
 ---
 
@@ -123,7 +124,7 @@ Move to Angular 16 as the stepping stone for Angular 17/18.
 
 ---
 
-## Phase 4 (Next): Angular 16 → 17 → 18 (Estimated: 2–3 weeks)
+## Phase 4 (In Progress): Angular 16 → 17 → 18 (Estimated: 2–3 weeks)
 
 ### Goal
 Complete incremental major upgrades with minimal regressions.
@@ -140,7 +141,18 @@ Complete incremental major upgrades with minimal regressions.
 ### Validation checklist
 - [ ] All main routes functional (`house-tasks`, `recipes`, `visits`, `shopping`).
 - [ ] No broken Material controls after MDC/theming changes.
-- [ ] Production build succeeds after each major step.
+- [x] Production build succeeds for Angular 17 step.
+
+### Completed sub-step: 16 → 17
+- `ng update @angular/cli@17 @angular/core@17` executed with migrations.
+- Material/CDK upgraded through supported path (`15→16→17`).
+- Global Material theming updated for Angular 17 Sass compatibility (removed deprecated `@import "@angular/material/_theming"`).
+- Build/test status after upgrade:
+   - `npm run build` ✅
+   - `npm test -- --watch=false --browsers=ChromeHeadless` ✅
+
+### Next sub-step
+- Upgrade Angular 17 → 18 and then re-validate build/tests/manual mobile smoke checks.
 
 ---
 
