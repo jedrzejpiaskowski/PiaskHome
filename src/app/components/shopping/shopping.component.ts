@@ -34,6 +34,7 @@ export class ShoppingComponent {
   }
 
   toggleMode() {
+    console.log('toggle mode');
     this.mode.set(
       this.mode() === ShoppingMode.View ? ShoppingMode.Edit : ShoppingMode.View
     );

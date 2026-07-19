@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { AuthService } from 'src/app/services/auth.service';
@@ -24,6 +24,8 @@ export class TodoComponent {
   editingTaskId: string | null = null;
 
   owners = ['Jędrek', 'Kasia'];
+  selectedOwners = [...this.owners];
+  selectedOwners$ = new BehaviorSubject<string[]>([...this.owners]);
   priorities = [TodoPriority.Low, TodoPriority.Normal, TodoPriority.High];
   priorityLabels: Record<TodoPriority, string> = {
     [TodoPriority.Low]: 'Niski',
@@ -80,7 +82,7 @@ export class TodoComponent {
     this.title.setTitle('TODO');
     this.user$ = this.auth.user$;
 
-    this.tasks$ = this.store
+    const rawTasks$ = this.store
       .collection<TodoTask>(CollectionKey.Todo)
       .valueChanges({ idField: 'id' })
       .pipe(
@@ -90,6 +92,15 @@ export class TodoComponent {
             .sort((a, b) => this.compareTasks(a, b))
         )
       );
+
+    this.tasks$ = combineLatest([rawTasks$, this.selectedOwners$]).pipe(
+      map(([tasks, selectedOwners]) => {
+        if (!selectedOwners || selectedOwners.length === 0) {
+          return [];
+        }
+        return tasks.filter((task) => selectedOwners.includes(task.owner ?? ''));
+      })
+    );
 
     this.activeTasks$ = this.tasks$.pipe(
       map((tasks) => tasks.filter((t) => !t.done))
@@ -193,6 +204,11 @@ export class TodoComponent {
 
   toggleArchive() {
     this.isArchiveExpanded = !this.isArchiveExpanded;
+  }
+
+  updateOwnerFilter(owners: string[]) {
+    this.selectedOwners = owners;
+    this.selectedOwners$.next(owners);
   }
 
   cancelEdit() {

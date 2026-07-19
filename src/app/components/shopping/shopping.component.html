@@ -1,5 +1,5 @@
 <ng-container *ngIf='{ shoppingList: shoppingList$ | async } as data'>
-    <mat-tab-group class='full-width-tabs' mat-align-tabs="center" *ngIf="data.shoppingList">
+    <mat-tab-group mat-stretch-tabs="false" class='full-width-tabs' mat-align-tabs="center" *ngIf="data.shoppingList">
         <mat-tab label='Lista zakupów'>
             <app-shopping-list [mode]='mode()' [shoppingList]="data.shoppingList"></app-shopping-list>
         </mat-tab>

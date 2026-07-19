@@ -1,3 +1,11 @@
+.filter-card {
+	margin: 12px;
+
+	mat-form-field {
+		width: min(420px, 100%);
+	}
+}
+
 .add-task-card {
 	margin: 12px;
 }

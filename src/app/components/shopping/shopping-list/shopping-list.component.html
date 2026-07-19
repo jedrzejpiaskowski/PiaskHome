@@ -33,8 +33,7 @@
             </button>
         </div>
         <div class='list-buttons-container' *ngIf="!(shoppingList?.items?.length === 0)">
-            <button class='clear-button' (click)='clearList(true)' mat-stroked-button
-                aria-label="clear list icon">
+            <button class='clear-button' (click)='clearList(true)' mat-stroked-button aria-label="clear list icon">
                 Wyczyść
                 <mat-icon color='warn'>clear</mat-icon>
             </button>
@@ -70,12 +69,13 @@
                             <input matInput type="number" [(ngModel)]="item.ingredient.quantity">
                         </mat-form-field>
                         <mat-form-field class='unit'>
-                            <mat-select [(ngModel)]="item.ingredient.unit"
+                            <select matNativeControl>
+                                <option *ngFor="let u of units" [value]="u">{{u}}</option>
+                            </select>
+                            <!-- <mat-select [(value)]="item.ingredient.unit"
                                 (selectionChange)='setItemUnit(item.ingredient, $event.value)'>
-                                <mat-option *ngFor="let u of units" [value]="u">
-                                    {{u}}
-                                </mat-option>
-                            </mat-select>
+                                <mat-option *ngFor="let u of units" [value]="u">{{u}}</mat-option>
+                            </mat-select> -->
                         </mat-form-field>
                         <button mat-icon-button color="warn" (click)='deleteItem(item)'>
                             <mat-icon>clear</mat-icon>

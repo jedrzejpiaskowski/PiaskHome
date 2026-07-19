@@ -21,11 +21,11 @@
   }
 
   .quantity {
-    width: 45px;
+    width: 60px;
   }
 
   .unit {
-    width: 50px;
+    max-width: 50px;
   }
 }
 
@@ -78,12 +78,13 @@
       max-width: 100%;
     }
 
-    margin: 0.75em;
+    margin: 0.25em;
 
     .category-header {
       display: flex;
       align-items: center;
       margin-bottom: 0.2em;
+      font-size:1.2em;
 
       mat-icon {
         margin-left: 0.4em;

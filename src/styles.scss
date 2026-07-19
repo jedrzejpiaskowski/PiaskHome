@@ -30,6 +30,10 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+h2 {
+  font-weight: 550;
+}
+
 .center-container {
   display: flex;
   align-items: center;
@@ -55,55 +59,55 @@ body {
   }
 }
 
-.mat-option.mat-active, .mat-option:hover:not(.mat-option-disabled) {
-  background-color: rgb(225, 225, 225);
-}
+// .mat-option.mat-active, .mat-option:hover:not(.mat-option-disabled) {
+//   background-color: rgb(225, 225, 225);
+// }
 
-.snackbar-info {
-  background-color: #009688;
-  color: white;
-}
+// .snackbar-info {
+//   background-color: #009688;
+//   color: white;
+// }
 
-.snackbar-warning {
-  background-color: #ffab40;
-  color: black;
-}
+// .snackbar-warning {
+//   background-color: #ffab40;
+//   color: black;
+// }
 
-:root {
-  --primary: #009688;
-}
+// :root {
+//   --primary: #009688;
+// }
 
-// Material element style compacting
-.mat-mdc-form-field {
-  width: 100%;
-  margin-bottom: 8px;
-}
+// // Material element style compacting
+// .mat-mdc-form-field {
+//   width: 100%;
+//   margin-bottom: 8px;
+// }
 
-.mat-mdc-chip {
-  margin-right: 4px;
-  margin-bottom: 4px;
-  height: 28px;
-  font-size: 12px;
-}
+// .mat-mdc-chip {
+//   margin-right: 4px;
+//   margin-bottom: 4px;
+//   height: 28px;
+//   font-size: 12px;
+// }
 
-.mat-mdc-card {
-  margin-bottom: 12px;
-}
+// .mat-mdc-card {
+//   margin-bottom: 12px;
+// }
 
-.mat-mdc-menu-content {
-  max-height: 300px;
-  overflow-y: auto;
-}
+// .mat-mdc-menu-content {
+//   max-height: 300px;
+//   overflow-y: auto;
+// }
 
-.mat-mdc-button {
-  padding: 0 12px;
-  min-height: 36px;
-}
+// .mat-mdc-button {
+//   padding: 0 12px;
+//   min-height: 36px;
+// }
 
-.mat-mdc-raised-button {
-  padding: 0 12px;
-  min-height: 36px;
-}
+// .mat-mdc-raised-button {
+//   padding: 0 12px;
+//   min-height: 36px;
+// }
 
 @mixin mix-app-theme($app-theme) {
   $primary: map.get(map.get($app-theme, color), primary);

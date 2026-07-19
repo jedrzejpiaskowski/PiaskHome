@@ -63,6 +63,21 @@
 	</mat-card-actions>
 </mat-card>
 
+<mat-card class="filter-card">
+	<mat-card-content>
+		<mat-form-field appearance="outline">
+			<mat-label>Filtr właściciela</mat-label>
+			<mat-select
+				multiple
+				[(ngModel)]="selectedOwners"
+				(ngModelChange)="updateOwnerFilter($event)"
+			>
+				<mat-option *ngFor="let owner of owners" [value]="owner">{{ owner }}</mat-option>
+			</mat-select>
+		</mat-form-field>
+	</mat-card-content>
+</mat-card>
+
 <div class="tasks-list" *ngIf="activeTasks$ | async as tasks">
 	<div class="tasks-header">
 		<div>Opis</div>
