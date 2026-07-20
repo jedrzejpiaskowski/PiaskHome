@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { Title } from '@angular/platform-browser';
 import * as moment from 'moment';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
