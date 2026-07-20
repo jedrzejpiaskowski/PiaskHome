@@ -2,7 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { debounceTime, map, switchMap, tap } from 'rxjs/operators';
 import { Recipe, TagContainer } from 'src/models/recipe';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  collection,
+  collectionData,
+  doc,
+  docData,
+  DocumentReference,
+  Firestore,
+  orderBy,
+  query,
+  where,
+} from '@angular/fire/firestore';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { DateUtilityService } from 'src/app/services/date-utility.service';
 import { Constants } from 'src/models/constants';
@@ -22,7 +32,7 @@ export class RecipesComponent implements OnInit {
   startingTags: Tag[] = [];
 
   constructor(
-    private store: AngularFirestore,
+    private store: Firestore,
     private dateUtilityService: DateUtilityService,
     private title: Title
   ) {
@@ -33,17 +43,15 @@ export class RecipesComponent implements OnInit {
         if (!tags || tags.length === 0) {
           return combineLatest([of([] as Recipe[]), of(tags)]);
         }
-        const rec = this.store
-          .collection<Recipe>(CollectionKey.Recipes, (ref) => {
-            let query:
-              | firebase.default.firestore.CollectionReference
-              | firebase.default.firestore.Query = ref;
-            // can only use single 'array-contains', rest of the tags is filtered 'offline'
-            query = query.where('tags', 'array-contains', tags[0]);
-            query = query.orderBy('creationDate', 'desc');
-            return query;
-          })
-          .valueChanges({ idField: 'id' });
+        // can only use single 'array-contains', rest of the tags is filtered 'offline'
+        const rec = collectionData<Recipe>(
+          query(
+            collection(this.store, CollectionKey.Recipes),
+            where('tags', 'array-contains', tags[0]),
+            orderBy('creationDate', 'desc')
+          ) as any,
+          { idField: 'id' }
+        );
 
         let remainingTags: string[] = [];
         if (tags.length > 1) {
@@ -82,12 +90,12 @@ export class RecipesComponent implements OnInit {
       })
     );
 
-    this.tagContainer$ = this.store
-      .doc<TagContainer>(
+    this.tagContainer$ = docData(
+      doc(
+        this.store,
         `${CollectionKey.Recipes}/${Constants.TAG_CONTAINER_ID}`
-      )
-      .valueChanges()
-      .pipe(
+      ) as DocumentReference<TagContainer>
+    ).pipe(
         tap((tc) => {
           if (tc && tc.tags) {
             this.tags = [];

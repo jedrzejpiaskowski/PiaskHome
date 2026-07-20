@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  collection,
+  collectionData,
+  Firestore,
+  orderBy,
+  query,
+  where,
+} from '@angular/fire/firestore';
 import { Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
@@ -47,39 +54,35 @@ export class HouseTasksChartsComponent {
     domain: ['#009688', '#ffab40'],
   };
 
-  constructor(private store: AngularFirestore) {
+  constructor(private store: Firestore) {
 	this.tasksSummary$ = this.summaryPeriod$.pipe(
 	  switchMap((period) => {
 		let fromDate: Date;
 		let toDate = new Date();
-		return this.store
-		  .collection<HouseTasks>(CollectionKey.HouseTasks, (ref) => {
-			let query:
-			  | firebase.default.firestore.CollectionReference
-			  | firebase.default.firestore.Query = ref;
-			query = query.orderBy('date', 'desc');
-
-			if (period === SummaryPeriod.Week) {
-			  fromDate = new Date(
-				toDate.getFullYear(),
-				toDate.getMonth(),
-				toDate.getDate() - 7
-			  );
-			} else if (period === SummaryPeriod.Month) {
-			  fromDate = new Date(
-				toDate.getFullYear(),
-				toDate.getMonth() - 1,
-				toDate.getDate()
-			  );
-			} else {
-			  fromDate = new Date(0);
-			}
-			query = query
-			  .where('date', '>', fromDate)
-			  .where('date', '<', toDate);
-			return query;
-		  })
-		  .valueChanges({ idField: 'id' });
+		if (period === SummaryPeriod.Week) {
+		  fromDate = new Date(
+			toDate.getFullYear(),
+			toDate.getMonth(),
+			toDate.getDate() - 7
+		  );
+		} else if (period === SummaryPeriod.Month) {
+		  fromDate = new Date(
+			toDate.getFullYear(),
+			toDate.getMonth() - 1,
+			toDate.getDate()
+		  );
+		} else {
+		  fromDate = new Date(0);
+		}
+		return collectionData<HouseTasks>(
+		  query(
+			collection(this.store, CollectionKey.HouseTasks),
+			orderBy('date', 'desc'),
+			where('date', '>', fromDate),
+			where('date', '<', toDate)
+		  ) as any,
+		  { idField: 'id' }
+		);
 	  }),
 	  tap((tasks) => {
 		this.kitchenData = tasks.reduce<BarGroupData[]>((summary, task) => {

@@ -26,19 +26,18 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HouseTasksComponent } from './components/house-tasks/house-tasks.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { AngularFireStorageModule } from '@angular/fire/compat/storage';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AuthService } from './services/auth.service';
-import { USE_DEVICE_LANGUAGE } from '@angular/fire/compat/auth';
 import {
   MatMomentDateModule,
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
 } from '@angular/material-moment-adapter';
 import { AuthGuard } from './auth.guard';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { PatientsComponent } from './components/patients/patients.component';
 import '@angular/common/locales/global/pl';
 import { VisitsComponent } from './components/visits/visits.component';
@@ -53,8 +52,7 @@ import { ShoppingComponent } from './components/shopping/shopping.component';
 import { ShoppingListComponent } from './components/shopping/shopping-list/shopping-list.component';
 import { IngredientsComponent } from './components/shopping/ingredients/ingredients.component';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppComponent,
         HouseTasksComponent,
         UserProfileComponent,
@@ -71,14 +69,9 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
         ShoppingListComponent,
         IngredientsComponent,
     ],
-    imports: [
-        BrowserModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         BrowserAnimationsModule,
-        AngularFireModule.initializeApp(environment.firebase),
-        AngularFirestoreModule,
-        AngularFireAuthModule,
-        AngularFireStorageModule,
         MatToolbarModule,
         MatIconModule,
         MatButtonModule,
@@ -102,16 +95,19 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
         MatSnackBarModule,
         FormsModule,
         ReactiveFormsModule,
-        HttpClientModule,
-        NgxChartsModule,
-    ],
-    providers: [
+        NgxChartsModule], providers: [
         AuthGuard,
         AuthService,
-        { provide: USE_DEVICE_LANGUAGE, useValue: true },
         { provide: LOCALE_ID, useValue: 'pl-PL' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
-    ],
-    bootstrap: [AppComponent]
-})
+        provideHttpClient(withInterceptorsFromDi()),
+        provideFirebaseApp(() => initializeApp(environment.firebase)),
+        provideAuth(() => {
+          const auth = getAuth();
+          auth.useDeviceLanguage();
+          return auth;
+        }),
+        provideFirestore(() => getFirestore()),
+        provideStorage(() => getStorage()),
+    ] })
 export class AppModule {}

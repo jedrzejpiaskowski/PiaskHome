@@ -1,7 +1,23 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { AngularFireStorage } from '@angular/fire/compat/storage';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  docData,
+  DocumentReference,
+  Firestore,
+  updateDoc,
+} from '@angular/fire/firestore';
+import {
+  deleteObject,
+  getDownloadURL,
+  percentage,
+  ref,
+  Storage,
+  uploadBytesResumable,
+} from '@angular/fire/storage';
 import {
   UntypedFormControl,
   UntypedFormGroup,
@@ -15,7 +31,6 @@ import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, iif, Observable, of } from 'rxjs';
 import {
-  finalize,
   map,
   mergeMap,
   startWith,
@@ -54,10 +69,10 @@ export class RecipeDetailsComponent {
   @ViewChild('tagsInput') tagsInput!: ElementRef<HTMLInputElement>;
 
   constructor(
-    private store: AngularFirestore,
+    private store: Firestore,
     private route: ActivatedRoute,
     private router: Router,
-    private storage: AngularFireStorage,
+    private storage: Storage,
     private sanitizer: DomSanitizer,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
@@ -88,12 +103,12 @@ export class RecipeDetailsComponent {
       )
     );
 
-    this.tagContainer$ = this.store
-      .doc<TagContainer>(
+    this.tagContainer$ = docData(
+      doc(
+        this.store,
         `${CollectionKey.Recipes}/${Constants.TAG_CONTAINER_ID}`
-      )
-      .valueChanges()
-      .pipe(
+      ) as DocumentReference<TagContainer>
+    ).pipe(
         tap((tc) => {
           if (tc && tc.tags) {
             this.availableTags = tc.tags.sort();
@@ -105,9 +120,10 @@ export class RecipeDetailsComponent {
     this.recipeId$ = new BehaviorSubject(this.recipeId);
     this.recipe$ = this.recipeId$.pipe(
       switchMap((_id) =>
-        this.store
-          .doc<Recipe>(`${CollectionKey.Recipes}/${_id}`)
-          .valueChanges({ idField: 'id' })
+        docData(
+          doc(this.store, `${CollectionKey.Recipes}/${_id}`) as DocumentReference<Recipe>,
+          { idField: 'id' }
+        )
       ),
       mergeMap((r) =>
         iif(() => r?.id !== 'new', of(r), of(this.createNewRecipe()))
@@ -234,19 +250,17 @@ export class RecipeDetailsComponent {
     if (!recipe.saved) {
       recipe.saved = true;
       recipe.creationDate = new Date();
-      this.store
-        .collection(CollectionKey.Recipes)
-        .add(recipe)
-        .then((ref) => {
-          this.router.navigate([`/recipes/${ref.id}`]).then(() => {
+      addDoc(collection(this.store, CollectionKey.Recipes), recipe).then(
+        (docRef) => {
+          this.router.navigate([`/recipes/${docRef.id}`]).then(() => {
             window.location.reload();
           });
-        });
+        }
+      );
     } else {
-      this.store
-        .collection(CollectionKey.Recipes)
-        .doc(recipe.id)
-        .update(recipe);
+      updateDoc(doc(this.store, CollectionKey.Recipes, recipe.id), {
+        ...recipe,
+      });
     }
     if (stopEditing) {
       this.editing = false;
@@ -263,11 +277,9 @@ export class RecipeDetailsComponent {
     );
     confirmationDialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        const recipeRef = this.store.doc<Recipe>(
-          `${CollectionKey.Recipes}/${recipeId}`
-        );
+        const recipeRef = doc(this.store, `${CollectionKey.Recipes}/${recipeId}`);
         console.log(recipeRef);
-        recipeRef.delete().then((_) => {
+        deleteDoc(recipeRef).then((_) => {
           this.snackbar.open('Przepis usunięty', undefined, {
             duration: 2000,
             panelClass: ['snackbar-info'],
@@ -282,10 +294,9 @@ export class RecipeDetailsComponent {
     const newTags = tags.filter((t) => !tagContainer.tags.includes(t));
     if (newTags.length > 0) {
       tagContainer.tags.push(...newTags);
-      this.store
-        .collection(CollectionKey.Recipes)
-        .doc(Constants.TAG_CONTAINER_ID)
-        .update(tagContainer);
+      updateDoc(doc(this.store, CollectionKey.Recipes, Constants.TAG_CONTAINER_ID), {
+        ...tagContainer,
+      });
     }
   }
 
@@ -307,7 +318,7 @@ export class RecipeDetailsComponent {
       );
       confirmationDialogRef.afterClosed().subscribe((confirmed) => {
         if (confirmed) {
-          this.storage.refFromURL(image.downloadUrl).delete();
+          deleteObject(ref(this.storage, image.downloadUrl));
           const iid = this.images.findIndex(
             (i) => i.downloadUrl === image.downloadUrl
           );
@@ -353,23 +364,18 @@ export class RecipeDetailsComponent {
         const path = `recipes/${id}`;
         console.log(path);
 
-        const fileRef = this.storage.ref(path);
-        const task = this.storage.upload(path, f.file);
-        f.uploadProgress$ = task.percentageChanges();
-        task
-          .snapshotChanges()
-          .pipe(
-            finalize(() => {
-              fileRef.getDownloadURL().subscribe((url) => {
-                f.downloadUrl = url;
-                f.uploaded = true;
-                if (recipeSaved && i === files.length - 1) {
-                  this.saveRecipe(false);
-                }
-              });
-            })
-          )
-          .subscribe();
+        const fileRef = ref(this.storage, path);
+        const task = uploadBytesResumable(fileRef, f.file);
+        f.uploadProgress$ = percentage(task).pipe(map((p) => p.progress));
+        task.then(() => {
+          getDownloadURL(fileRef).then((url) => {
+            f.downloadUrl = url;
+            f.uploaded = true;
+            if (recipeSaved && i === files.length - 1) {
+              this.saveRecipe(false);
+            }
+          });
+        });
         this.images.push(f);
       });
     }

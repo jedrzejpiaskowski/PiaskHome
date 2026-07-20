@@ -5,7 +5,17 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  collection,
+  collectionData,
+  doc,
+  docData,
+  DocumentReference,
+  Firestore,
+  orderBy,
+  query,
+  updateDoc,
+} from '@angular/fire/firestore';
 import {
   FormControl,
   UntypedFormControl,
@@ -57,18 +67,19 @@ export class IngredientsComponent implements OnChanges, OnInit {
   listening = false;
 
   constructor(
-    private store: AngularFirestore,
+    private store: Firestore,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private stringService: StringUtilityService,
     private voiceRecognition: VoiceRecognitionService
   ) {
-    this.categories$ = this.store
-      .collection<ProductCategory>(CollectionKey.ProductCategories, (ref) =>
-        ref.orderBy('order')
-      )
-      .valueChanges({ idField: 'id' })
-      .pipe(
+    this.categories$ = collectionData<ProductCategory>(
+      query(
+        collection(this.store, CollectionKey.ProductCategories),
+        orderBy('order')
+      ) as any,
+      { idField: 'id' }
+    ).pipe(
         tap((categories) => {
           categories.map((c) => {
             this.productInputs[c.id] = '';
@@ -82,12 +93,12 @@ export class IngredientsComponent implements OnChanges, OnInit {
       ingredientSearch: new UntypedFormControl(''),
     });
 
-    this.ingredientContainer$ = this.store
-      .doc<IngredientContainer>(
+    this.ingredientContainer$ = docData(
+      doc(
+        this.store,
         `${CollectionKey.ShoppingList}/${Constants.INGREDIENTS_CONTAINER_ID}`
-      )
-      .valueChanges({ idField: 'id' })
-      .pipe(
+      ) as DocumentReference<IngredientContainer>
+    ).pipe(
         tap((ingC) => {
           this.ingredients = {};
           this.categories = [];
@@ -256,10 +267,10 @@ export class IngredientsComponent implements OnChanges, OnInit {
     confirmationDialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
         ingredientContainer.ingredients.splice(ingId, 1);
-        this.store
-          .collection(CollectionKey.ShoppingList)
-          .doc(Constants.INGREDIENTS_CONTAINER_ID)
-          .update(ingredientContainer);
+        updateDoc(
+          doc(this.store, CollectionKey.ShoppingList, Constants.INGREDIENTS_CONTAINER_ID),
+          { ...ingredientContainer }
+        );
       }
     });
   }
@@ -267,10 +278,10 @@ export class IngredientsComponent implements OnChanges, OnInit {
   saveShoppingList() {
     if (!this.shoppingList) return;
 
-    this.store
-      .collection(CollectionKey.ShoppingList)
-      .doc(Constants.LIST_CONTAINER_ID)
-      .update(this.shoppingList);
+    updateDoc(
+      doc(this.store, CollectionKey.ShoppingList, Constants.LIST_CONTAINER_ID),
+      { ...this.shoppingList }
+    );
   }
 
   saveSearchResults() {
@@ -290,7 +301,7 @@ export class IngredientsComponent implements OnChanges, OnInit {
         savedCount++;
         ing.addedToList = true;
         this.shoppingList?.items.push({
-          id: this.store.createId(),
+          id: this.createId(),
           ingredient: ing,
           bought: false,
         } as ShoppingItem);
@@ -329,7 +340,7 @@ export class IngredientsComponent implements OnChanges, OnInit {
     }
 
     this.shoppingList?.items.push({
-      id: this.store.createId(),
+      id: this.createId(),
       ingredient,
       bought: false,
     } as ShoppingItem);
@@ -379,7 +390,7 @@ export class IngredientsComponent implements OnChanges, OnInit {
     }
 
     const newProduct = {
-      id: this.store.createId(),
+      id: this.createId(),
       name: productName,
       unit: this.unitInputs[category.id] ?? null,
       quantity: this.quantityInputs[category.id] ?? null,
@@ -391,10 +402,10 @@ export class IngredientsComponent implements OnChanges, OnInit {
         ingredientContainer.ingredients = [];
       }
       ingredientContainer.ingredients.push(newProduct);
-      this.store
-        .collection(CollectionKey.ShoppingList)
-        .doc(Constants.INGREDIENTS_CONTAINER_ID)
-        .update(ingredientContainer);
+      updateDoc(
+        doc(this.store, CollectionKey.ShoppingList, Constants.INGREDIENTS_CONTAINER_ID),
+        { ...ingredientContainer }
+      );
       this.productInputs[category.id] = '';
     }
   }
@@ -432,5 +443,9 @@ export class IngredientsComponent implements OnChanges, OnInit {
     this.categories.forEach((c) => {
       this.ingredients[c].forEach((i) => (i.addedToList = false));
     });
+  }
+
+  private createId(): string {
+    return doc(collection(this.store, '_')).id;
   }
 }

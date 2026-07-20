@@ -1,5 +1,18 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  addDoc,
+  collection,
+  collectionData,
+  deleteDoc,
+  doc,
+  docData,
+  DocumentReference,
+  Firestore,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from '@angular/fire/firestore';
 import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
@@ -40,7 +53,7 @@ export class VisitsComponent implements OnInit, OnDestroy {
   displayedYearColumns = ['month', 'visitsCount', 'price', 'earnings'];
 
   constructor(
-    private store: AngularFirestore,
+    private store: Firestore,
     private dateUtilityService: DateUtilityService,
     public dialog: MatDialog,
     private title: Title
@@ -50,10 +63,10 @@ export class VisitsComponent implements OnInit, OnDestroy {
       debounceTime(100),
       switchMap(([id, date]) => {
         if (id) {
-          return this.store
-            .collection<VisitEntry>(this.CollectionKey)
-            .doc(id)
-            .valueChanges({ idField: 'id' });
+          return docData(
+            doc(this.store, this.CollectionKey, id) as DocumentReference<VisitEntry>,
+            { idField: 'id' }
+          );
         }
         if (!date) {
           date = new Date();
@@ -71,14 +84,15 @@ export class VisitsComponent implements OnInit, OnDestroy {
         const startDate = new Date(d.toDateString());
         const endDate = new Date(d.toDateString());
         endDate.setDate(startDate.getDate() + 1);
-        return this.store
-          .collection<VisitEntry>(this.CollectionKey, (ref) =>
-            ref
-              .orderBy('date')
-              .where('date', '>', startDate)
-              .where('date', '<', endDate)
-          )
-          .valueChanges({ idField: 'id' });
+        return collectionData<VisitEntry>(
+          query(
+            collection(this.store, this.CollectionKey),
+            orderBy('date'),
+            where('date', '>', startDate),
+            where('date', '<', endDate)
+          ) as any,
+          { idField: 'id' }
+        );
       }),
       map((visits) => visits.map((v) => this.convertVisit(v))),
       tap((visits) => {
@@ -102,14 +116,15 @@ export class VisitsComponent implements OnInit, OnDestroy {
         this.monthLabel = `${d.toLocaleString('default', {
           month: 'long',
         })} ${d.getFullYear()}`;
-        return this.store
-          .collection<VisitEntry>(this.CollectionKey, (ref) =>
-            ref
-              .orderBy('date')
-              .where('date', '>', firstDay)
-              .where('date', '<', lastDay)
-          )
-          .valueChanges({ idField: 'id' });
+        return collectionData<VisitEntry>(
+          query(
+            collection(this.store, this.CollectionKey),
+            orderBy('date'),
+            where('date', '>', firstDay),
+            where('date', '<', lastDay)
+          ) as any,
+          { idField: 'id' }
+        );
       }),
       map((visits) => {
         if (visits && visits.length > 0) {
@@ -151,14 +166,15 @@ export class VisitsComponent implements OnInit, OnDestroy {
         const firstDay = new Date(d.getFullYear(), 0, 1);
         const lastDay = new Date(d.getFullYear() + 1, 0, 1);
         this.yearLabel = d.getFullYear().toString();
-        return this.store
-          .collection<VisitEntry>(this.CollectionKey, (ref) =>
-            ref
-              .orderBy('date')
-              .where('date', '>', firstDay)
-              .where('date', '<', lastDay)
-          )
-          .valueChanges({ idField: 'id' });
+        return collectionData<VisitEntry>(
+          query(
+            collection(this.store, this.CollectionKey),
+            orderBy('date'),
+            where('date', '>', firstDay),
+            where('date', '<', lastDay)
+          ) as any,
+          { idField: 'id' }
+        );
       }),
       map((visits) => {
         if (visits && visits.length > 0) {
@@ -278,7 +294,7 @@ export class VisitsComponent implements OnInit, OnDestroy {
     visit.date = this.dateUtilityService.getDateWithDateTimeshift(visit.date);
     visit.saved = true;
     visit.earnings = (visit.price * visit.percentage) / 100;
-    this.store.collection(this.CollectionKey).add(visit);
+    addDoc(collection(this.store, this.CollectionKey), visit);
     this.newVisit();
   }
 
@@ -286,7 +302,7 @@ export class VisitsComponent implements OnInit, OnDestroy {
     if (!visit) return;
 
     visit.earnings = (visit.price * visit.percentage) / 100;
-    this.store.collection(this.CollectionKey).doc(visit.id).update(visit);
+    updateDoc(doc(this.store, this.CollectionKey, visit.id), { ...visit });
   }
 
   delete(visit: VisitEntry) {
@@ -300,7 +316,7 @@ export class VisitsComponent implements OnInit, OnDestroy {
     );
     confirmationDialogRef.afterClosed().subscribe((confirmed) => {
       if (confirmed) {
-        this.store.collection(this.CollectionKey).doc(visit.id).delete();
+        deleteDoc(doc(this.store, this.CollectionKey, visit.id));
         this.newVisit();
       }
     });

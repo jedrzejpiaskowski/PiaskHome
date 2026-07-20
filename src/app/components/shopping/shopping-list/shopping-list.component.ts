@@ -1,5 +1,15 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  collection,
+  collectionData,
+  doc,
+  docData,
+  DocumentReference,
+  Firestore,
+  orderBy,
+  query,
+  updateDoc,
+} from '@angular/fire/firestore';
 import { UntypedFormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatDialog } from '@angular/material/dialog';
@@ -39,13 +49,14 @@ export class ShoppingListComponent implements OnChanges {
   unit: string | null = null;
   units = units;
 
-  constructor(private store: AngularFirestore, private dialog: MatDialog) {
-    this.categories$ = this.store
-      .collection<ProductCategory>(CollectionKey.ProductCategories, (ref) =>
-        ref.orderBy('order')
-      )
-      .valueChanges({ idField: 'id' })
-      .pipe(
+  constructor(private store: Firestore, private dialog: MatDialog) {
+    this.categories$ = collectionData<ProductCategory>(
+      query(
+        collection(this.store, CollectionKey.ProductCategories),
+        orderBy('order')
+      ) as any,
+      { idField: 'id' }
+    ).pipe(
         tap((cat) => {
           this.categoriesIcons = {};
           cat.forEach((c) => {
@@ -54,12 +65,12 @@ export class ShoppingListComponent implements OnChanges {
         })
       );
 
-    this.store
-      .doc<IngredientContainer>(
+    docData(
+      doc(
+        this.store,
         `${CollectionKey.ShoppingList}/${Constants.INGREDIENTS_CONTAINER_ID}`
-      )
-      .valueChanges({ idField: 'id' })
-      .pipe(
+      ) as DocumentReference<IngredientContainer>
+    ).pipe(
         map((ingC) => {
           return ingC?.ingredients ?? [];
         }),
@@ -90,7 +101,7 @@ export class ShoppingListComponent implements OnChanges {
         inputProduct.unit = this.unit;
       }
       let item = {
-        id: this.store.createId(),
+        id: this.createId(),
         ingredient: inputProduct,
         bought: false,
       } as ShoppingItem;
@@ -161,10 +172,10 @@ export class ShoppingListComponent implements OnChanges {
     if (!this.shoppingList) {
       return;
     }
-    this.store
-      .collection(CollectionKey.ShoppingList)
-      .doc(Constants.LIST_CONTAINER_ID)
-      .update(this.shoppingList);
+    updateDoc(
+      doc(this.store, CollectionKey.ShoppingList, Constants.LIST_CONTAINER_ID),
+      { ...this.shoppingList }
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -228,5 +239,9 @@ export class ShoppingListComponent implements OnChanges {
     return productsCopy.filter((prod) =>
       prod.name.toLowerCase().includes(filterValue)
     );
+  }
+
+  private createId(): string {
+    return doc(collection(this.store, '_')).id;
   }
 }

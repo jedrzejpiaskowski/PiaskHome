@@ -1,6 +1,21 @@
 import { Component } from '@angular/core';
 import { HouseTasks } from 'src/models/house-task';
-import { AngularFirestore, Query } from '@angular/fire/compat/firestore';
+import {
+  addDoc,
+  collection,
+  collectionData,
+  doc,
+  endBefore,
+  Firestore,
+  limit,
+  limitToLast,
+  orderBy,
+  query,
+  QueryConstraint,
+  startAfter,
+  updateDoc,
+  where,
+} from '@angular/fire/firestore';
 import {
   BehaviorSubject,
   combineLatest,
@@ -48,7 +63,7 @@ export class HouseTasksComponent {
     'approved',
   ];
 
-  constructor(private store: AngularFirestore, private auth: AuthService, private dateUtilityService: DateUtilityService, private title: Title) {
+  constructor(private store: Firestore, private auth: AuthService, private dateUtilityService: DateUtilityService, private title: Title) {
     this.title.setTitle('Domowe');
     const date = new Date();
     this.today = date.toLocaleDateString();
@@ -58,27 +73,27 @@ export class HouseTasksComponent {
     this.user$ = this.auth.user$;
 
     this.tasksList$ = combineLatest([this.paging$, this.whoFilter$]).pipe(
-      switchMap(([paging, who]) =>
-        this.store
-          .collection<HouseTasks>(CollectionKey.HouseTasks, (ref) => {
-            let query:
-              | firebase.default.firestore.CollectionReference
-              | firebase.default.firestore.Query = ref;
-            query = query.orderBy('date', 'desc');
+      switchMap(([paging, who]) => {
+        const constraints: QueryConstraint[] = [orderBy('date', 'desc')];
 
-            if (paging === Paging.Previous && this.last) {
-              query = query.startAfter(this.last.date).limit(this.pageSize);
-            } else if (paging === Paging.Next && this.first) {
-              query = query
-                .endBefore(this.first.date)
-                .limitToLast(this.pageSize);
-            } else {
-              query = query.limit(this.pageSize);
-            }
-            return query;
-          })
-          .valueChanges({ idField: 'id' })
-      ),
+        if (paging === Paging.Previous && this.last) {
+          constraints.push(startAfter(this.last.date), limit(this.pageSize));
+        } else if (paging === Paging.Next && this.first) {
+          constraints.push(
+            endBefore(this.first.date),
+            limitToLast(this.pageSize)
+          );
+        } else {
+          constraints.push(limit(this.pageSize));
+        }
+        return collectionData<HouseTasks>(
+          query(
+            collection(this.store, CollectionKey.HouseTasks),
+            ...constraints
+          ) as any,
+          { idField: 'id' }
+        );
+      }),
       map((t) => t.map((ht) => this.convertHouseTasks(ht))),
       tap((tasks) => {
         const f = tasks[0];
@@ -101,14 +116,15 @@ export class HouseTasksComponent {
       switchMap(([date, authUser, activeUser]) => {
         const userName = activeUser ?? authUser?.shortName;
         return combineLatest([
-          this.store
-            .collection<HouseTasks>(CollectionKey.HouseTasks, (ref) => {
-              let query: Query = ref;
-              query = query.where('who', '==', userName);
-              query = query.where('dateString', '==', date).limit(1);
-              return query;
-            })
-            .valueChanges({ idField: 'id' }),
+          collectionData<HouseTasks>(
+            query(
+              collection(this.store, CollectionKey.HouseTasks),
+              where('who', '==', userName),
+              where('dateString', '==', date),
+              limit(1)
+            ) as any,
+            { idField: 'id' }
+          ),
           of(date),
           of(userName),
         ]);
@@ -182,26 +198,26 @@ export class HouseTasksComponent {
     if (!activeTask) return;
     console.log(activeTask);
     activeTask.date = this.dateUtilityService.getDateWithDateStringTimeshift(this.activeDate$.getValue());
-    this.store.collection(CollectionKey.HouseTasks).add(activeTask);
+    addDoc(collection(this.store, CollectionKey.HouseTasks), activeTask);
   }
 
   update(activeTask: HouseTasks) {
     if (!activeTask) return;
 
     activeTask.approved = null;
-    this.store
-      .collection(CollectionKey.HouseTasks)
-      .doc(activeTask.id)
-      .update(activeTask);
+    updateDoc(
+      doc(this.store, CollectionKey.HouseTasks, activeTask.id),
+      { ...activeTask }
+    );
   }
 
   approve(activeTask: HouseTasks, approve: boolean) {
     if (!activeTask) return;
 
     activeTask.approved = approve;
-    this.store
-      .collection(CollectionKey.HouseTasks)
-      .doc(activeTask.id)
-      .update(activeTask);
+    updateDoc(
+      doc(this.store, CollectionKey.HouseTasks, activeTask.id),
+      { ...activeTask }
+    );
   }
 }
