@@ -1,13 +1,13 @@
 <div class='container'>
     <mat-toolbar color="primary" class='example-toolbar'>
         <mat-toolbar-row>
-            <button mat-icon-button (click)="sidenav.toggle()" fxShow="true" fxHide.gt-sm>
+            <button mat-icon-button (click)="sidenav.toggle()" class="mobile-menu-button">
                 <mat-icon>menu</mat-icon>
             </button>
             <span>PiaskHome</span>
 
             <span class="example-spacer"></span>
-            <div fxShow="true" fxHide.lt-md>
+            <div class="desktop-nav">
                 <a mat-button routerLink='/login' class="example-icon favorite-icon" aria-label="user login icon"
                     routerLinkActive='active-link'>
                     <mat-icon>face</mat-icon>

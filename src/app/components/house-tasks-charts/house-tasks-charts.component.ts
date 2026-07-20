@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { LegendPosition } from '@swimlane/ngx-charts';
+import { Color, LegendPosition, ScaleType } from '@swimlane/ngx-charts';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { BarData, BarGroupData } from 'src/models/bar-group-data';
@@ -40,8 +40,11 @@ export class HouseTasksChartsComponent {
   showGridLines = true;
   legendTitle: string = '';
   legendPosition = LegendPosition.Below;
-  colorScheme = {
-	domain: ['#009688', '#ffab40'],
+  colorScheme: Color = {
+    name: 'piaskHome',
+    selectable: true,
+    group: ScaleType.Ordinal,
+    domain: ['#009688', '#ffab40'],
   };
 
   constructor(private store: AngularFirestore) {

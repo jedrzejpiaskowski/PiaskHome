@@ -40,7 +40,6 @@ import {
 import { AuthGuard } from './auth.guard';
 import { HttpClientModule } from '@angular/common/http';
 import { PatientsComponent } from './components/patients/patients.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import '@angular/common/locales/global/pl';
 import { VisitsComponent } from './components/visits/visits.component';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -49,7 +48,6 @@ import { HouseTasksChartsComponent } from './components/house-tasks-charts/house
 import { RecipesComponent } from './components/recipes/recipes.component';
 import { RecipeDetailsComponent } from './components/recipes/recipe-details.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
-import { AngularImageViewerModule } from 'angular-x-image-viewer';
 import { ImageViewerDialogComponent } from './dialogs/image-viewer-dialog/image-viewer-dialog.component';
 import { ShoppingComponent } from './components/shopping/shopping.component';
 import { ShoppingListComponent } from './components/shopping/shopping-list/shopping-list.component';
@@ -105,9 +103,7 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
-        FlexLayoutModule,
         NgxChartsModule,
-        AngularImageViewerModule
     ],
     providers: [
         AuthGuard,
