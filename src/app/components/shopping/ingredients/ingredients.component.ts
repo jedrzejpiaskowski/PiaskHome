@@ -41,9 +41,10 @@ import {
 } from 'src/models/ingredients';
 
 @Component({
-  selector: 'app-ingredients',
-  templateUrl: './ingredients.component.html',
-  styleUrls: ['./ingredients.component.scss'],
+    selector: 'app-ingredients',
+    templateUrl: './ingredients.component.html',
+    styleUrls: ['./ingredients.component.scss'],
+    standalone: false
 })
 export class IngredientsComponent implements OnChanges, OnInit {
   @Input() mode: string = ShoppingMode.View;

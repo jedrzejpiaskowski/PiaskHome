@@ -22,9 +22,10 @@ export enum SummaryPeriod {
 }
 
 @Component({
-  selector: 'app-house-tasks-charts',
-  templateUrl: './house-tasks-charts.component.html',
-  styleUrls: ['./house-tasks-charts.component.scss'],
+    selector: 'app-house-tasks-charts',
+    templateUrl: './house-tasks-charts.component.html',
+    styleUrls: ['./house-tasks-charts.component.scss'],
+    standalone: false
 })
 export class HouseTasksChartsComponent {
   summaryPeriod = SummaryPeriod.Week;

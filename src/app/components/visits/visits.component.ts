@@ -25,9 +25,10 @@ import { DaySummary, MonthSummary, Summary, VisitEntry } from 'src/models/visit-
 import { DateUtilityService } from '../../services/date-utility.service';
 
 @Component({
-  selector: 'app-visits',
-  templateUrl: './visits.component.html',
-  styleUrls: ['./visits.component.scss']
+    selector: 'app-visits',
+    templateUrl: './visits.component.html',
+    styleUrls: ['./visits.component.scss'],
+    standalone: false
 })
 export class VisitsComponent implements OnInit, OnDestroy {
   activeVisit$: Observable<VisitEntry>;

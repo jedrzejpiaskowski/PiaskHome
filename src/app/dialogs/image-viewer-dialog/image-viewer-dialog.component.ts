@@ -20,9 +20,10 @@ function loadImageSize(src: string): Promise<{ src: string; width: number; heigh
 }
 
 @Component({
-  selector: 'app-image-viewer-dialog',
-  templateUrl: './image-viewer-dialog.component.html',
-  styleUrls: ['./image-viewer-dialog.component.scss'],
+    selector: 'app-image-viewer-dialog',
+    templateUrl: './image-viewer-dialog.component.html',
+    styleUrls: ['./image-viewer-dialog.component.scss'],
+    standalone: false
 })
 export class ImageViewerDialogComponent implements AfterViewInit, OnDestroy {
   private lightbox?: PhotoSwipeLightbox;

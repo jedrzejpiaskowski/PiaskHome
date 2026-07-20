@@ -20,9 +20,10 @@ import { Tag } from 'src/models/tag';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-recipes',
-  templateUrl: './recipes.component.html',
-  styleUrls: ['./recipes.component.scss'],
+    selector: 'app-recipes',
+    templateUrl: './recipes.component.html',
+    styleUrls: ['./recipes.component.scss'],
+    standalone: false
 })
 export class RecipesComponent implements OnInit {
   allRecipes$: Observable<Recipe[]>;

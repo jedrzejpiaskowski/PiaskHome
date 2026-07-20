@@ -45,9 +45,10 @@ import { ImageHandle } from 'src/models/image';
 import { Recipe, TagContainer } from 'src/models/recipe';
 
 @Component({
-  selector: 'app-recipe-details',
-  templateUrl: './recipe-details.component.html',
-  styleUrls: ['./recipe-details.component.scss'],
+    selector: 'app-recipe-details',
+    templateUrl: './recipe-details.component.html',
+    styleUrls: ['./recipe-details.component.scss'],
+    standalone: false
 })
 export class RecipeDetailsComponent {
   recipeForm: UntypedFormGroup;

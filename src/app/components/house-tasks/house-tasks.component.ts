@@ -36,9 +36,10 @@ import { DateUtilityService } from '../../services/date-utility.service';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-house-tasks',
-  templateUrl: './house-tasks.component.html',
-  styleUrls: ['./house-tasks.component.scss'],
+    selector: 'app-house-tasks',
+    templateUrl: './house-tasks.component.html',
+    styleUrls: ['./house-tasks.component.scss'],
+    standalone: false
 })
 export class HouseTasksComponent {
   activeTasks$: Observable<HouseTasks>;

@@ -8,9 +8,10 @@ import { Constants } from 'src/models/constants';
 import { ShoppingListContainer, ShoppingMode } from 'src/models/ingredients';
 
 @Component({
-  selector: 'app-shopping',
-  templateUrl: './shopping.component.html',
-  styleUrls: ['./shopping.component.scss'],
+    selector: 'app-shopping',
+    templateUrl: './shopping.component.html',
+    styleUrls: ['./shopping.component.scss'],
+    standalone: false
 })
 export class ShoppingComponent {
   mode = ShoppingMode.View;

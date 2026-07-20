@@ -29,9 +29,10 @@ import {
 } from 'src/models/ingredients';
 
 @Component({
-  selector: 'app-shopping-list',
-  templateUrl: './shopping-list.component.html',
-  styleUrls: ['./shopping-list.component.scss'],
+    selector: 'app-shopping-list',
+    templateUrl: './shopping-list.component.html',
+    styleUrls: ['./shopping-list.component.scss'],
+    standalone: false
 })
 export class ShoppingListComponent implements OnChanges {
   @Input() mode: ShoppingMode = ShoppingMode.View;

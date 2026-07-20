@@ -7,7 +7,8 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Directive({
-  selector: '[appDragDrop]',
+    selector: '[appDragDrop]',
+    standalone: false
 })
 export class DragDropDirective {
   @Output() files: EventEmitter<FileList> = new EventEmitter();
