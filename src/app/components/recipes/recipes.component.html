@@ -5,53 +5,74 @@
     Dodaj nowy
   </a>
 </div>
-<div class='recipes-search' *ngIf='tagContainer$ | async'>
-  <mat-chip-listbox multiple #chipList aria-label="Tags selection" *ngIf='tags'>
-    <button mat-icon-button *ngIf='anySelected()' (click)='clearTags()' color="warn">
-      <mat-icon>cancel</mat-icon>
-    </button>
-    <mat-chip-option selectable [selected]='tag.selected || tag.isLabel' (click)='tagChanged(tag)' *ngFor="let tag of tags">
-        {{tag.value}}
-    </mat-chip-option>
-</mat-chip-listbox>
-</div>
-<div class='recipes-view' *ngIf='allRecipes$ | async as recipes'>
-  <div class='recipe-row' *ngFor='let r of recipes'>
-    <div class='recipe-title'>
-      <h3>
-        <a class='recipe-link' routerLink='/recipes/{{r.id}}'>
-          {{r.title}}
-        </a>
-        <a class='external-link' *ngIf='r.url' [href]='r.url' target='blank' mat-icon-button button color='primary'
-          aria-label="recipe url icon">
-          <mat-icon>link</mat-icon>
-        </a>
-      </h3>
-    </div>
-
-    <!-- <div class='recipe-date'>
-      <span>{{r.creationDate | date: 'dd.MM.yyyy'}}</span>
-    </div> -->
-
-    <div class='recipe-marks' *ngIf='r.calories || r.prepTime'>
-      <span *ngIf="r.calories">{{r.calories}}&nbsp;<mat-icon color="primary">bolt</mat-icon></span>
-      <span *ngIf="r.prepTime">{{r.prepTime}}&nbsp;<mat-icon color="primary">schedule</mat-icon></span>
-    </div>
-
-    <div class='recipe-desc' *ngIf='r.description && r.description.length > 0'>
-      {{ (r.description.length > 80)? (r.description | slice:0:78) + '..' : r.description }}
-    </div>
-
-    <div class='recipe-rating' *ngIf='r.rating'>
-      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(1, r.rating) }"></div>
-      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(2, r.rating) }"></div>
-      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(3, r.rating) }"></div>
-      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(4, r.rating) }"></div>
-      <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(5, r.rating) }"></div>
-    </div>
-
-    <div class='recipe-tags' *ngIf='r.tags'>
-      <span>Tagi: {{r.tags.join(', ')}}</span>
-    </div>
+@if (tagContainer$ | async) {
+  <div class='recipes-search'>
+    @if (tags) {
+      <mat-chip-listbox multiple #chipList aria-label="Tags selection">
+        @if (anySelected()) {
+          <button mat-icon-button (click)='clearTags()' color="warn">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        }
+        @for (tag of tags; track tag) {
+          <mat-chip-option selectable [selected]='tag.selected || tag.isLabel' (click)='tagChanged(tag)'>
+            {{tag.value}}
+          </mat-chip-option>
+        }
+      </mat-chip-listbox>
+    }
   </div>
+}
+@if (allRecipes$ | async; as recipes) {
+  <div class='recipes-view'>
+    @for (r of recipes; track r) {
+      <div class='recipe-row'>
+        <div class='recipe-title'>
+          <h3>
+            <a class='recipe-link' routerLink='/recipes/{{r.id}}'>
+              {{r.title}}
+            </a>
+            @if (r.url) {
+              <a class='external-link' [href]='r.url' target='blank' mat-icon-button button color='primary'
+                aria-label="recipe url icon">
+                <mat-icon>link</mat-icon>
+              </a>
+            }
+          </h3>
+        </div>
+        <!-- <div class='recipe-date'>
+        <span>{{r.creationDate | date: 'dd.MM.yyyy'}}</span>
+      </div> -->
+      @if (r.calories || r.prepTime) {
+        <div class='recipe-marks'>
+          @if (r.calories) {
+            <span>{{r.calories}}&nbsp;<mat-icon color="primary">bolt</mat-icon></span>
+          }
+          @if (r.prepTime) {
+            <span>{{r.prepTime}}&nbsp;<mat-icon color="primary">schedule</mat-icon></span>
+          }
+        </div>
+      }
+      @if (r.description && r.description.length > 0) {
+        <div class='recipe-desc'>
+          {{ (r.description.length > 80)? (r.description | slice:0:78) + '..' : r.description }}
+        </div>
+      }
+      @if (r.rating) {
+        <div class='recipe-rating'>
+          <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(1, r.rating) }"></div>
+          <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(2, r.rating) }"></div>
+          <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(3, r.rating) }"></div>
+          <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(4, r.rating) }"></div>
+          <div [ngClass]="{ 'rating-bar': true, 'filled': hasStar(5, r.rating) }"></div>
+        </div>
+      }
+      @if (r.tags) {
+        <div class='recipe-tags'>
+          <span>Tagi: {{r.tags.join(', ')}}</span>
+        </div>
+      }
+    </div>
+  }
 </div>
+}

@@ -12,7 +12,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 })
 export class DragDropDirective {
   @Output() files: EventEmitter<FileList> = new EventEmitter();
-  @HostBinding('style.background') private background = 'transparent';
+  @HostBinding('style.background') background = 'transparent';
   constructor(private sanitizer: DomSanitizer) {}
 
   @HostListener('dragover', ['$event']) public onDragOver(evt: DragEvent) {

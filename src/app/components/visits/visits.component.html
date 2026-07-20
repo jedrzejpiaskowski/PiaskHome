@@ -1,225 +1,216 @@
 <mat-tab-group class='full-width-tabs' mat-align-tabs="center">
-    <mat-tab label="Dzień">
-        <ng-container *ngIf='{
-            activeVisit: activeVisit$ | async,
-            date: selectedDate$ | async
-        } as data'>
-            <div class='visit-container' *ngIf='data.activeVisit'>
-                <mat-card appearance="outlined">
-                    <mat-card-header>
-                        <mat-card-title>Wizyta
-                            <span *ngIf='data.activeVisit.saved; else unsaved'>
-                                <mat-icon color='primary'>save</mat-icon>
-                            </span>
-                            <ng-template #unsaved>
-                                <mat-icon color='warn'>help_outline</mat-icon>
-                            </ng-template>
-                        </mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <div class='visit-form'>
-                            <mat-form-field class='item-date'>
-                                <mat-label>Data</mat-label>
-                                <input (dateChange)='dateChanged($event.value)' matInput
-                                    [(ngModel)]='data.activeVisit.date' [matDatepicker]="datepicker">
-                                <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-                                <mat-datepicker [dateClass]="dateClass" touchUi #datepicker>
-                                </mat-datepicker>
-                            </mat-form-field>
-                            <mat-form-field class='item-price'>
-                                <mat-label>Kwota</mat-label>
-                                <input min="0" matInput [(ngModel)]='data.activeVisit.price' type="number" required>
-                                <span matSuffix> zł</span>
-                            </mat-form-field>
-                            <mat-form-field class='item-percentage'>
-                                <mat-label>Procent</mat-label>
-                                <input min="0" max="100" step="1" matInput [(ngModel)]='data.activeVisit.percentage'
-                                    type="number">
-                                <span matSuffix> %</span>
-                            </mat-form-field>
-                            <mat-form-field class='item-patient'>
-                                <mat-label>Pacjent</mat-label>
-                                <input matInput maxlength="30" [(ngModel)]='data.activeVisit.patient' type="text">
-                            </mat-form-field>
-                        </div>
-                    </mat-card-content>
-                    <mat-card-actions align='end' class='visit-actions'>
-                        <button color='primary'
-                            [disabled]='!data.activeVisit.patient || data.activeVisit.patient?.length === 0 || !data.activeVisit.price || data.activeVisit.price <= 0'
-                            *ngIf='!data.activeVisit.saved' (click)='save(data.activeVisit)'
-                            mat-stroked-button>Zapisz</button>
-                        <ng-container *ngIf='data.activeVisit.saved'>
-                            <button color='warn' (click)='delete(data.activeVisit)' mat-stroked-button>Usuń</button>
-                            <button color='accent' (click)='newVisit()' mat-stroked-button>Nowa</button>
-                            <button color='primary' (click)='update(data.activeVisit)' mat-stroked-button>Aktualizuj</button>
-                        </ng-container>
-                    </mat-card-actions>
-                    <mat-card-footer>
-                        <mat-progress-bar></mat-progress-bar>
-                    </mat-card-footer>
-                </mat-card>
+  <mat-tab label="Dzień">
+    @if ({
+      activeVisit: activeVisit$ | async,
+      date: selectedDate$ | async
+      }; as data) {
+      @if (data.activeVisit) {
+        <div class='visit-container'>
+          <mat-card appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>Wizyta
+                @if (data.activeVisit.saved) {
+                  <span>
+                    <mat-icon color='primary'>save</mat-icon>
+                  </span>
+                } @else {
+                  <mat-icon color='warn'>help_outline</mat-icon>
+                }
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class='visit-form'>
+                <mat-form-field class='item-date'>
+                  <mat-label>Data</mat-label>
+                  <input (dateChange)='dateChanged($event.value)' matInput
+                    [(ngModel)]='data.activeVisit.date' [matDatepicker]="datepicker">
+                    <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+                    <mat-datepicker [dateClass]="dateClass" touchUi #datepicker>
+                    </mat-datepicker>
+                  </mat-form-field>
+                  <mat-form-field class='item-price'>
+                    <mat-label>Kwota</mat-label>
+                    <input min="0" matInput [(ngModel)]='data.activeVisit.price' type="number" required>
+                    <span matSuffix> zł</span>
+                  </mat-form-field>
+                  <mat-form-field class='item-percentage'>
+                    <mat-label>Procent</mat-label>
+                    <input min="0" max="100" step="1" matInput [(ngModel)]='data.activeVisit.percentage'
+                      type="number">
+                      <span matSuffix> %</span>
+                    </mat-form-field>
+                    <mat-form-field class='item-patient'>
+                      <mat-label>Pacjent</mat-label>
+                      <input matInput maxlength="30" [(ngModel)]='data.activeVisit.patient' type="text">
+                    </mat-form-field>
+                  </div>
+                </mat-card-content>
+                <mat-card-actions align='end' class='visit-actions'>
+                  @if (!data.activeVisit.saved) {
+                    <button color='primary'
+                      [disabled]='!data.activeVisit.patient || data.activeVisit.patient?.length === 0 || !data.activeVisit.price || data.activeVisit.price <= 0'
+                      (click)='save(data.activeVisit)'
+                    mat-stroked-button>Zapisz</button>
+                  }
+                  @if (data.activeVisit.saved) {
+                    <button color='warn' (click)='delete(data.activeVisit)' mat-stroked-button>Usuń</button>
+                    <button color='accent' (click)='newVisit()' mat-stroked-button>Nowa</button>
+                    <button color='primary' (click)='update(data.activeVisit)' mat-stroked-button>Aktualizuj</button>
+                  }
+                </mat-card-actions>
+                <mat-card-footer>
+                  <mat-progress-bar></mat-progress-bar>
+                </mat-card-footer>
+              </mat-card>
             </div>
-            <div class='visits-table'>
-                <!-- daily summary -->
-                <ng-container *ngIf='visitsForDay$ | async as visits'>
-                    <table *ngIf='visits' mat-table [dataSource]="visits">
-                        <ng-container matColumnDef="day">
-                            <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="5">
-                                <span>{{ data.date | date: 'EEEE, d.MM.YYYY' | titlecase }}</span>
-                            </th>
-                        </ng-container>
-
-                        <ng-container matColumnDef="id">
-                            <th mat-header-cell *matHeaderCellDef>
-                                <button mat-mini-fab (click)='newVisit()' color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </th>
-                            <td mat-cell *matCellDef="let visit; let i = index">
-                                <button mat-mini-fab (click)='pickVisit(visit)' color="primary">{{i+1}}</button>
-                            </td>
-                            <td mat-footer-cell *matFooterCellDef></td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="patient">
-                            <th mat-header-cell *matHeaderCellDef>Pacjent</th>
-                            <td mat-cell *matCellDef="let visit">{{visit.patient}}</td>
-                            <td mat-footer-cell *matFooterCellDef>W sumie</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="price">
-                            <th class='right' mat-header-cell *matHeaderCellDef>Kwota</th>
-                            <td class='right' mat-cell *matCellDef="let visit">{{visit.price | currency: 'PLN'}}</td>
-                            <td class='right' mat-footer-cell *matFooterCellDef>{{totalPrice | currency: 'PLN'}}</td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="percentage">
-                            <th mat-header-cell *matHeaderCellDef>%</th>
-                            <td mat-cell *matCellDef="let visit">{{visit.percentage}}</td>
-                            <td mat-footer-cell *matFooterCellDef></td>
-                        </ng-container>
-
-                        <ng-container matColumnDef="earnings">
-                            <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
-                            <td class='right' mat-cell *matCellDef="let visit">{{visit.earnings | currency: 'PLN'}}</td>
-                            <td class='right' mat-footer-cell *matFooterCellDef>{{totalEarnings | currency: 'PLN'}}</td>
-                        </ng-container>
-
-                        <tr mat-header-row *matHeaderRowDef="['day']"></tr>
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns" class="example-first-header-row"></tr>
-                        <tr mat-row *matRowDef="let visit; columns: displayedColumns;" (click)='pickVisit(visit)'></tr>
-                        <tr mat-footer-row *matFooterRowDef="displayedColumns" class="bold"></tr>
-                    </table>
-                </ng-container>
-
-
-            </div>
-        </ng-container>
-    </mat-tab>
-    <mat-tab label="Miesiąc">
+          }
+          <div class='visits-table'>
+            <!-- daily summary -->
+            @if (visitsForDay$ | async; as visits) {
+              @if (visits) {
+                <table mat-table [dataSource]="visits">
+                  <ng-container matColumnDef="day">
+                    <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="5">
+                      <span>{{ data.date | date: 'EEEE, d.MM.YYYY' | titlecase }}</span>
+                    </th>
+                  </ng-container>
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>
+                      <button mat-mini-fab (click)='newVisit()' color="primary">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    </th>
+                    <td mat-cell *matCellDef="let visit; let i = index">
+                      <button mat-mini-fab (click)='pickVisit(visit)' color="primary">{{i+1}}</button>
+                    </td>
+                    <td mat-footer-cell *matFooterCellDef></td>
+                  </ng-container>
+                  <ng-container matColumnDef="patient">
+                    <th mat-header-cell *matHeaderCellDef>Pacjent</th>
+                    <td mat-cell *matCellDef="let visit">{{visit.patient}}</td>
+                    <td mat-footer-cell *matFooterCellDef>W sumie</td>
+                  </ng-container>
+                  <ng-container matColumnDef="price">
+                    <th class='right' mat-header-cell *matHeaderCellDef>Kwota</th>
+                    <td class='right' mat-cell *matCellDef="let visit">{{visit.price | currency: 'PLN'}}</td>
+                    <td class='right' mat-footer-cell *matFooterCellDef>{{totalPrice | currency: 'PLN'}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="percentage">
+                    <th mat-header-cell *matHeaderCellDef>%</th>
+                    <td mat-cell *matCellDef="let visit">{{visit.percentage}}</td>
+                    <td mat-footer-cell *matFooterCellDef></td>
+                  </ng-container>
+                  <ng-container matColumnDef="earnings">
+                    <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
+                    <td class='right' mat-cell *matCellDef="let visit">{{visit.earnings | currency: 'PLN'}}</td>
+                    <td class='right' mat-footer-cell *matFooterCellDef>{{totalEarnings | currency: 'PLN'}}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="['day']"></tr>
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns" class="example-first-header-row"></tr>
+                  <tr mat-row *matRowDef="let visit; columns: displayedColumns;" (click)='pickVisit(visit)'></tr>
+                  <tr mat-footer-row *matFooterRowDef="displayedColumns" class="bold"></tr>
+                </table>
+              }
+            }
+          </div>
+        }
+      </mat-tab>
+      <mat-tab label="Miesiąc">
         <!-- monthly summary -->
-        <ng-container *ngIf='{ monthSummary: visitsForMonth$ | async,
-            selectedMonth: selectedMonth$ | async } as data'>
-            <div class='month-table' *ngIf='data.monthSummary && data.selectedMonth'>
-                <table class='month-table' mat-table [dataSource]="data.monthSummary">
-
-                    <ng-container matColumnDef="month">
-                        <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
-                            <button (click)='changeMonth(-1)' mat-icon-button>
-                                <mat-icon color='primary'>arrow_left</mat-icon>
-                            </button>
-                            <span>{{ monthLabel | titlecase }}</span>
-                            <button (click)='changeMonth(1)' mat-icon-button
-                                [ngClass]='{ "d-none": !showNextMonthArrow() }' [disabled]='!showNextMonthArrow()'>
-                                <mat-icon color='primary'>arrow_right</mat-icon>
-                            </button>
-                        </th>
-                    </ng-container>
-
-                    <ng-container matColumnDef="day">
-                        <th mat-header-cell *matHeaderCellDef>Dzień</th>
-                        <td mat-cell *matCellDef="let entry">{{entry.day | date: 'd.MM - EE'}}</td>
-                        <td mat-footer-cell *matFooterCellDef>W sumie</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="visitsCount">
-                        <th class='center' mat-header-cell *matHeaderCellDef>Wizyty</th>
-                        <td class='center' mat-cell *matCellDef="let entry">{{entry.visitsCount}}</td>
-                        <td class='center' mat-footer-cell *matFooterCellDef>{{monthSummary.totalVisits}}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="price">
-                        <th class='right' mat-header-cell *matHeaderCellDef>Suma</th>
-                        <td class='right' mat-cell *matCellDef="let entry">{{entry.price | currency: 'PLN'}}</td>
-                        <td class='right' mat-footer-cell *matFooterCellDef>{{monthSummary.totalPrice | currency: 'PLN'}}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="earnings">
-                        <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
-                        <td class='right' mat-cell *matCellDef="let entry">{{entry.earnings | currency: 'PLN'}}</td>
-                        <td class='right' mat-footer-cell *matFooterCellDef>{{monthSummary.totalEarnings | currency: 'PLN'}}
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="['month']"></tr>
-                    <tr mat-header-row *matHeaderRowDef="displayedMonthColumns"></tr>
-                    <tr mat-row *matRowDef="let visit; columns: displayedMonthColumns;"></tr>
-                    <tr mat-footer-row *matFooterRowDef="displayedMonthColumns" class="bold"></tr>
-                </table>
+        @if ({ monthSummary: visitsForMonth$ | async,
+          selectedMonth: selectedMonth$ | async }; as data) {
+          @if (data.monthSummary && data.selectedMonth) {
+            <div class='month-table'>
+              <table class='month-table' mat-table [dataSource]="data.monthSummary">
+                <ng-container matColumnDef="month">
+                  <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
+                    <button (click)='changeMonth(-1)' mat-icon-button>
+                      <mat-icon color='primary'>arrow_left</mat-icon>
+                    </button>
+                    <span>{{ monthLabel | titlecase }}</span>
+                    <button (click)='changeMonth(1)' mat-icon-button
+                      [ngClass]='{ "d-none": !showNextMonthArrow() }' [disabled]='!showNextMonthArrow()'>
+                      <mat-icon color='primary'>arrow_right</mat-icon>
+                    </button>
+                  </th>
+                </ng-container>
+                <ng-container matColumnDef="day">
+                  <th mat-header-cell *matHeaderCellDef>Dzień</th>
+                  <td mat-cell *matCellDef="let entry">{{entry.day | date: 'd.MM - EE'}}</td>
+                  <td mat-footer-cell *matFooterCellDef>W sumie</td>
+                </ng-container>
+                <ng-container matColumnDef="visitsCount">
+                  <th class='center' mat-header-cell *matHeaderCellDef>Wizyty</th>
+                  <td class='center' mat-cell *matCellDef="let entry">{{entry.visitsCount}}</td>
+                  <td class='center' mat-footer-cell *matFooterCellDef>{{monthSummary.totalVisits}}</td>
+                </ng-container>
+                <ng-container matColumnDef="price">
+                  <th class='right' mat-header-cell *matHeaderCellDef>Suma</th>
+                  <td class='right' mat-cell *matCellDef="let entry">{{entry.price | currency: 'PLN'}}</td>
+                  <td class='right' mat-footer-cell *matFooterCellDef>{{monthSummary.totalPrice | currency: 'PLN'}}</td>
+                </ng-container>
+                <ng-container matColumnDef="earnings">
+                  <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
+                  <td class='right' mat-cell *matCellDef="let entry">{{entry.earnings | currency: 'PLN'}}</td>
+                  <td class='right' mat-footer-cell *matFooterCellDef>{{monthSummary.totalEarnings | currency: 'PLN'}}
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['month']"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedMonthColumns"></tr>
+                <tr mat-row *matRowDef="let visit; columns: displayedMonthColumns;"></tr>
+                <tr mat-footer-row *matFooterRowDef="displayedMonthColumns" class="bold"></tr>
+              </table>
             </div>
-        </ng-container>
-    </mat-tab>
-    <mat-tab label="Rok">
+          }
+        }
+      </mat-tab>
+      <mat-tab label="Rok">
         <!-- yearly summary -->
-        <ng-container *ngIf='{ yearSummary: visitsForYear$ | async,
-            selectedYear: selectedYear$ | async } as data'>
-            <div class='year-table' *ngIf='data.yearSummary && data.selectedYear'>
-                <table class='year-table' mat-table [dataSource]="data.yearSummary">
-
-                    <ng-container matColumnDef="year">
-                        <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
-                            <button (click)='changeYear(-1)' mat-icon-button>
-                                <mat-icon color='primary'>arrow_left</mat-icon>
-                            </button>
-                            <span>{{ yearLabel }}</span>
-                            <button (click)='changeYear(1)' mat-icon-button
-                                [ngClass]='{ "d-none": !showNextYearArrow() }' [disabled]='!showNextYearArrow()'>
-                                <mat-icon color='primary'>arrow_right</mat-icon>
-                            </button>
-                        </th>
-                    </ng-container>
-
-                    <ng-container matColumnDef="month">
-                        <th mat-header-cell *matHeaderCellDef>Miesiąc</th>
-                        <td mat-cell *matCellDef="let entry">{{entry.monthDate | date: 'LLLL' |  titlecase}}</td>
-                        <td mat-footer-cell *matFooterCellDef>W sumie</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="visitsCount">
-                        <th class='center' mat-header-cell *matHeaderCellDef>Wizyty</th>
-                        <td class='center' mat-cell *matCellDef="let entry">{{entry.visitsCount}}</td>
-                        <td class='center' mat-footer-cell *matFooterCellDef>{{yearSummary.totalVisits}}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="price">
-                        <th class='right' mat-header-cell *matHeaderCellDef>Suma</th>
-                        <td class='right' mat-cell *matCellDef="let entry">{{entry.totalPrice | currency: 'PLN'}}</td>
-                        <td class='right' mat-footer-cell *matFooterCellDef>{{yearSummary.totalPrice | currency: 'PLN'}}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="earnings">
-                        <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
-                        <td class='right' mat-cell *matCellDef="let entry">{{entry.totalEarnings | currency: 'PLN'}}</td>
-                        <td class='right' mat-footer-cell *matFooterCellDef>{{yearSummary.totalEarnings | currency: 'PLN'}}
-                        </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="['year']"></tr>
-                    <tr mat-header-row *matHeaderRowDef="displayedYearColumns"></tr>
-                    <tr mat-row *matRowDef="let visit; columns: displayedYearColumns;"></tr>
-                    <tr mat-footer-row *matFooterRowDef="displayedYearColumns" class="bold"></tr>
-                </table>
+        @if ({ yearSummary: visitsForYear$ | async,
+          selectedYear: selectedYear$ | async }; as data) {
+          @if (data.yearSummary && data.selectedYear) {
+            <div class='year-table'>
+              <table class='year-table' mat-table [dataSource]="data.yearSummary">
+                <ng-container matColumnDef="year">
+                  <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
+                    <button (click)='changeYear(-1)' mat-icon-button>
+                      <mat-icon color='primary'>arrow_left</mat-icon>
+                    </button>
+                    <span>{{ yearLabel }}</span>
+                    <button (click)='changeYear(1)' mat-icon-button
+                      [ngClass]='{ "d-none": !showNextYearArrow() }' [disabled]='!showNextYearArrow()'>
+                      <mat-icon color='primary'>arrow_right</mat-icon>
+                    </button>
+                  </th>
+                </ng-container>
+                <ng-container matColumnDef="month">
+                  <th mat-header-cell *matHeaderCellDef>Miesiąc</th>
+                  <td mat-cell *matCellDef="let entry">{{entry.monthDate | date: 'LLLL' |  titlecase}}</td>
+                  <td mat-footer-cell *matFooterCellDef>W sumie</td>
+                </ng-container>
+                <ng-container matColumnDef="visitsCount">
+                  <th class='center' mat-header-cell *matHeaderCellDef>Wizyty</th>
+                  <td class='center' mat-cell *matCellDef="let entry">{{entry.visitsCount}}</td>
+                  <td class='center' mat-footer-cell *matFooterCellDef>{{yearSummary.totalVisits}}</td>
+                </ng-container>
+                <ng-container matColumnDef="price">
+                  <th class='right' mat-header-cell *matHeaderCellDef>Suma</th>
+                  <td class='right' mat-cell *matCellDef="let entry">{{entry.totalPrice | currency: 'PLN'}}</td>
+                  <td class='right' mat-footer-cell *matFooterCellDef>{{yearSummary.totalPrice | currency: 'PLN'}}</td>
+                </ng-container>
+                <ng-container matColumnDef="earnings">
+                  <th class='right' mat-header-cell *matHeaderCellDef>Zarobek</th>
+                  <td class='right' mat-cell *matCellDef="let entry">{{entry.totalEarnings | currency: 'PLN'}}</td>
+                  <td class='right' mat-footer-cell *matFooterCellDef>{{yearSummary.totalEarnings | currency: 'PLN'}}
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['year']"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedYearColumns"></tr>
+                <tr mat-row *matRowDef="let visit; columns: displayedYearColumns;"></tr>
+                <tr mat-footer-row *matFooterRowDef="displayedYearColumns" class="bold"></tr>
+              </table>
             </div>
-        </ng-container>
-    </mat-tab>    
-</mat-tab-group>
+          }
+        }
+      </mat-tab>
+    </mat-tab-group>

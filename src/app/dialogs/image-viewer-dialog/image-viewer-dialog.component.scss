@@ -1,7 +1,10 @@
 ::ng-deep .mat-mdc-dialog-container {
+  width: 90vw;
+  height: 100vh;
+}
+
+::ng-deep .mat-mdc-dialog-surface {
   background: transparent;
   box-shadow: none;
   padding: 0;
-  width: 90vw;
-  height: 100vh;
 }

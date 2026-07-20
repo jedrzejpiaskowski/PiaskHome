@@ -1,90 +1,119 @@
-<ng-container *ngIf='{ categories: categories$ | async,
-    ingredients: ingredientContainer$ | async } as data'>
-    <div class='filter-panel'>
-        <mat-form-field class='ing-filter'>
-            <mat-label>Wyszukaj</mat-label>
-            <input matInput type="text" [formControl]='productSearch' autocomplete="off">
-        </mat-form-field>
-        <button mat-icon-button color="warn" (click)='clearFilter()'>
+@if ({ categories: categories$ | async,
+  ingredients: ingredientContainer$ | async }; as data) {
+  <div class='filter-panel'>
+    <mat-form-field class='ing-filter'>
+      <mat-label>Wyszukaj</mat-label>
+      <input matInput type="text" [formControl]='productSearch' autocomplete="off">
+    </mat-form-field>
+    <button mat-icon-button color="warn" (click)='clearFilter()'>
+      <mat-icon>clear</mat-icon>
+    </button>
+    @if (!listening) {
+      <button (click)='startVoiceSearch()' mat-icon-button color="primary">
+        <mat-icon>mic</mat-icon>
+      </button>
+    }
+    @if (listening) {
+      <button (click)='stopVoiceSearch()' mat-icon-button color="warn">
+        <mat-icon>mic</mat-icon>
+      </button>
+    }
+  </div>
+  @if (listening || voiceSearchResults.length > 0) {
+    <div class="voice-search">
+      @if (listening) {
+        <div class='listening-indicator'>
+          <mat-progress-bar color='warn' mode="indeterminate"></mat-progress-bar>
+        </div>
+      }
+      <div class='search-results'>
+        <mat-chip-listbox multiple="true" #tagList aria-label="Tag selection">
+          @for (si of voiceSearchResults; track si) {
+            <mat-chip-option class='ingredient'>
+              <span class='name'>{{ si.name }}</span>
+              <button matChipRemove (click)='removeSearchResult(si)'>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-option>
+          }
+        </mat-chip-listbox>
+      </div>
+      @if (!listening) {
+        <div class='results-actions'>
+          <button mat-flat-button color='accent' (click)='clearSearchResults()' aria-label="clear ingredients icon">
+            Wyczyść
             <mat-icon>clear</mat-icon>
-        </button>
-        <button *ngIf="!listening" (click)='startVoiceSearch()' mat-icon-button color="primary">
-            <mat-icon>mic</mat-icon>
-        </button>
-        <button *ngIf="listening" (click)='stopVoiceSearch()' mat-icon-button color="warn">
-            <mat-icon>mic</mat-icon>
-        </button>
+          </button>
+          <button mat-flat-button color='primary' (click)='saveSearchResults()' aria-label="add ingredients icon">
+            Dodaj
+            <mat-icon>add_icon</mat-icon>
+          </button>
+        </div>
+      }
     </div>
-    <div *ngIf="listening || voiceSearchResults.length > 0" class="voice-search">
-        <div *ngIf='listening' class='listening-indicator'>
-            <mat-progress-bar color='warn' mode="indeterminate"></mat-progress-bar>
-        </div>
-        <div class='search-results'>
-            <mat-chip-listbox multiple="true" #tagList aria-label="Tag selection">
-                <mat-chip-option *ngFor='let si of voiceSearchResults' class='ingredient'>
-                    <span class='name'>{{ si.name }}</span>
-                    <button matChipRemove (click)='removeSearchResult(si)'>
-                        <mat-icon>cancel</mat-icon>
-                    </button>
-                </mat-chip-option>
-            </mat-chip-listbox>
-        </div>
-        <div *ngIf="!listening" class='results-actions'>
-            <button mat-flat-button color='accent' (click)='clearSearchResults()' aria-label="clear ingredients icon">
-                Wyczyść
-                <mat-icon>clear</mat-icon>
-            </button>
-            <button mat-flat-button color='primary' (click)='saveSearchResults()' aria-label="add ingredients icon">
-                Dodaj
-                <mat-icon>add_icon</mat-icon>
-            </button>
-        </div>
-    </div>
-    <div class='ingredient-groups' *ngIf='categories$ | async as categories'>
-        <ng-container *ngFor='let c of data.categories'>
-            <div *ngIf='filteredIngredients[c.id] && filteredIngredients[c.id].length > 0' class='category'>
-                <h2 class='category-header'>
-                    {{c.name}}<mat-icon color='accent'>{{c.icon}}</mat-icon>
-                </h2>
-                <div *ngIf="mode === 'edit'" class='new-product'>
-                    <mat-form-field class='product-name'>
-                        <mat-label>Produkt</mat-label>
-                        <input matInput type="text" [(ngModel)]="productInputs[c.id]"
-                            (keyup.enter)='addNewIngredient(c, data.ingredients)'>
-                    </mat-form-field>
-                    <mat-form-field class='quantity'>
-                        <mat-label>Ilość</mat-label>
-                        <input matInput type="number" [(ngModel)]="quantityInputs[c.id]">
-                    </mat-form-field>
-                    <mat-form-field class='unit'>
-                        <!-- <mat-label>Jednostka</mat-label> -->
-                        <mat-select [(ngModel)]="unitInputs[c.id]">
-                            <mat-option *ngFor="let u of units" [value]="u">
-                                {{u}}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <button mat-icon-button color="primary" (click)='addNewIngredient(c, data.ingredients)'
-                        [disabled]='productInputs[c.id].length <= 2'>
-                        <mat-icon>add</mat-icon>
-                    </button>
+  }
+  @if (categories$ | async; as categories) {
+    <div class='ingredient-groups'>
+      @for (c of data.categories; track c) {
+        @if (filteredIngredients[c.id] && filteredIngredients[c.id].length > 0) {
+          <div class='category'>
+            <h2 class='category-header'>
+              {{c.name}}<mat-icon color='accent'>{{c.icon}}</mat-icon>
+            </h2>
+            @if (mode === 'edit') {
+              <div class='new-product'>
+                <mat-form-field class='product-name'>
+                  <mat-label>Produkt</mat-label>
+                  <input matInput type="text" [(ngModel)]="productInputs[c.id]"
+                    (keyup.enter)='addNewIngredient(c, data.ingredients)'>
+                  </mat-form-field>
+                  <mat-form-field class='quantity'>
+                    <mat-label>Ilość</mat-label>
+                    <input matInput type="number" [(ngModel)]="quantityInputs[c.id]">
+                  </mat-form-field>
+                  <mat-form-field class='unit'>
+                    <!-- <mat-label>Jednostka</mat-label> -->
+                    <mat-select [(ngModel)]="unitInputs[c.id]">
+                      @for (u of units; track u) {
+                        <mat-option [value]="u">
+                          {{u}}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <button mat-icon-button color="primary" (click)='addNewIngredient(c, data.ingredients)'
+                    [disabled]='productInputs[c.id].length <= 2'>
+                    <mat-icon>add</mat-icon>
+                  </button>
                 </div>
-                <mat-chip-listbox multiple="true" #tagList aria-label="Tag selection">
-                    <mat-chip-option *ngFor='let i of filteredIngredients[c.id]' [selected]='i.addedToList' class='ingredient'
-                        color='accent'>
-                        <span class='name'>{{ i.name }}</span>
-                        <span *ngIf='i.quantity' class='quantity'>{{ i.quantity }}</span>
-                        <span *ngIf='i.unit' class='unit'>{{ i.unit }}</span>
-
-                        <button *ngIf="mode === 'edit'" matChipRemove (click)='deleteIngredient(i, data.ingredients)'>
-                            <mat-icon>cancel</mat-icon>
-                        </button>
-                        <button *ngIf="mode === 'view'" matChipRemove (click)='addToShoppingList(i)'>
-                            <mat-icon>add</mat-icon>
-                        </button>
-                    </mat-chip-option>
-                </mat-chip-listbox>
+              }
+              <mat-chip-listbox multiple="true" #tagList aria-label="Tag selection">
+                @for (i of filteredIngredients[c.id]; track i) {
+                  <mat-chip-option [selected]='i.addedToList' class='ingredient'
+                    color='accent'>
+                    <span class='name'>{{ i.name }}</span>
+                    @if (i.quantity) {
+                      <span class='quantity'>{{ i.quantity }}</span>
+                    }
+                    @if (i.unit) {
+                      <span class='unit'>{{ i.unit }}</span>
+                    }
+                    @if (mode === 'edit') {
+                      <button matChipRemove (click)='deleteIngredient(i, data.ingredients)'>
+                        <mat-icon>cancel</mat-icon>
+                      </button>
+                    }
+                    @if (mode === 'view') {
+                      <button matChipRemove (click)='addToShoppingList(i)'>
+                        <mat-icon>add</mat-icon>
+                      </button>
+                    }
+                  </mat-chip-option>
+                }
+              </mat-chip-listbox>
             </div>
-        </ng-container>
-    </div>
-</ng-container>
+          }
+        }
+      </div>
+    }
+  }
