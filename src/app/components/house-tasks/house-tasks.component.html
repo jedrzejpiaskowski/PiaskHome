@@ -7,7 +7,7 @@
 } as data'>
 
             <div class='task-viewer' *ngIf='data.activeTasks'>
-                <mat-card class="active-task" *ngIf='{ notMe: data.activeTasks.who !== data.user?.shortName} as check'>
+                <mat-card appearance="outlined" class="active-task" *ngIf='{ notMe: data.activeTasks.who !== data.user?.shortName} as check'>
                     <mat-card-header>
                         <mat-card-title>Prace domowe
                             <span *ngIf='data.activeTasks.saved; else unsaved'>

@@ -11,7 +11,7 @@
 
 <!-- User logged in -->
 <ng-template #authenticated>
-    <mat-card *ngIf="auth.user$ | async as user">
+    <mat-card appearance="outlined" *ngIf="auth.user$ | async as user">
         <mat-card-header>
             <div *ngIf='user.photoURL' mat-card-avatar class="profile-image"
                 style='background-image: url({{user.photoURL}}); background-size: cover'></div>

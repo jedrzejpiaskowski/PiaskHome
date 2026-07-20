@@ -20,14 +20,14 @@
             <mat-progress-bar color='warn' mode="indeterminate"></mat-progress-bar>
         </div>
         <div class='search-results'>
-            <mat-chip-list multiple="true" #tagList aria-label="Tag selection">
-                <mat-chip *ngFor='let si of voiceSearchResults' class='ingredient'>
+            <mat-chip-listbox multiple="true" #tagList aria-label="Tag selection">
+                <mat-chip-option *ngFor='let si of voiceSearchResults' class='ingredient'>
                     <span class='name'>{{ si.name }}</span>
                     <button matChipRemove (click)='removeSearchResult(si)'>
                         <mat-icon>cancel</mat-icon>
                     </button>
-                </mat-chip>
-            </mat-chip-list>
+                </mat-chip-option>
+            </mat-chip-listbox>
         </div>
         <div *ngIf="!listening" class='results-actions'>
             <button mat-flat-button color='accent' (click)='clearSearchResults()' aria-label="clear ingredients icon">
@@ -69,8 +69,8 @@
                         <mat-icon>add</mat-icon>
                     </button>
                 </div>
-                <mat-chip-list multiple="true" #tagList aria-label="Tag selection">
-                    <mat-chip *ngFor='let i of filteredIngredients[c.id]' [selected]='i.addedToList' class='ingredient'
+                <mat-chip-listbox multiple="true" #tagList aria-label="Tag selection">
+                    <mat-chip-option *ngFor='let i of filteredIngredients[c.id]' [selected]='i.addedToList' class='ingredient'
                         color='accent'>
                         <span class='name'>{{ i.name }}</span>
                         <span *ngIf='i.quantity' class='quantity'>{{ i.quantity }}</span>
@@ -82,8 +82,8 @@
                         <button *ngIf="mode === 'view'" matChipRemove (click)='addToShoppingList(i)'>
                             <mat-icon>add</mat-icon>
                         </button>
-                    </mat-chip>
-                </mat-chip-list>
+                    </mat-chip-option>
+                </mat-chip-listbox>
             </div>
         </ng-container>
     </div>

@@ -5,7 +5,7 @@
             date: selectedDate$ | async
         } as data'>
             <div class='visit-container' *ngIf='data.activeVisit'>
-                <mat-card>
+                <mat-card appearance="outlined">
                     <mat-card-header>
                         <mat-card-title>Wizyta
                             <span *ngIf='data.activeVisit.saved; else unsaved'>
@@ -18,7 +18,7 @@
                     </mat-card-header>
                     <mat-card-content>
                         <div class='visit-form'>
-                            <mat-form-field class='item-date' appearance="standard">
+                            <mat-form-field class='item-date'>
                                 <mat-label>Data</mat-label>
                                 <input (dateChange)='dateChanged($event.value)' matInput
                                     [(ngModel)]='data.activeVisit.date' [matDatepicker]="datepicker">
@@ -26,18 +26,18 @@
                                 <mat-datepicker [dateClass]="dateClass" touchUi #datepicker>
                                 </mat-datepicker>
                             </mat-form-field>
-                            <mat-form-field class='item-price' appearance="standard">
+                            <mat-form-field class='item-price'>
                                 <mat-label>Kwota</mat-label>
                                 <input min="0" matInput [(ngModel)]='data.activeVisit.price' type="number" required>
                                 <span matSuffix> zł</span>
                             </mat-form-field>
-                            <mat-form-field class='item-percentage' appearance="standard">
+                            <mat-form-field class='item-percentage'>
                                 <mat-label>Procent</mat-label>
                                 <input min="0" max="100" step="1" matInput [(ngModel)]='data.activeVisit.percentage'
                                     type="number">
                                 <span matSuffix> %</span>
                             </mat-form-field>
-                            <mat-form-field class='item-patient' appearance="standard">
+                            <mat-form-field class='item-patient'>
                                 <mat-label>Pacjent</mat-label>
                                 <input matInput maxlength="30" [(ngModel)]='data.activeVisit.patient' type="text">
                             </mat-form-field>

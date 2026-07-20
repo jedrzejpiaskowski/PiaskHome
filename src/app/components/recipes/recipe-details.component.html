@@ -36,11 +36,11 @@
                 <textarea formControlName='description' matInput></textarea>
             </mat-form-field>
             <div class="horizontal-row">
-                <mat-form-field appearance="standard">
+                <mat-form-field>
                     <input min="0" matInput formControlName='calories' type="number">
                     <span matSuffix> kcal</span>
                 </mat-form-field>
-                <mat-form-field appearance="standard">
+                <mat-form-field>
                     <mat-label>Czas</mat-label>
                     <input min="0" matInput formControlName='prepTime' type="number">
                     <span matSuffix> min</span>
@@ -52,17 +52,17 @@
             </mat-form-field>
             <h2>Tagi</h2>
             <mat-form-field class='tags-container' appearance="fill">
-                <mat-chip-list #tagList aria-label="Tag selection">
-                    <mat-chip *ngFor="let tag of tags" removable="true" (removed)="removeTag(tag)" selected>
+                <mat-chip-grid #tagList aria-label="Tag selection">
+                    <mat-chip-row *ngFor="let tag of tags" removable="true" (removed)="removeTag(tag)" selected>
                         {{tag}}
                         <button matChipRemove>
                             <mat-icon>cancel</mat-icon>
                         </button>
-                    </mat-chip>
+                    </mat-chip-row>
                     <input placeholder="Nowy tag..." #tagsInput formControlName="tags" [matAutocomplete]="auto"
                     [matChipInputFor]="tagList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                     (matChipInputTokenEnd)="add($event)">
-                </mat-chip-list>
+                </mat-chip-grid>
                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
                     <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
                         {{tag}}
@@ -122,11 +122,11 @@
                 <a target="_blank" [href]='recipe.url'>{{recipe.url}}</a>
             </p>
             <h2>Tagi</h2>
-            <mat-chip-list #chipList aria-label="Tags selection">
-                <mat-chip selected *ngFor="let tag of tags">
+            <mat-chip-listbox #chipList aria-label="Tags selection">
+                <mat-chip-option selected *ngFor="let tag of tags">
                     {{tag}}
-                </mat-chip>
-            </mat-chip-list>
+                </mat-chip-option>
+            </mat-chip-listbox>
             <h2 *ngIf='images && images.length > 0'>Zdjęcia</h2>
             <div class='recipe-images'>
                 <div *ngFor='let image of images; let i = index' class="tile image-tile">
