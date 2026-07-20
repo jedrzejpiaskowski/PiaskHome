@@ -40,6 +40,8 @@ import { AuthGuard } from './auth.guard';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { PatientsComponent } from './components/patients/patients.component';
 import '@angular/common/locales/global/pl';
+// @ts-ignore - moment ships this file without type declarations for the subpath
+import 'moment/locale/pl';
 import { VisitsComponent } from './components/visits/visits.component';
 import { ConfirmationDialogComponent } from './dialogs/confirmation-dialog/confirmation-dialog.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';

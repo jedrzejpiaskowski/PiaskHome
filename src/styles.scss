@@ -1,31 +1,32 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use "@angular/material" as mat;
+@use "./theme-colors" as theme-colors;
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat.elevation-classes();
-@include mat.app-background();
+@include mat.core();
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$piask-home-primary: mat.m2-define-palette(mat.$m2-teal-palette);
-$piask-home-accent: mat.m2-define-palette(mat.$m2-orange-palette, A200, A100, A400);
-
-// The warn palette is optional (defaults to red).
-$piask-home-warn: mat.m2-define-palette(mat.$m2-red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
-$piask-home-theme: mat.m2-define-light-theme(
+// Material 3 theme, generated from the app's teal/orange/red brand colors
+// (see src/theme-colors.scss, produced by `ng generate @angular/material:m3-theme`).
+$piask-home-color-config: (
+  theme-type: light,
+  primary: theme-colors.$primary-palette,
+  tertiary: theme-colors.$tertiary-palette,
+);
+$piask-home-theme: mat.define-theme(
   (
-    color: (
-      primary: $piask-home-primary,
-      accent: $piask-home-accent,
-      warn: $piask-home-warn,
-    ),
+    color: $piask-home-color-config,
+  )
+);
+
+// mat.define-theme()/all-component-themes() emit per-component tokens, but not the
+// --mat-sys-* system-level custom properties that components fall back to by default;
+// mat.theme() is needed separately to emit those.
+@include mat.theme(
+  (
+    color: $piask-home-color-config,
   )
 );
 
@@ -36,9 +37,6 @@ $piask-home-theme: mat.m2-define-light-theme(
 }
 
 @mixin mix-app-theme($app-theme) {
-  $primary: map-get($app-theme, primary);
-  $accent: map-get($app-theme, accent);
-
   .mat-mdc-button-toggle-group {
     height: 32px;
     align-items: center;
@@ -46,7 +44,7 @@ $piask-home-theme: mat.m2-define-light-theme(
   }
 
   .mat-mdc-button-toggle-checked {
-    background-color: mat.m2-get-color-from-palette($primary);
+    background-color: mat.get-theme-color($app-theme, primary);
 
     button {
       color: white;
@@ -59,6 +57,11 @@ $piask-home-theme: mat.m2-define-light-theme(
 // that you are using.
 @include mat.all-component-themes($piask-home-theme);
 @include mix-app-theme($piask-home-theme);
+
+// M3 dropped automatic support for color="accent"/color="warn" (mat-icon, mat-button, etc.)
+// in favor of primary/tertiary/error theme roles; this restores it so the app's existing
+// color="accent" usages (orange) keep working without touching every template.
+@include mat.color-variants-backwards-compatibility($piask-home-theme);
 
 /* You can add global styles to this file, and also import other style files */
 
