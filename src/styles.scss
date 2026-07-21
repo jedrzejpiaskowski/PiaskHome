@@ -159,3 +159,16 @@ h1, h2, h3 {
     title-text-size: 1.1rem
   ));
 }
+
+// The PiaskHome toolbar is a flex child of .container, so with the default
+// flex-shrink it gets squeezed toward its min-content height (32px) whenever the
+// routed content below it is tall enough to over-subscribe the column (e.g. the
+// house-tasks history table), but keeps its full height when the content is
+// short (the summary charts) — so its height changes as you navigate/switch
+// tabs. flex-shrink: 0 stops it being squeezed; the explicit height pins it so
+// it also can't jump to Material's taller "standard" height above the 599px
+// breakpoint. Element+class outranks Material's single-class height rule.
+mat-toolbar.mat-toolbar-single-row {
+  flex-shrink: 0;
+  height: 52px;
+}

@@ -12,19 +12,24 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 1em 1em 0 1em;
+  // small outer gutter only; the card fills the rest of the phone width. The
+  // former 1em here stacked with the card's own 1em below (~64px of side
+  // margin total), leaving the two columns too narrow so their labels wrapped.
+  margin: 1em 0.5em 0 0.5em;
 
   .active-task {
-    margin: 0 1em;
+    margin: 0;
 
     .tasks-container {
       display: flex;
       flex-direction: row;
     }
 
+    // only a small gap between the two columns; the former margin-left here
+    // plus the ul's padding-inline-start stacked ~2em of dead space on the far
+    // left, squeezing the right column until its labels wrapped
     .task-category:first-child {
-      margin-left: 1em;
-      margin-right: 1em;
+      margin-right: 0.5em;
     }
   }
 }
@@ -90,10 +95,15 @@
 
 ul {
   list-style-type: none;
-  padding-inline-start: 1em;
+  // no bullets, so no indentation needed; this was compounding the left gap
+  padding-inline-start: 0;
 
   li {
     margin-top: 0.5em;
+    // keep each label and its trailing icon on one line; otherwise the checkbox
+    // wraps its label internally rather than letting the column grow to the
+    // width it needs (there is ample room in the card for the natural widths)
+    white-space: nowrap;
 
     span {
       margin-right: 0.5em;
