@@ -12,19 +12,44 @@
 }
 
 .item-form {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+
   .name {
+    flex: 1 1 auto;
+    min-width: 0;
     margin-right: 0.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   mat-form-field {
     margin-right: 0.4em;
   }
 
+  // the default mat-mdc-form-field-infix width (180px) is too wide to share a
+  // row with the quantity/unit/button controls on a phone screen; let it
+  // shrink instead and give it whatever space the fixed-width siblings leave
+  .product {
+    flex: 1 1 auto;
+    min-width: 0;
+
+    ::ng-deep .mat-mdc-form-field-infix {
+      width: auto;
+    }
+  }
+
   .quantity {
-    width: 45px;
+    // needs room for the floated "Ilość" label, not just a 1-2 digit value
+    flex: 0 0 60px;
+    width: 60px;
   }
 
   .unit {
+    flex: 0 0 50px;
     width: 50px;
   }
 }

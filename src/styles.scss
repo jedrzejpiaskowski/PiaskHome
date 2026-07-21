@@ -94,6 +94,16 @@ body {
   --mat-form-field-filled-container-color: transparent;
 }
 
+// Angular Material's M3 form-field density tokens drop the floating label
+// entirely on filled fields at density -2 and below (see @angular/material's
+// _m3-form-field.scss, get-tokens(): form-field-filled-label-display is
+// "block" at scale 0/-1 but "none" from -2 on, assuming there isn't room for
+// both label and value). At our app-wide density -2 that silently removed
+// every mat-label ("Produkt", "Ilość", ...) from filled fields; force it back.
+html {
+  --mat-form-field-filled-label-display: block;
+}
+
 .full-width-tabs {
   width: 100%;
 

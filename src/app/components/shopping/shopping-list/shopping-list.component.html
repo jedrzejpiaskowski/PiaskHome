@@ -2,7 +2,7 @@
   @if (mode === 'edit') {
     <div class='item-edit'>
       <div class='item-form'>
-        <mat-form-field>
+        <mat-form-field class='product'>
           <mat-label>Produkt</mat-label>
           <input type="text" matInput [formControl]="productControl" [matAutocomplete]="auto">
           <mat-autocomplete (optionSelected)='ingredientSelected($event)' #auto="matAutocomplete"
