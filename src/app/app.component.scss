@@ -54,3 +54,11 @@ button {
 .active-link {
     color: #ffc983;
 }
+
+// M3's default nav-drawer width token (360px, the Material spec's modal-drawer
+// default) is sized for tablets; on a phone-width viewport it swallows the
+// whole screen instead of leaving a hint of the page behind it.
+mat-sidenav {
+    --mat-sidenav-container-width: 250px;
+    width: 250px;
+}

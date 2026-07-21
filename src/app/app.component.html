@@ -42,28 +42,24 @@
     <mat-sidenav-container class='full-height'>
         <mat-sidenav #sidenav>
             <mat-nav-list>
-                <!-- <a (click)="sidenav.toggle()" mat-list-item>
-                    <mat-icon matListIcon>close</mat-icon>
-                    Zamknij
-                </a> -->
                 <a mat-list-item routerLink='/login' (click)="sidenav.toggle()" routerLinkActive='active-link'>
-                    <mat-icon matListIcon>face</mat-icon>
+                    <mat-icon matListItemIcon>face</mat-icon>
                     Profil
                 </a>
                 <a mat-list-item routerLink='/house-tasks' (click)="sidenav.toggle()" routerLinkActive='active-link'>
-                    <mat-icon matListIcon>home</mat-icon>
+                    <mat-icon matListItemIcon>home</mat-icon>
                     Domowe
                 </a>
                 <a mat-list-item routerLink='/shopping' (click)="sidenav.toggle()" routerLinkActive='active-link'>
-                    <mat-icon matListIcon>local_grocery_store</mat-icon>
+                    <mat-icon matListItemIcon>local_grocery_store</mat-icon>
                     Zakupy
                 </a>
                 <a mat-list-item routerLink='/recipes' (click)="sidenav.toggle()" routerLinkActive='active-link'>
-                    <mat-icon matListIcon>lunch_dining</mat-icon>
+                    <mat-icon matListItemIcon>lunch_dining</mat-icon>
                     Przepisy
                 </a>
                 <a mat-list-item routerLink='/visits' (click)="sidenav.toggle()" routerLinkActive='active-link'>
-                    <mat-icon matListIcon>payments</mat-icon>
+                    <mat-icon matListItemIcon>payments</mat-icon>
                     Wizyty
                 </a>
             </mat-nav-list>
