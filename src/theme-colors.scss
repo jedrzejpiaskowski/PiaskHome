@@ -5,20 +5,29 @@
 @use '@angular/material' as mat;
 
 // Note: Color palettes are generated from primary: #009688, tertiary: #ffab40, error: #f44336
+//
+// The light theme's role->tone mapping (see @angular/material/core/tokens/m3/_md-sys-color.scss,
+// md-sys-color-values-light) pulls primary=40, primary-container=90, on-primary-container=30,
+// tertiary=40, tertiary-container=90, on-tertiary-container=30, on-tertiary=100. mat.all-component-
+// themes() bakes these tones' literal hex values directly into each component's CSS custom
+// properties at build time (e.g. --mat-fab-container-color), so a runtime --mat-sys-* override
+// on :root has no effect on them. Overriding those exact tones here, instead, is what actually
+// restores the app's original vibrant flat teal/orange everywhere (was M3's default desaturated
+// generated tones: 40 #006a60, 90 #85f6e5, 30 #005048, 80 #67d9c9).
 $_palettes: (
   primary: (
     0: #000000,
     10: #00201c,
     20: #003731,
     25: #00443d,
-    30: #005048,
+    30: #ffffff,
     35: #005d54,
-    40: #006a60,
+    40: #009688,
     50: #008679,
     60: #21a293,
     70: #48bdae,
-    80: #67d9c9,
-    90: #85f6e5,
+    80: #009688,
+    90: #009688,
     95: #b4fff2,
     98: #e4fff9,
     99: #f2fffb,
@@ -47,18 +56,18 @@ $_palettes: (
     10: #2b1700,
     20: #482900,
     25: #573300,
-    30: #673d00,
+    30: #000000,
     35: #774800,
-    40: #875200,
+    40: #ffab40,
     50: #a96800,
     60: #cb8011,
     70: #ea9a2f,
-    80: #ffb866,
-    90: #ffddba,
+    80: #ffab40,
+    90: #ffab40,
     95: #ffeedf,
     98: #fff8f4,
     99: #fffbff,
-    100: #ffffff,
+    100: #000000,
   ),
   neutral: (
     0: #000000,

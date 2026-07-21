@@ -15,20 +15,24 @@ $piask-home-color-config: (
   primary: theme-colors.$primary-palette,
   tertiary: theme-colors.$tertiary-palette,
 );
-$piask-home-theme: mat.define-theme(
-  (
-    color: $piask-home-color-config,
-  )
+// density: -2 tightens control heights (buttons, form fields, table rows, toggles) app-wide
+// to recover the more compact M2-era layout on small phone screens.
+$piask-home-theme-config: (
+  color: $piask-home-color-config,
+  density: (
+    scale: -2,
+  ),
 );
+$piask-home-theme: mat.define-theme($piask-home-theme-config);
 
 // mat.define-theme()/all-component-themes() emit per-component tokens, but not the
 // --mat-sys-* system-level custom properties that components fall back to by default;
 // mat.theme() is needed separately to emit those.
-@include mat.theme(
-  (
-    color: $piask-home-color-config,
-  )
-);
+// Must be nested in a real selector: with a density scale set, mat.theme() emits some
+// tokens via a raw CSS custom-property declaration that isn't valid at the stylesheet root.
+html {
+  @include mat.theme($piask-home-theme-config);
+}
 
 .center-container {
   display: flex;
@@ -63,6 +67,10 @@ $piask-home-theme: mat.define-theme(
 // color="accent" usages (orange) keep working without touching every template.
 @include mat.color-variants-backwards-compatibility($piask-home-theme);
 
+// Note: bringing the vibrant brand teal/orange back into the M3 palette is done directly in
+// theme-colors.scss (the tones the light theme maps to the primary/tertiary roles), not here —
+// see the comment there for why a --mat-sys-* override doesn't work.
+
 /* You can add global styles to this file, and also import other style files */
 
 html,
@@ -76,6 +84,14 @@ body {
 
 .d-none {
   opacity: 0;
+}
+
+// M3's default "filled" mat-form-field appearance shades its container with a
+// surface-container tone, which reads as a mismatched grey-green box against
+// the plain white/card backgrounds this app uses everywhere. Drop it so the
+// field blends into whatever surface it sits on, leaving just the underline.
+.mat-mdc-text-field-wrapper.mdc-text-field--filled {
+  --mat-form-field-filled-container-color: transparent;
 }
 
 .full-width-tabs {

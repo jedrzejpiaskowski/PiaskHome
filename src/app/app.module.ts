@@ -23,6 +23,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { HouseTasksComponent } from './components/house-tasks/house-tasks.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
@@ -102,6 +103,7 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
         AuthService,
         { provide: LOCALE_ID, useValue: 'pl-PL' },
         { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true } },
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { subscriptSizing: 'dynamic' } },
         provideHttpClient(withInterceptorsFromDi()),
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideAuth(() => {

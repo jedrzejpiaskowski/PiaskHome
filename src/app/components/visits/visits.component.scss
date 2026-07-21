@@ -9,12 +9,16 @@
   }
 }
 
-::ng-deep .mat-mdc-form-field {
-  margin-bottom: -1.25em;
-}
-
 .visit-container {
-  margin: 1em;
+  margin: 0.5em;
+
+  .mat-mdc-card-header {
+    padding-bottom: 0;
+  }
+
+  .mat-mdc-card-content {
+    padding-top: 0.25em;
+  }
 
   .visit-form {
     display: grid;
@@ -24,6 +28,12 @@
       "date date"
       "price percentage"
       "patient patient";
+
+    // no mat-hint/mat-error is used on these fields, so the reserved subscript
+    // space would just be dead vertical whitespace under every field
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
   }
 
   .item-date {
@@ -45,6 +55,8 @@
   }
 
   .mat-mdc-card-actions {
+    padding-top: 0;
+
     button:not(:last-child) {
       margin-left: 0;
       margin-right: 0.5em;
@@ -67,13 +79,13 @@
 
     th:first-child,
     td:first-child {
-      padding-right: 1em;
+      padding-right: 0.5em;
       width: 15%;
     }
 
     th,
     td {
-      margin: 0 2em;
+      padding: 0 0.5em;
     }
   }
 }
