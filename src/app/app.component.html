@@ -1,42 +1,40 @@
 <div class='container'>
     <mat-toolbar color="primary" class='example-toolbar'>
-        <mat-toolbar-row>
-            <button mat-icon-button (click)="sidenav.toggle()" class="mobile-menu-button">
-                <mat-icon>menu</mat-icon>
-            </button>
-            <span>PiaskHome</span>
+        <button matIconButton (click)="sidenav.toggle()" class="mobile-menu-button">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <span>PiaskHome</span>
 
-            <span class="example-spacer"></span>
-            <div class="desktop-nav">
-                <a mat-button routerLink='/login' class="example-icon favorite-icon" aria-label="user login icon"
-                    routerLinkActive='active-link'>
-                    <mat-icon>face</mat-icon>
-                    Profil
-                </a>
-                <a mat-button routerLink='/house-tasks' class="example-icon favorite-icon" aria-label="house icon"
-                    routerLinkActive='active-link'>
-                    <mat-icon>home</mat-icon>
-                    Domowe
-                </a>
-                <a mat-button routerLink='/shopping' class="example-icon favorite-icon" aria-label="dinner icon"
-                    routerLinkActive='active-link'>
-                    <mat-icon><span class="material-icons">
-                            local_grocery_store
-                        </span></mat-icon>
-                    Zakupy
-                </a>
-                <a mat-button routerLink='/recipes' class="example-icon favorite-icon" aria-label="dinner icon"
-                    routerLinkActive='active-link'>
-                    <mat-icon>lunch_dining</mat-icon>
-                    Przepisy
-                </a>
-                <a mat-button routerLink='/visits' class="example-icon favorite-icon" aria-label="medical services icon"
-                    routerLinkActive='active-link'>
-                    <mat-icon>medical_services</mat-icon>
-                    Wizyty
-                </a>
-            </div>
-        </mat-toolbar-row>
+        <span class="example-spacer"></span>
+        <div class="desktop-nav">
+            <a mat-button routerLink='/login' class="example-icon favorite-icon" aria-label="user login icon"
+                routerLinkActive='active-link'>
+                <mat-icon>face</mat-icon>
+                Profil
+            </a>
+            <a mat-button routerLink='/house-tasks' class="example-icon favorite-icon" aria-label="house icon"
+                routerLinkActive='active-link'>
+                <mat-icon>home</mat-icon>
+                Domowe
+            </a>
+            <a mat-button routerLink='/shopping' class="example-icon favorite-icon" aria-label="dinner icon"
+                routerLinkActive='active-link'>
+                <mat-icon><span class="material-icons">
+                        local_grocery_store
+                    </span></mat-icon>
+                Zakupy
+            </a>
+            <a mat-button routerLink='/recipes' class="example-icon favorite-icon" aria-label="dinner icon"
+                routerLinkActive='active-link'>
+                <mat-icon>lunch_dining</mat-icon>
+                Przepisy
+            </a>
+            <a mat-button routerLink='/visits' class="example-icon favorite-icon" aria-label="medical services icon"
+                routerLinkActive='active-link'>
+                <mat-icon>medical_services</mat-icon>
+                Wizyty
+            </a>
+        </div>
     </mat-toolbar>
 
     <mat-sidenav-container class='full-height'>

@@ -32,6 +32,7 @@
 
 // Matches the app's former fxHide.gt-sm / fxHide.lt-md breakpoint (960px, Flex Layout's "md").
 .mobile-menu-button {
+  color: white;
   @media (min-width: 960px) {
     display: none;
   }

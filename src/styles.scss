@@ -104,6 +104,22 @@ html {
   --mat-form-field-filled-label-display: block;
 }
 
+h1 {
+  font-size: 1.4em;
+}
+
+h2 {
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 1.1em;
+}
+
+h1, h2, h3 {
+  font-weight: 500;
+}
+
 .full-width-tabs {
   width: 100%;
 
@@ -136,4 +152,10 @@ html {
 
 :root {
   --primary: #009688;
+
+  @include mat.toolbar-overrides((
+    container-background-color: #009688,
+    container-text-color: white,
+    title-text-size: 1.1rem
+  ));
 }
