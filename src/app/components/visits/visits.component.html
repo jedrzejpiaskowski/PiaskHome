@@ -123,7 +123,7 @@
             <div class='month-table'>
               <table class='month-table' mat-table [dataSource]="data.monthSummary">
                 <ng-container matColumnDef="month">
-                  <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
+                  <th mat-header-cell class='center summary-nav' mat-cell *matHeaderCellDef colspan="4">
                     <button (click)='changeMonth(-1)' mat-icon-button>
                       <mat-icon color='primary'>arrow_left</mat-icon>
                     </button>
@@ -172,7 +172,7 @@
             <div class='year-table'>
               <table class='year-table' mat-table [dataSource]="data.yearSummary">
                 <ng-container matColumnDef="year">
-                  <th mat-header-cell class='center' mat-cell *matHeaderCellDef colspan="4">
+                  <th mat-header-cell class='center summary-nav' mat-cell *matHeaderCellDef colspan="4">
                     <button (click)='changeYear(-1)' mat-icon-button>
                       <mat-icon color='primary'>arrow_left</mat-icon>
                     </button>

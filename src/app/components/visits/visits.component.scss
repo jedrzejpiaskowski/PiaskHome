@@ -79,13 +79,19 @@
 
     th:first-child,
     td:first-child {
+      padding-left: 1em;
       padding-right: 0.5em;
       width: 15%;
     }
 
     th,
     td {
-      padding: 0 0.5em;
+      padding: 0 0em;
+    }
+
+    th:last-child,
+    td:last-child {
+      padding-right: 1em;
     }
   }
 }
@@ -109,6 +115,37 @@
 
   tfoot tr td {
     font-weight: bold;
+  }
+
+  // The nav cell relies on colspan to span the whole row, so it must stay a
+  // table-cell — display:flex drops it out of the table layout, shrinking it to
+  // its content (left-aligned and narrow enough to wrap "Czerwiec 2026").
+  // Horizontal centering comes from the .center class; here we just keep the
+  // label on one line and vertically center it with the arrow buttons.
+  .summary-nav {
+    white-space: nowrap;
+
+    button,
+    span {
+      vertical-align: middle;
+    }
+  }
+
+  // Material gives every cell 16px of horizontal padding, which overflows the
+  // narrow phone width. Drop it and only inset the row's outer edges by 1em.
+  th,
+  td {
+    padding: 0.5em;
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: 1em;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 1em;
   }
 }
 
