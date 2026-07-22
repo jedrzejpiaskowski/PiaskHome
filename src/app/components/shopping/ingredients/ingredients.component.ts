@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
@@ -72,7 +73,8 @@ export class IngredientsComponent implements OnChanges, OnInit {
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
     private stringService: StringUtilityService,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private changeDetector: ChangeDetectorRef
   ) {
     this.categories$ = collectionData<ProductCategory>(
       query(
@@ -166,61 +168,71 @@ export class IngredientsComponent implements OnChanges, OnInit {
     });
 
     // Subscription to detect user input from voice to text.
+    // The Web Speech API dispatches its events outside Angular's zone, so state
+    // mutated while processing them (voiceSearchResults, listening) does not get
+    // picked up automatically — which is why the results only appeared after
+    // clicking the mic to stop (an in-zone event). Run change detection
+    // explicitly so the view updates live as words are recognised.
     this.voiceRecognition.speechInput().subscribe((input) => {
-      let clearInput = input;
-      console.log(clearInput);
-      console.log(this.processedWords);
-      this.processedWords.forEach((pw) => {
-        clearInput = clearInput.replace(pw, '');
-      });
-      let clearWords = clearInput
-        .split(' ')
-        .filter((ci) => ci.length >= 2)
-        .map((ci) => ci.trim());
-
-      if (clearWords.length === 0) {
-        return;
-      }
-
-      if (clearWords.includes('stop')) {
-        this.stopVoiceSearch();
-        return;
-      }
-      if (clearWords.includes('dodaj')) {
-        this.stopAndAdd();
-        return;
-      }
-
-      console.log('CW', clearWords);
-      let matchingIngredients: Ingredient[] = [];
-      clearWords.forEach((cw) => {
-        var foundIng = this.allIngredients.filter((ai) =>
-          this.containsWord(ai.name, cw)
-        );
-        foundIng.forEach((fi) => {
-          if (matchingIngredients.indexOf(fi) === -1) {
-            console.log(`match: ${cw} - ${fi.name}`);
-            matchingIngredients.push(fi);
-          }
-        });
-      });
-
-      if (matchingIngredients.length > 0) {
-        console.log('matching', matchingIngredients);
-        matchingIngredients.forEach((ing) => {
-          if (
-            !this.voiceSearchResults.find((r) => r.id == ing.id) &&
-            this.listening
-          ) {
-            this.voiceSearchResults.push(ing);
-            console.log(`Dodaje: ${ing.name}`);
-            this.addProcessedIngredient(ing);
-          }
-        });
-      }
-      // Set voice text output to
-      // this.searchForm.controls.searchText.setValue(input);
+      this.processVoiceInput(input);
+      this.changeDetector.detectChanges();
     });
+  }
+
+  private processVoiceInput(input: string): void {
+    let clearInput = input;
+    console.log(clearInput);
+    console.log(this.processedWords);
+    this.processedWords.forEach((pw) => {
+      clearInput = clearInput.replace(pw, '');
+    });
+    let clearWords = clearInput
+      .split(' ')
+      .filter((ci) => ci.length >= 2)
+      .map((ci) => ci.trim());
+
+    if (clearWords.length === 0) {
+      return;
+    }
+
+    if (clearWords.includes('stop')) {
+      this.stopVoiceSearch();
+      return;
+    }
+    if (clearWords.includes('dodaj')) {
+      this.stopAndAdd();
+      return;
+    }
+
+    console.log('CW', clearWords);
+    let matchingIngredients: Ingredient[] = [];
+    clearWords.forEach((cw) => {
+      var foundIng = this.allIngredients.filter((ai) =>
+        this.containsWord(ai.name, cw)
+      );
+      foundIng.forEach((fi) => {
+        if (matchingIngredients.indexOf(fi) === -1) {
+          console.log(`match: ${cw} - ${fi.name}`);
+          matchingIngredients.push(fi);
+        }
+      });
+    });
+
+    if (matchingIngredients.length > 0) {
+      console.log('matching', matchingIngredients);
+      matchingIngredients.forEach((ing) => {
+        if (
+          !this.voiceSearchResults.find((r) => r.id == ing.id) &&
+          this.listening
+        ) {
+          this.voiceSearchResults.push(ing);
+          console.log(`Dodaje: ${ing.name}`);
+          this.addProcessedIngredient(ing);
+        }
+      });
+    }
+    // Set voice text output to
+    // this.searchForm.controls.searchText.setValue(input);
   }
 
   removeSearchResult(ingredient: Ingredient) {
