@@ -161,7 +161,7 @@ export class VisitsComponent implements OnInit, OnDestroy {
     this.visitsForYear$ = this.selectedYear$.pipe(
       debounceTime(200),
       tap((_) => {
-        this.resetMonthSummaries();
+        this.resetYearSummaries();
       }),
       switchMap((d) => {
         const firstDay = new Date(d.getFullYear(), 0, 1);
