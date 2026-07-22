@@ -6,7 +6,6 @@
   // everything inside has a fixed 360px reference to lay out (and truncate)
   // against; the 0.5em padding then gives the whole list its side margin.
   box-sizing: border-box;
-  width: 100%;
   max-width: 100%;
   padding: 0.5em;
   display: flex;
