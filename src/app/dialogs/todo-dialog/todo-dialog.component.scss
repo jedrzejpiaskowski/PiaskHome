@@ -1,0 +1,39 @@
+.todo-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.deadline-presets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+
+  button {
+    width: 100%;
+  }
+}
+
+.todo-dialog-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+  .right-actions {
+    display: flex;
+    gap: 8px;
+  }
+}

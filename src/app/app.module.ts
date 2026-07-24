@@ -54,6 +54,8 @@ import { ImageViewerDialogComponent } from './dialogs/image-viewer-dialog/image-
 import { ShoppingComponent } from './components/shopping/shopping.component';
 import { ShoppingListComponent } from './components/shopping/shopping-list/shopping-list.component';
 import { IngredientsComponent } from './components/shopping/ingredients/ingredients.component';
+import { TodoComponent } from './components/todo/todo.component';
+import { TodoDialogComponent } from './dialogs/todo-dialog/todo-dialog.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -71,6 +73,8 @@ import { IngredientsComponent } from './components/shopping/ingredients/ingredie
         ShoppingComponent,
         ShoppingListComponent,
         IngredientsComponent,
+        TodoComponent,
+        TodoDialogComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

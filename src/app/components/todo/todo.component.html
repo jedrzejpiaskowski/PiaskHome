@@ -1,0 +1,57 @@
+@if ({ user: user$ | async, todos: todos$ | async, showAll: showAll$ | async }; as data) {
+  <div class="todo-container">
+    <div class="todo-actions">
+      <mat-button-toggle-group [value]="data.showAll" aria-label="Filtr zadań"
+        (change)="setShowAll($event.value)">
+        <mat-button-toggle [value]="true">Wszystkie</mat-button-toggle>
+        <mat-button-toggle [value]="false">Moje</mat-button-toggle>
+      </mat-button-toggle-group>
+      <span class="spacer"></span>
+      <button mat-flat-button color="primary" [disabled]="!data.user" (click)="openAdd(data.user)">
+        <mat-icon>add</mat-icon>
+        Dodaj
+      </button>
+    </div>
+
+    <div class="todo-list">
+      @for (todo of data.todos; track todo.id) {
+        <div class="todo-item priority-{{ todo.priority }}" [class.completed]="todo.completed">
+          <mat-checkbox class="todo-check" [checked]="todo.completed"
+            [disabled]="!canModify(todo, data.user)"
+            (change)="toggleComplete(todo, $event.checked)"></mat-checkbox>
+
+          <div class="todo-body">
+            <div class="todo-description">{{ todo.description }}</div>
+            <div class="todo-meta">
+              <span class="todo-owner">
+                <mat-icon>person</mat-icon>{{ todo.owner }}
+              </span>
+              @if (todo.deadline) {
+                <span class="todo-deadline">
+                  <mat-icon>event</mat-icon>{{ todo.deadline | date: 'dd.MM.yyyy' }}
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="todo-item-actions">
+            @if (canModify(todo, data.user)) {
+              <button mat-icon-button color="primary" aria-label="Edytuj zadanie"
+                (click)="openEdit(todo)">
+                <mat-icon>edit</mat-icon>
+              </button>
+            }
+            @if (canModify(todo, data.user) && todo.completed) {
+              <button mat-icon-button color="warn" aria-label="Usuń zadanie"
+                (click)="confirmDelete(todo)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <p class="todo-empty">Brak zadań.</p>
+      }
+    </div>
+  </div>
+}

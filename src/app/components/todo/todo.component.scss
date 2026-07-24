@@ -1,0 +1,101 @@
+.todo-container {
+  padding: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.todo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+  background: rgba(0, 0, 0, 0.02);
+
+  .todo-check {
+    margin-top: 2px;
+  }
+
+  .todo-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .todo-description {
+    word-break: break-word;
+  }
+
+  .todo-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+    font-size: 12px;
+    opacity: 0.7;
+
+    span {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .todo-item-actions {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+}
+
+// Priority cues — subtle, low-alpha so they read on light and dark themes.
+// Standard has no distinction.
+.todo-item.priority-low {
+  opacity: 0.75;
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.todo-item.priority-high {
+  background: rgba(211, 47, 47, 0.08);
+  border-left-color: rgba(211, 47, 47, 0.55);
+}
+
+// Completed styling takes precedence over priority cues.
+.todo-item.completed {
+  opacity: 0.55;
+  background: rgba(0, 0, 0, 0.03);
+  border-left-color: transparent;
+
+  .todo-description {
+    text-decoration: line-through;
+  }
+}
+
+.todo-empty {
+  text-align: center;
+  opacity: 0.6;
+  padding: 24px 0;
+}

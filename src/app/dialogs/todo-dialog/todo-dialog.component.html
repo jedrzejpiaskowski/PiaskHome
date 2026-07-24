@@ -1,0 +1,58 @@
+<h1 mat-dialog-title>{{ isEdit ? 'Edytuj zadanie' : 'Nowe zadanie' }}</h1>
+<div mat-dialog-content>
+  <form class="todo-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Opis</mat-label>
+      <textarea matInput required maxlength="200" rows="2" [(ngModel)]="todo.description"
+        name="description" cdkFocusInitial></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Priorytet</mat-label>
+      <mat-select [(ngModel)]="todo.priority" name="priority">
+        @for (p of priorities; track p.value) {
+          <mat-option [value]="p.value">{{ p.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Termin</mat-label>
+      <input matInput [(ngModel)]="todo.deadline" name="deadline" [matDatepicker]="deadlinePicker">
+      <mat-datepicker-toggle matSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
+      @if (todo.deadline) {
+        <button matSuffix mat-icon-button aria-label="Wyczyść termin" (click)="clearDeadline()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+      <mat-datepicker touchUi #deadlinePicker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="deadline-presets">
+      @for (preset of deadlinePresets; track preset.label) {
+        <button mat-stroked-button color="primary" type="button"
+          (click)="setDeadlinePreset(preset.amount, preset.unit)">
+          {{ preset.label }}
+        </button>
+      }
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions class="todo-dialog-actions">
+  @if (isEdit) {
+    <button mat-icon-button color="warn" aria-label="Usuń zadanie" (click)="delete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  }
+  <span class="spacer"></span>
+  <div class="right-actions">
+    <button mat-stroked-button [mat-dialog-close]="null">
+      <mat-icon>close</mat-icon>
+      Anuluj
+    </button>
+    <button mat-stroked-button color="primary" [disabled]="!isValid" (click)="save()">
+      <mat-icon>save</mat-icon>
+      Zapisz
+    </button>
+  </div>
+</div>
