@@ -20,6 +20,9 @@ export type TodoDialogResult =
 export class TodoDialogComponent {
   todo: Todo;
   isEdit: boolean;
+  // Bound to the datepicker; the moment adapter (useUtc) works in Moments, so we
+  // keep the deadline as a Moment here and convert to a JS Date on save.
+  deadline: moment.Moment | null = null;
   TodoPriority = TodoPriority;
 
   priorities = [
@@ -47,14 +50,20 @@ export class TodoDialogComponent {
           priority: TodoPriority.Standard,
           deadline: null,
         } as Todo);
+    this.deadline = this.todo.deadline
+      ? moment.utc(this.todo.deadline)
+      : null;
   }
 
   setDeadlinePreset(amount: number, unit: moment.unitOfTime.DurationConstructor): void {
-    this.todo.deadline = moment().add(amount, unit).startOf('day').toDate();
+    // Take the local calendar day (e.g. tomorrow) and pin it to UTC midnight so it
+    // round-trips consistently with datepicker-selected values (adapter uses UTC).
+    const targetDay = moment().add(amount, unit).format('YYYY-MM-DD');
+    this.deadline = moment.utc(targetDay);
   }
 
   clearDeadline(): void {
-    this.todo.deadline = null;
+    this.deadline = null;
   }
 
   get isValid(): boolean {
@@ -64,6 +73,7 @@ export class TodoDialogComponent {
   save(): void {
     if (!this.isValid) return;
     this.todo.description = this.todo.description.trim();
+    this.todo.deadline = this.deadline ? this.deadline.toDate() : null;
     this.dialogRef.close({ action: 'save', todo: this.todo } as TodoDialogResult);
   }
 

@@ -28,7 +28,7 @@
               </span>
               @if (todo.deadline) {
                 <span class="todo-deadline">
-                  <mat-icon>event</mat-icon>{{ todo.deadline | date: 'dd.MM.yyyy' }}
+                  <mat-icon>event</mat-icon>{{ todo.deadline | date: 'dd.MM.yyyy':'UTC' }}
                 </span>
               }
             </div>

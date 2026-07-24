@@ -18,9 +18,9 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Termin</mat-label>
-      <input matInput [(ngModel)]="todo.deadline" name="deadline" [matDatepicker]="deadlinePicker">
+      <input matInput [(ngModel)]="deadline" name="deadline" [matDatepicker]="deadlinePicker">
       <mat-datepicker-toggle matSuffix [for]="deadlinePicker"></mat-datepicker-toggle>
-      @if (todo.deadline) {
+      @if (deadline) {
         <button matSuffix mat-icon-button aria-label="Wyczyść termin" (click)="clearDeadline()">
           <mat-icon>close</mat-icon>
         </button>
