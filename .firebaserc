@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "domek": "domek-14cdc"
+  },
+  "targets": {
+    "domek-14cdc": {
+      "hosting": {
+        "live": [
+          "piask-home"
+        ],
+        "beta": [
+          "piask-home-beta"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
