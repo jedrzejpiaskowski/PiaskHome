@@ -25,7 +25,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { debounceTime, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
 import { StringUtilityService } from 'src/app/services/string-utility.service';
 import { VoiceRecognitionService } from 'src/app/services/voice-recognition.service';
@@ -105,6 +105,7 @@ export class IngredientsComponent implements OnChanges, OnInit {
         tap((ingC) => {
           this.ingredients = {};
           this.categories = [];
+          this.allIngredients = [];
           if (ingC && ingC.ingredients?.length > 0) {
             ingC.ingredients.forEach((i) => {
               this.allIngredients.push(i);
@@ -113,47 +114,56 @@ export class IngredientsComponent implements OnChanges, OnInit {
                 this.categories.push(i.categoryId);
               }
               this.ingredients[i.categoryId].push(i);
-              this.categories.forEach((c) => {
-                this.ingredients[c].sort((a, b) =>
-                  a.name.localeCompare(b.name)
-                );
-              });
             });
-            this.filteredIngredients = this.ingredients;
+            this.categories.forEach((c) => {
+              this.ingredients[c].sort((a, b) => a.name.localeCompare(b.name));
+            });
           }
+          // Re-apply the active search term so a background Firestore
+          // re-emission doesn't wipe the user's current filter.
+          this.applyFilter(this.productSearch.value);
         })
       );
 
     this.productSearch.valueChanges
       .pipe(
-        debounceTime(400),
+        debounceTime(200),
+        distinctUntilChanged(),
         tap((filterInput) => {
-          if (!filterInput || filterInput === '') {
-            this.filteredIngredients = this.ingredients;
-            return;
-          }
-          const filNormalized = this.stringService
-            .deaccent(filterInput)
-            .toLowerCase();
-          this.filteredIngredients = {};
-          this.categories.forEach((c) => {
-            this.ingredients[c].forEach((ing) => {
-              if (
-                this.stringService
-                  .deaccent(ing.name)
-                  .toLowerCase()
-                  .includes(filNormalized)
-              ) {
-                if (!this.filteredIngredients[c]) {
-                  this.filteredIngredients[c] = [];
-                }
-                this.filteredIngredients[c].push(ing);
-              }
-            });
-          });
+          this.applyFilter(filterInput);
+          // The debounced emission fires from a timer, outside the change
+          // detection triggered by the keystroke itself, so the view wouldn't
+          // repaint until the next in-zone event (e.g. a click/blur). Run
+          // change detection explicitly — same reason as the voice input above.
+          this.changeDetector.detectChanges();
         })
       )
       .subscribe();
+  }
+
+  /**
+   * Rebuilds `filteredIngredients` from the current ingredient data and the
+   * given search term. Called both when the user types and when the Firestore
+   * data reloads, so the two stay in sync (a background re-emission no longer
+   * clobbers an active filter).
+   */
+  private applyFilter(filterInput: string | null): void {
+    const term = this.stringService.deaccent(filterInput ?? '').trim().toLowerCase();
+
+    if (term === '') {
+      this.filteredIngredients = this.ingredients;
+      return;
+    }
+
+    this.filteredIngredients = {};
+    this.categories.forEach((c) => {
+      const matches = this.ingredients[c].filter((ing) =>
+        this.stringService.deaccent(ing.name).toLowerCase().includes(term)
+      );
+      if (matches.length > 0) {
+        this.filteredIngredients[c] = matches;
+      }
+    });
   }
 
   ngOnInit(): void {
