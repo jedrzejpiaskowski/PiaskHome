@@ -28,6 +28,12 @@
       <mat-datepicker touchUi #deadlinePicker></mat-datepicker>
     </mat-form-field>
 
+    @if (!isEdit) {
+      <mat-checkbox [(ngModel)]="todo.shared" name="shared" class="shared-check">
+        Wspólne (dostępne dla wszystkich)
+      </mat-checkbox>
+    }
+
     <div class="deadline-presets">
       @for (preset of deadlinePresets; track preset.label) {
         <button mat-stroked-button color="primary" type="button"

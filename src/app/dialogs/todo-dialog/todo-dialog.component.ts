@@ -49,6 +49,7 @@ export class TodoDialogComponent {
           description: '',
           priority: TodoPriority.Standard,
           deadline: null,
+          shared: true,
         } as Todo);
     this.deadline = this.todo.deadline
       ? moment.utc(this.todo.deadline)

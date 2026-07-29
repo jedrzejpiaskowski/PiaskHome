@@ -25,6 +25,9 @@
             <div class="todo-meta">
               <span class="todo-owner">
                 <mat-icon>person</mat-icon>{{ todo.owner }}
+                @if (todo.shared) {
+                  <mat-icon class="shared-icon" color="primary" aria-label="Zadanie wspólne" title="Zadanie wspólne">group</mat-icon>
+                }
               </span>
               @if (todo.deadline) {
                 <span class="todo-deadline">

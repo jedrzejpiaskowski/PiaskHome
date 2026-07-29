@@ -54,7 +54,7 @@ export class TodoComponent {
   }
 
   canModify(todo: Todo, user: User | null | undefined): boolean {
-    return !!user && todo.ownerUid === user.uid;
+    return !!user && (todo.shared || todo.ownerUid === user.uid);
   }
 
   setShowAll(showAll: boolean): void {
