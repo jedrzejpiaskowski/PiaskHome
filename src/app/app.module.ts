@@ -50,7 +50,6 @@ import { HouseTasksChartsComponent } from './components/house-tasks-charts/house
 import { RecipesComponent } from './components/recipes/recipes.component';
 import { RecipeDetailsComponent } from './components/recipes/recipe-details.component';
 import { DragDropDirective } from './directives/drag-drop.directive';
-import { ImageViewerDialogComponent } from './dialogs/image-viewer-dialog/image-viewer-dialog.component';
 import { ShoppingComponent } from './components/shopping/shopping.component';
 import { ShoppingListComponent } from './components/shopping/shopping-list/shopping-list.component';
 import { IngredientsComponent } from './components/shopping/ingredients/ingredients.component';
@@ -69,7 +68,6 @@ import { TodoDialogComponent } from './dialogs/todo-dialog/todo-dialog.component
         RecipeDetailsComponent,
         RecipeDetailsComponent,
         DragDropDirective,
-        ImageViewerDialogComponent,
         ShoppingComponent,
         ShoppingListComponent,
         IngredientsComponent,
