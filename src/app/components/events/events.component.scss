@@ -1,0 +1,137 @@
+:host {
+  display: flex;
+  justify-content: center;
+}
+
+.events-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px;
+}
+
+.calendar-card {
+  width: 100%;
+}
+
+.calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 16px 16px;
+}
+
+.upcoming {
+  margin-top: 12px;
+
+  .upcoming-toggle {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.upcoming-item {
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.02);
+
+  // The whole row is the edit target, so the button has to lay out like a row rather
+  // than Material's centred single-line label.
+  .upcoming-item-body {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 12px;
+    text-align: left;
+    line-height: 1.3;
+  }
+
+  .upcoming-date {
+    flex: 0 0 auto;
+    font-size: 12px;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  .upcoming-description {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  // Marks an event the app only mirrors - it is owned by Google and not editable here.
+  .google-icon {
+    flex: 0 0 auto;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+  }
+}
+
+.upcoming-empty {
+  text-align: center;
+  opacity: 0.6;
+  padding: 16px 0;
+}
+
+// Calendar day decorations. Scoped under :host so they cannot leak into the datepickers
+// used elsewhere in the app.
+:host ::ng-deep {
+  // Ring on the day number itself. .mat-calendar-body-cell-content already has
+  // border-radius: 999px and a transparent border, so an inset shadow reads cleanly and
+  // survives the selected/today states. Same idiom as the visits calendar.
+  .mat-calendar-body-cell.event-day .mat-calendar-body-cell-content {
+    box-shadow: inset 0 0 5px 0 var(--primary);
+  }
+
+  // Material already owns .mat-calendar-body-cell::after for date-range fills
+  // (content:""; absolute; top:5%; left:0; width:100%; height:90%; z-index:0). This
+  // calendar is single-select so nothing else uses it, but every inherited box property
+  // has to be reset, and z-index must beat .mat-calendar-body-cell-content (z-index:1).
+  .mat-calendar-body-cell.event-day::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    left: auto;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  // A lone event gets the ring only - a "1" badge is just noise.
+  .mat-calendar-body-cell.event-count-1::after {
+    display: none;
+  }
+
+  .mat-calendar-body-cell.event-count-2::after {
+    content: '2';
+  }
+
+  .mat-calendar-body-cell.event-count-3::after {
+    content: '3';
+  }
+
+  .mat-calendar-body-cell.event-count-4::after {
+    content: '4+';
+    width: 18px;
+    border-radius: 8px;
+  }
+}

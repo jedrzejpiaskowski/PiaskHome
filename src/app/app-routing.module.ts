@@ -8,6 +8,7 @@ import { RecipesComponent } from './components/recipes/recipes.component';
 import { RecipeDetailsComponent } from './components/recipes/recipe-details.component';
 import { ShoppingComponent } from './components/shopping/shopping.component';
 import { TodoComponent } from './components/todo/todo.component';
+import { EventsComponent } from './components/events/events.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -18,7 +19,8 @@ const routes: Routes = [
     { path: 'recipes/:id', component: RecipeDetailsComponent, canActivate: [AuthGuard]},
     { path: 'recipes/new', component: RecipeDetailsComponent, canActivate: [AuthGuard]},
     { path: 'shopping', component: ShoppingComponent, canActivate: [AuthGuard]},
-    { path: 'todo', component: TodoComponent, canActivate: [AuthGuard]}
+    { path: 'todo', component: TodoComponent, canActivate: [AuthGuard]},
+    { path: 'events', component: EventsComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

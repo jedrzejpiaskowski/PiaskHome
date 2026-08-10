@@ -1,0 +1,49 @@
+@if ({ user: user$ | async, upcoming: upcoming$ | async, showUpcoming: showUpcoming$ | async }; as data) {
+  <div class="events-container">
+    <mat-card class="calendar-card" appearance="outlined">
+      <mat-card-content>
+        <mat-calendar [dateClass]="dateClass"
+          (selectedChange)="onDaySelected($event, data.user)"></mat-calendar>
+      </mat-card-content>
+      <mat-card-actions class="calendar-actions">
+        <button mat-flat-button color="primary" [disabled]="!data.user"
+          (click)="openEventDialog(null, null, data.user)">
+          <mat-icon>add</mat-icon>
+          Dodaj
+        </button>
+        <button mat-stroked-button [disabled]="syncing || !data.user" (click)="syncGoogle()">
+          <mat-icon>sync</mat-icon>
+          Synchronizuj z Google
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <div class="upcoming">
+      <button mat-button class="upcoming-toggle" (click)="toggleUpcoming()">
+        <mat-icon>{{ data.showUpcoming ? 'expand_less' : 'expand_more' }}</mat-icon>
+        Nadchodzące wydarzenia ({{ data.upcoming?.length ?? 0 }})
+      </button>
+
+      @if (data.showUpcoming) {
+        <div class="upcoming-list">
+          @for (event of data.upcoming; track event.id) {
+            <div class="upcoming-item">
+              <button mat-button class="upcoming-item-body"
+                [disabled]="!data.user || isFromGoogle(event)"
+                (click)="openEventDialog(event, null, data.user)">
+                <span class="upcoming-date">{{ eventDateLabel(event) }}</span>
+                <span class="upcoming-description">{{ event.description }}</span>
+                @if (isFromGoogle(event)) {
+                  <mat-icon class="google-icon" aria-label="Z Kalendarza Google"
+                    title="Z Kalendarza Google">event_available</mat-icon>
+                }
+              </button>
+            </div>
+          } @empty {
+            <p class="upcoming-empty">Brak wydarzeń.</p>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

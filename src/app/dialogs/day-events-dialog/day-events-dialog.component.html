@@ -1,0 +1,48 @@
+<h1 mat-dialog-title class="day-title">{{ data.day | date: 'EEEE, d MMMM yyyy':'UTC' | titlecase }}</h1>
+<div mat-dialog-content>
+  <div class="day-list">
+    @for (event of data.events; track event.id) {
+      <div class="day-item">
+        <button mat-button class="day-item-body" [disabled]="!canEdit(event)" (click)="edit(event)">
+          <span class="day-description">{{ event.description }}</span>
+          <span class="day-meta">
+            @if (event.time) {
+              <span><mat-icon>schedule</mat-icon>{{ event.time }}</span>
+            }
+            @if (isFromGoogle(event)) {
+              <span aria-label="Z Kalendarza Google" title="Z Kalendarza Google">
+                <mat-icon>event_available</mat-icon>Google
+              </span>
+            }
+            @if (isMultiDay(event)) {
+              <span>
+                <mat-icon>date_range</mat-icon>
+                {{ event.date | date: 'dd.MM':'UTC' }}–{{ event.endDate | date: 'dd.MM':'UTC' }}
+              </span>
+            }
+            @if (event.owner) {
+              <span>{{ event.owner }}</span>
+            }
+          </span>
+        </button>
+        @if (canEdit(event)) {
+          <button mat-icon-button color="warn" aria-label="Usuń wydarzenie" (click)="delete(event)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </div>
+    } @empty {
+      <p class="day-empty">Brak wydarzeń.</p>
+    }
+  </div>
+</div>
+<div mat-dialog-actions class="day-dialog-actions">
+  <button mat-stroked-button [mat-dialog-close]="null">
+    <mat-icon>close</mat-icon>
+    Zamknij
+  </button>
+  <button mat-stroked-button color="primary" [disabled]="!data.canModify" (click)="add()">
+    <mat-icon>add</mat-icon>
+    Dodaj wydarzenie
+  </button>
+</div>

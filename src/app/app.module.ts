@@ -56,6 +56,9 @@ import { ShoppingListComponent } from './components/shopping/shopping-list/shopp
 import { IngredientsComponent } from './components/shopping/ingredients/ingredients.component';
 import { TodoComponent } from './components/todo/todo.component';
 import { TodoDialogComponent } from './dialogs/todo-dialog/todo-dialog.component';
+import { EventsComponent } from './components/events/events.component';
+import { EventDialogComponent } from './dialogs/event-dialog/event-dialog.component';
+import { DayEventsDialogComponent } from './dialogs/day-events-dialog/day-events-dialog.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -75,6 +78,9 @@ import { TodoDialogComponent } from './dialogs/todo-dialog/todo-dialog.component
         IngredientsComponent,
         TodoComponent,
         TodoDialogComponent,
+        EventsComponent,
+        EventDialogComponent,
+        DayEventsDialogComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

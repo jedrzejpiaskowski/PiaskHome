@@ -1,0 +1,66 @@
+<h1 mat-dialog-title>{{ isEdit ? 'Edytuj wydarzenie' : 'Nowe wydarzenie' }}</h1>
+<div mat-dialog-content>
+  <form class="event-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Opis</mat-label>
+      <textarea matInput required maxlength="200" rows="2" [(ngModel)]="event.description"
+        name="description" cdkFocusInitial></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Data</mat-label>
+      <input matInput required [(ngModel)]="startDate" name="startDate" [matDatepicker]="startPicker">
+      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker touchUi #startPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Godzina (opcjonalnie)</mat-label>
+      <input matInput type="time" [(ngModel)]="time" name="time">
+      @if (time) {
+        <button matSuffix mat-icon-button type="button" aria-label="Wyczyść godzinę" (click)="clearTime()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+      <mat-hint>Puste = całodniowe</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Data zakończenia (opcjonalnie)</mat-label>
+      <input matInput [(ngModel)]="endDate" name="endDate" [matDatepicker]="endPicker" [min]="startDate">
+      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+      @if (endDate) {
+        <button matSuffix mat-icon-button type="button" aria-label="Wyczyść datę zakończenia"
+          (click)="clearEndDate()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+      <mat-datepicker touchUi #endPicker></mat-datepicker>
+      <mat-hint>np. urlop od–do</mat-hint>
+    </mat-form-field>
+
+    @if (!isEdit) {
+      <mat-checkbox [(ngModel)]="createTodo" name="createTodo" class="todo-check">
+        Utwórz też zadanie
+      </mat-checkbox>
+    }
+  </form>
+</div>
+<div mat-dialog-actions class="event-dialog-actions">
+  @if (isEdit) {
+    <button mat-icon-button color="warn" aria-label="Usuń wydarzenie" (click)="delete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  }
+  <span class="spacer"></span>
+  <div class="right-actions">
+    <button mat-stroked-button [mat-dialog-close]="null">
+      <mat-icon>close</mat-icon>
+      Anuluj
+    </button>
+    <button mat-stroked-button color="primary" [disabled]="!isValid" (click)="save()">
+      <mat-icon>save</mat-icon>
+      Zapisz
+    </button>
+  </div>
+</div>

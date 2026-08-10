@@ -39,6 +39,11 @@
                 <mat-icon>checklist</mat-icon>
                 Zadania
             </a>
+            <a mat-button routerLink='/events' class="example-icon favorite-icon" aria-label="calendar icon"
+                routerLinkActive='active-link'>
+                <mat-icon>calendar_month</mat-icon>
+                Kalendarz
+            </a>
         </div>
     </mat-toolbar>
 
@@ -68,6 +73,10 @@
                 <a mat-list-item routerLink='/todo' (click)="sidenav.toggle()" routerLinkActive='active-link'>
                     <mat-icon matListItemIcon>checklist</mat-icon>
                     Zadania
+                </a>
+                <a mat-list-item routerLink='/events' (click)="sidenav.toggle()" routerLinkActive='active-link'>
+                    <mat-icon matListItemIcon>calendar_month</mat-icon>
+                    Kalendarz
                 </a>
             </mat-nav-list>
         </mat-sidenav>
