@@ -1,3 +1,10 @@
+// Height of the Material tab header, and the gutter carved out of it on the
+// right so the view/edit toggle sits beside the tabs instead of on top of the
+// last one.
+$tab-header-height: 40px;
+$toggle-gutter: 48px;
+$tab-padding: 12px;
+
 .tab-group-wrapper {
   position: relative;
 }
@@ -10,12 +17,47 @@
     backdrop-filter: blur(3px);
     top: 0;
     z-index: 1000;
+
+    // Keep the tabs (and the active ink bar) clear of the toggle button.
+    padding-right: $toggle-gutter;
+
+    // Tabs are flex-shrink: 0, so the gutter would push them past the header
+    // and clip the labels on a phone. Trim their padding to win the space back.
+    .mat-mdc-tab {
+      padding-left: $tab-padding;
+      padding-right: $tab-padding;
+      min-width: 0;
+    }
+
+    // The divider normally sits on the label container, which now stops short
+    // of the right edge - move it to the header so the line spans full width.
+    .mat-mdc-tab-label-container {
+      border-bottom: none;
+    }
+
+    border-bottom: 1px solid var(--mat-tab-divider-color);
   }
 }
 
+// Sticky strip that rides along with the sticky tab header, so the view/edit
+// toggle stays pinned next to the tabs while scrolling. The negative margin
+// keeps it from taking up any space in the flow.
 .mode-toggle-button {
-  position: absolute;
+  position: sticky;
+  position: -webkit-sticky;
   top: 0;
-  right: 0;
   z-index: 1001;
+  height: $tab-header-height;
+  margin-bottom: -$tab-header-height;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: $toggle-gutter;
+  margin-left: auto;
+  // The strip itself must not swallow clicks aimed at the tabs underneath.
+  pointer-events: none;
+
+  button {
+    pointer-events: auto;
+  }
 }

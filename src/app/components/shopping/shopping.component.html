@@ -1,14 +1,6 @@
 @if ({ shoppingList: shoppingList$ | async }; as data) {
   @if (data.shoppingList) {
     <div class="tab-group-wrapper">
-      <mat-tab-group class='full-width-tabs' mat-align-tabs="center">
-        <mat-tab label='Lista zakupów'>
-          <app-shopping-list [mode]='mode' [shoppingList]="data.shoppingList"></app-shopping-list>
-        </mat-tab>
-        <mat-tab label='Produkty'>
-          <app-ingredients [mode]='mode' [shoppingList]="data.shoppingList"></app-ingredients>
-        </mat-tab>
-      </mat-tab-group>
       <div class="mode-toggle-button">
         @if (mode === 'view') {
           <button color='primary' mat-icon-button (click)='toggleMode()'>
@@ -21,6 +13,14 @@
           </button>
         }
       </div>
+      <mat-tab-group class='full-width-tabs' mat-align-tabs="center">
+        <mat-tab label='Lista zakupów'>
+          <app-shopping-list [mode]='mode' [shoppingList]="data.shoppingList"></app-shopping-list>
+        </mat-tab>
+        <mat-tab label='Produkty'>
+          <app-ingredients [mode]='mode' [shoppingList]="data.shoppingList"></app-ingredients>
+        </mat-tab>
+      </mat-tab-group>
     </div>
   }
 }
