@@ -56,6 +56,11 @@ export class EventsComponent implements OnInit, AfterViewInit, OnDestroy {
   // synchronously once per cell. Also serves the day tap, so a tap never rescans
   // the whole collection.
   private eventsByDay = new Map<string, CalendarEvent[]>();
+  // Days covered by an event spanning more than one day, and days carrying at least one
+  // single-day event. Kept apart so the two get different decorations: a continuous bar
+  // for a span, a ring for a one-off.
+  private spanDays = new Set<string>();
+  private singleDays = new Set<string>();
   private sub = new Subscription();
 
   constructor(
@@ -89,14 +94,23 @@ export class EventsComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sub.add(
       this.events$.subscribe((events) => {
         this.eventsByDay = new Map<string, CalendarEvent[]>();
+        this.spanDays = new Set<string>();
+        this.singleDays = new Set<string>();
         for (const event of events) {
           // Multi-day events are expanded here, so every covered day is decorated.
-          for (const key of this.eventService.dayKeysFor(event)) {
+          const keys = this.eventService.dayKeysFor(event);
+          const isSpan = keys.length > 1;
+          for (const key of keys) {
             const bucket = this.eventsByDay.get(key);
             if (bucket) {
               bucket.push(event);
             } else {
               this.eventsByDay.set(key, [event]);
+            }
+            if (isSpan) {
+              this.spanDays.add(key);
+            } else {
+              this.singleDays.add(key);
             }
           }
         }
@@ -121,11 +135,28 @@ export class EventsComponent implements OnInit, AfterViewInit, OnDestroy {
   dateClass: MatCalendarCellClassFunction<moment.Moment> = (cellDate, view) => {
     if (view !== 'month') return '';
 
-    const count = this.eventsByDay.get(cellDate.format('YYYY-MM-DD'))?.length ?? 0;
+    const key = cellDate.format('YYYY-MM-DD');
+    const count = this.eventsByDay.get(key)?.length ?? 0;
     if (count === 0) return '';
 
     // Anything past four collapses into the same "4+" badge.
-    return `event-day event-count-${Math.min(count, 4)}`;
+    const classes = ['event-day', `event-count-${Math.min(count, 4)}`];
+
+    if (this.singleDays.has(key)) {
+      classes.push('event-single');
+    }
+
+    if (this.spanDays.has(key)) {
+      classes.push('event-span');
+      // Round the caps only where the run actually begins or ends, so that spans which
+      // touch or overlap read as one continuous bar rather than several pills.
+      const prev = cellDate.clone().subtract(1, 'day').format('YYYY-MM-DD');
+      const next = cellDate.clone().add(1, 'day').format('YYYY-MM-DD');
+      if (!this.spanDays.has(prev)) classes.push('event-span-start');
+      if (!this.spanDays.has(next)) classes.push('event-span-end');
+    }
+
+    return classes.join(' ');
   };
 
   toggleUpcoming(): void {

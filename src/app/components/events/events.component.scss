@@ -85,11 +85,45 @@
 // Calendar day decorations. Scoped under :host so they cannot leak into the datepickers
 // used elsewhere in the app.
 :host ::ng-deep {
-  // Ring on the day number itself. .mat-calendar-body-cell-content already has
-  // border-radius: 999px and a transparent border, so an inset shadow reads cleanly and
-  // survives the selected/today states. Same idiom as the visits calendar.
-  .mat-calendar-body-cell.event-day .mat-calendar-body-cell-content {
+  // Ring on the day number itself, for days holding a single-day event.
+  // .mat-calendar-body-cell-content already has border-radius: 999px and a transparent
+  // border, so an inset shadow reads cleanly and survives the selected/today states.
+  // Same idiom as the visits calendar.
+  .mat-calendar-body-cell.event-single .mat-calendar-body-cell-content {
     box-shadow: inset 0 0 5px 0 var(--primary);
+  }
+
+  // Continuous bar behind the days an event spans, so a five-day holiday reads as one
+  // block rather than five separate marks. This borrows the geometry Material uses for
+  // date-range fills: ::before is already positioned to cover the cell edge to edge at
+  // z-index 0, which puts it behind .mat-calendar-body-cell-content (z-index 1). Because
+  // it runs the full width, adjacent cells join up across the row with no seam, and a
+  // span crossing a week boundary simply continues on the next row.
+  .mat-calendar-body-cell.event-span::before {
+    background: rgba(0, 150, 136, 0.18);
+  }
+
+  // Rounded caps at the ends of a run. The 5%/95% insets match Material's own range
+  // start/end rules, so the cap lines up with the day circle.
+  .mat-calendar-body-cell.event-span-start::before {
+    left: 5%;
+    width: 95%;
+    border-top-left-radius: 999px;
+    border-bottom-left-radius: 999px;
+  }
+
+  .mat-calendar-body-cell.event-span-end::before {
+    width: 95%;
+    border-top-right-radius: 999px;
+    border-bottom-right-radius: 999px;
+  }
+
+  // A one-cell run needs both caps, and both insets applied at once would overflow the
+  // cell - so narrow it the way Material narrows its single-day ranges.
+  .mat-calendar-body-cell.event-span-start.event-span-end::before {
+    left: 5%;
+    width: 90%;
+    border-radius: 999px;
   }
 
   // Material already owns .mat-calendar-body-cell::after for date-range fills
