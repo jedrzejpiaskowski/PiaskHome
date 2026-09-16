@@ -38,7 +38,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { ConfirmationDialogComponent } from 'src/app/dialogs/confirmation-dialog/confirmation-dialog.component';
-import { ImageViewerDialogComponent } from 'src/app/dialogs/image-viewer-dialog/image-viewer-dialog.component';
+import { ImageViewerService } from 'src/app/services/image-viewer.service';
 import { CollectionKey } from 'src/models/colletion-keys';
 import { Constants } from 'src/models/constants';
 import { ImageHandle } from 'src/models/image';
@@ -77,6 +77,7 @@ export class RecipeDetailsComponent {
     private sanitizer: DomSanitizer,
     private snackbar: MatSnackBar,
     private dialog: MatDialog,
+    private imageViewer: ImageViewerService,
     private title: Title
   ) {
     new UntypedFormControl();
@@ -302,11 +303,7 @@ export class RecipeDetailsComponent {
   }
 
   showImages(imageUrls: string[], i: number) {
-    this.dialog.open(ImageViewerDialogComponent, {
-      maxWidth: '90vw !important',
-      maxHeight: '100vh !important',
-      data: { index: i, images: imageUrls },
-    });
+    this.imageViewer.open(imageUrls, i);
   }
 
   deleteImage(image: ImageHandle, recipeSaved: boolean) {

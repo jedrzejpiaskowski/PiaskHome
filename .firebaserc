@@ -5,11 +5,14 @@
   "targets": {
     "domek-14cdc": {
       "hosting": {
-        "live": [
-          "piask-home"
-        ],
         "beta": [
           "piask-home-beta"
+        ],
+        "live": [
+          "domek-14cdc"
+        ],
+        "mirror": [
+          "piaskhome"
         ]
       }
     }
