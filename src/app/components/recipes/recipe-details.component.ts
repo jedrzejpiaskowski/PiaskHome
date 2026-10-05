@@ -29,10 +29,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { DomSanitizer, Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, iif, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import {
   map,
-  mergeMap,
   startWith,
   switchMap,
   tap,
@@ -62,8 +61,8 @@ export class RecipeDetailsComponent {
   separatorKeysCodes: number[] = [ENTER, COMMA];
   editing = false;
   recipe$: Observable<Recipe | undefined>;
-  recipeId: string | null;
-  recipeId$: BehaviorSubject<string | null>;
+  recipeId: string;
+  recipeId$: BehaviorSubject<string>;
   rating: number | null = null;
   ratings = [1, 2, 3, 4, 5];
   maxFileSize = 1_000_000;
@@ -118,17 +117,16 @@ export class RecipeDetailsComponent {
         })
       );
 
-    this.recipeId = this.route.snapshot.paramMap.get('id');
+    this.recipeId = this.route.snapshot.paramMap.get('id') ?? 'new';
     this.recipeId$ = new BehaviorSubject(this.recipeId);
     this.recipe$ = this.recipeId$.pipe(
       switchMap((_id) =>
-        docData(
-          doc(this.store, `${CollectionKey.Recipes}/${_id}`) as DocumentReference<Recipe>,
-          { idField: 'id' }
-        )
-      ),
-      mergeMap((r) =>
-        iif(() => r?.id !== 'new', of(r), of(this.createNewRecipe()))
+        _id === 'new'
+          ? of(this.createNewRecipe())
+          : docData(
+              doc(this.store, `${CollectionKey.Recipes}/${_id}`) as DocumentReference<Recipe>,
+              { idField: 'id' }
+            )
       ),
       tap((r) => {
         if (r) {

@@ -16,8 +16,8 @@ const routes: Routes = [
     { path: 'house-tasks', component: HouseTasksComponent, canActivate: [AuthGuard]},
     { path: 'visits', component: VisitsComponent, canActivate: [AuthGuard]},
     { path: 'recipes', component: RecipesComponent, canActivate: [AuthGuard]},
-    { path: 'recipes/:id', component: RecipeDetailsComponent, canActivate: [AuthGuard]},
     { path: 'recipes/new', component: RecipeDetailsComponent, canActivate: [AuthGuard]},
+    { path: 'recipes/:id', component: RecipeDetailsComponent, canActivate: [AuthGuard]},
     { path: 'shopping', component: ShoppingComponent, canActivate: [AuthGuard]},
     { path: 'todo', component: TodoComponent, canActivate: [AuthGuard]},
     { path: 'events', component: EventsComponent, canActivate: [AuthGuard]}
